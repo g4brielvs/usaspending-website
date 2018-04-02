@@ -14,7 +14,8 @@ const propTypes = {
     pageName: PropTypes.string,
     sections: PropTypes.array,
     jumpToSection: PropTypes.func,
-    stickyHeaderHeight: PropTypes.number
+    stickyHeaderHeight: PropTypes.number,
+    contentHeight: PropTypes.number
 };
 
 export default class Sidebar extends React.Component {
@@ -24,7 +25,8 @@ export default class Sidebar extends React.Component {
         this.state = {
             shouldFloat: false,
             sidebarWidth: 0,
-            floatPoint: 0
+            floatPoint: 0,
+            reachedBottom: false
         };
 
         this.lastY = null;
@@ -96,6 +98,23 @@ export default class Sidebar extends React.Component {
                 }
             });
         }
+
+        const siteHeaderHeight = 97;
+        const totalHeight = this.props.contentHeight + this.props.stickyHeaderHeight + siteHeaderHeight + 30;
+        const distFromBottom = totalHeight - yPos - this.div.clientHeight;
+
+        if (distFromBottom < 0 && !this.state.reachedBottom) {
+            this.setState({
+                reachedBottom: true
+            });
+            this.div.style.margin = `${yPos}px 0 0 0`;
+        }
+        else if (distFromBottom >= 0 && this.state.reachedBottom) {
+            this.setState({
+                reachedBottom: false
+            });
+            this.div.style.margin = `auto`;
+        }
     }
 
     render() {
@@ -127,6 +146,9 @@ export default class Sidebar extends React.Component {
         let floatSidebar = '';
         if (this.state.shouldFloat) {
             floatSidebar = 'float-sidebar';
+        }
+        if (this.state.reachedBottom) {
+            floatSidebar = 'reached-bottom';
         }
 
         return (

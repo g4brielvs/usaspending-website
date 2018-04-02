@@ -10,6 +10,9 @@
         position: fixed;
         top: rem(96);
     }
+    &.reached-bottom {
+        position: relative;
+    }
 
     background-color: $color-white;
     box-shadow: $container-shadow;

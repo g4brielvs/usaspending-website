@@ -53,7 +53,8 @@ export default class AboutContent extends React.Component {
             sectionPositions: [],
             window: {
                 height: 0
-            }
+            },
+            contentHeight: 0
         };
 
         this.jumpToSection = this.jumpToSection.bind(this);
@@ -102,7 +103,8 @@ export default class AboutContent extends React.Component {
             sectionPositions,
             window: {
                 height: windowHeight
-            }
+            },
+            contentHeight: this.div.clientHeight
         });
     }
 
@@ -221,9 +223,14 @@ export default class AboutContent extends React.Component {
                         pageName="about"
                         sections={aboutSections}
                         jumpToSection={this.jumpToSection}
-                        stickyHeaderHeight={StickyHeader.stickyHeaderHeight} />
+                        stickyHeaderHeight={StickyHeader.stickyHeaderHeight}
+                        contentHeight={this.state.contentHeight} />
                 </div>
-                <div className="about-content">
+                <div
+                    className="about-content"
+                    ref={(div) => {
+                        this.div = div;
+                    }}>
                     <div className="about-padded-content">
                         <Mission />
                         <Background />
