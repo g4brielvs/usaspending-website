@@ -28,6 +28,7 @@ import * as SearchHelper from 'helpers/searchHelper';
 import * as DownloadHelper from 'helpers/downloadHelper';
 
 import SearchAwardsOperation from 'models/search/SearchAwardsOperation';
+import BaseSavedSearch from 'models/v2/search/savedSearches/BaseSavedSearch';
 
 import SearchPage from 'components/search/SearchPage';
 
@@ -212,6 +213,8 @@ export class SearchContainer extends React.Component {
     }
 
     applyFilters(data) {
+        const output = BaseSavedSearch.restore(data);
+        console.log(output);
         const filters = data.filters;
         const version = data.version;
 
@@ -301,6 +304,17 @@ export class SearchContainer extends React.Component {
             Router.history.replace('/search');
             return;
         }
+
+        // TEST TEST TEST: create a BaseSavedSearch object
+        const savedSearch = Object.create(BaseSavedSearch);
+        savedSearch.populate({
+            searchView: this.props.searchView,
+            filters: this.props.filters
+        });
+        console.log(savedSearch);
+
+        const output = BaseSavedSearch.restore(JSON.parse(JSON.stringify(savedSearch)));
+        console.log(output);
 
         // POST an API request to retrieve the Redux state
         if (this.request) {
@@ -414,7 +428,7 @@ export default connect(
         filters: state.filters,
         download: state.download,
         appliedFilters: state.appliedFilters,
-        subaward: state.searchView.subaward
+        searchView: state.searchView
     }),
     (dispatch) => bindActionCreators(Object.assign({}, searchHashActions, {
         clearAllFilters,
