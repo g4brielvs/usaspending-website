@@ -4,19 +4,9 @@
  */
 
 import { Set, OrderedMap } from 'immutable';
-
+import { convertArrayToOrderedMap } from './utils';
 import BaseSavedTimePeriod from './BaseSavedTimePeriod';
-
-export function convertArrayToOrderedMap(arr, keyProp) {
-    const orderedKeyVals = arr.map((item, index) => (
-        [
-            item[keyProp] || `${index}`,
-            item
-        ]
-    ));
-
-    return new OrderedMap(orderedKeyVals);
-}
+import BaseSavedLocation from './BaseSavedLocation';
 
 const BaseSavedFilters = {
     populate(data) {
@@ -29,14 +19,26 @@ const BaseSavedFilters = {
         this.timePeriod.populate(data);
 
         this.awardType = data.awardType.toArray();
+        this.location = Object.create(BaseSavedLocation);
+        this.location.populate(data.selectedLocations, data.locationDomesticForeign);
+        this.fundingAgency = data.selectedFundingAgencies.toArray();
+        this.awardingAgency = data.selectedAwardingAgencies.toArray();
+        this.recipients = data.selectedRecipients.toArray();
 
-        this.location = data.selectedLocations.toArray();
+        this.recipientLocation = Object.create(BaseSavedLocation);
+        this.recipientLocation.populate(
+            data.selectedRecipientLocations,
+            data.recipientDomesticForeign
+        );
     },
     restore(data) {
         const output = {
             keyword: '',
             awardType: [],
-            selectedLocations: new OrderedMap()
+            selectedLocations: new OrderedMap(),
+            selectedFundingAgencies: new OrderedMap(),
+            selectedAwardingAgencies: new OrderedMap(),
+            selectedRecipients: new Set()
         };
         if (data.keyword && data.keyword.length > 0) {
             output.keyword = data.keyword[0];
@@ -51,8 +53,36 @@ const BaseSavedFilters = {
             output.awardType = new Set(data.awardType);
         }
 
-        if (data.location && data.location.length > 0) {
-            output.selectedLocations = convertArrayToOrderedMap(data.location);
+        if (data.location) {
+            Object.assign(
+                output,
+                BaseSavedLocation.restore(
+                    data.location,
+                    'selectedLocations',
+                    'locationDomesticForeign'
+                )
+            );
+        }
+
+        if (data.fundingAgency && data.fundingAgency.length > 0) {
+            output.selectedFundingAgencies = convertArrayToOrderedMap(data.fundingAgency);
+        }
+        if (data.awardingAgency && data.awardingAgency.length > 0) {
+            output.selectedAwardingAgencies = convertArrayToOrderedMap(data.awardingAgency);
+        }
+
+        if (data.recipients) {
+            output.selectedRecipients = new Set(data.recipients);
+        }
+        if (data.recipientLocation) {
+            Object.assign(
+                output,
+                BaseSavedLocation.restore(
+                    data.recipientLocation,
+                    'selectedRecipientLocations',
+                    'recipientDomesticForeign'
+                )
+            );
         }
 
         return output;

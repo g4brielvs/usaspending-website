@@ -1,8 +1,29 @@
+function convertObjectToArray(input) {
+    return Object.keys(input)
+        .map((key) => input[key]);
+}
+
 const migration = {
     next: null, // this is the first migration
     inboundVersion: '2017-11-21', // version we are migrating from
     migrate(data) {
-        const inboundFilters = data.filters;
+        let inboundFilters = data.filters;
+        if (data.version !== this.inboundVersion) {
+            if (this.next) {
+                // use an earlier migration to bring it up to the inbound version
+                inboundFilters = this.next.migrate(data);
+            }
+            else {
+                // bad input, return a blank set of data
+                return {
+                    filters: {},
+                    view: {
+                        activeTab: 'table',
+                        subaward: false
+                    }
+                };
+            }
+        }
         const filters = {
             awardType: inboundFilters.filtersawardType || []
         };
@@ -30,8 +51,15 @@ const migration = {
 
         // convert location objects to arrays of objects
         if (inboundFilters.selectedLocations) {
-            filters.location = Object.keys(inboundFilters.selectedLocations)
-                .map((key) => inboundFilters.selectedLocations[key]);
+            filters.location = convertObjectToArray(inboundFilters.selectedLocations);
+        }
+
+        // do the same conversion for funding and awarding agencies
+        if (inboundFilters.selectedFundingAgencies) {
+            filters.fundingAgency = convertObjectToArray(inboundFilters.selectedFundingAgencies);
+        }
+        if (inboundFilters.selectedAwardingAgencies) {
+            filters.awardingAgency = convertObjectToArray(inboundFilters.selectedAwardingAgencies);
         }
 
         // in previous versions, there was no search view, so use a stock set of values
