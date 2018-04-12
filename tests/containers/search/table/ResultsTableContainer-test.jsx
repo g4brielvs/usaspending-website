@@ -49,6 +49,23 @@ describe('ResultsTableContainer', () => {
         expect(container.instance().parseTabCounts).toHaveBeenCalledTimes(2);
     });
 
+    it('should pick a default tab whenever the subaward toggle changes', async () => {
+        const container = mount(<ResultsTableContainer
+            {...mockActions}
+            {...mockRedux} />);
+
+        container.instance().parseTabCounts = jest.fn();
+
+        // update the filters
+        container.setProps({
+            subaward: true
+        });
+
+        await container.instance().tabCountRequest.promise;
+
+        expect(container.instance().parseTabCounts).toHaveBeenCalledTimes(2);
+    });
+
     describe('pickDefaultTab', () => {
         it('should call parseTabCounts() after the API responds', async () => {
             const container = shallow(<ResultsTableContainer
@@ -135,6 +152,60 @@ describe('ResultsTableContainer', () => {
             expect(container.instance().switchTab).toHaveBeenCalledTimes(1);
             expect(container.instance().switchTab).toHaveBeenCalledWith('contracts');
         });
+        it('should pick a subaward tab when subawards are enabled', () => {
+            const container = shallow(<ResultsTableContainer
+                {...mockActions}
+                {...mockRedux}
+                subaward />);
+            container.instance().switchTab = jest.fn();
+            container.instance().updateFilters = jest.fn();
+
+            container.instance().parseTabCounts({
+                results: {
+                    subcontracts: 10,
+                    subgrants: 8
+                }
+            });
+
+            expect(container.instance().switchTab).toHaveBeenCalledTimes(1);
+            expect(container.instance().switchTab).toHaveBeenCalledWith('subcontracts');
+        });
+        it('should pick the first subaward tab with a non-zero number of results when subawards are enabled', () => {
+            const container = shallow(<ResultsTableContainer
+                {...mockActions}
+                {...mockRedux}
+                subaward />);
+            container.instance().switchTab = jest.fn();
+            container.instance().updateFilters = jest.fn();
+
+            container.instance().parseTabCounts({
+                results: {
+                    subcontracts: 0,
+                    subgrants: 20
+                }
+            });
+
+            expect(container.instance().switchTab).toHaveBeenCalledTimes(1);
+            expect(container.instance().switchTab).toHaveBeenCalledWith('subgrants');
+        });
+        it('should pick subcontracts when all tabs have 0 results and subawards are enabled', () => {
+            const container = shallow(<ResultsTableContainer
+                {...mockActions}
+                {...mockRedux}
+                subaward />);
+            container.instance().switchTab = jest.fn();
+            container.instance().updateFilters = jest.fn();
+
+            container.instance().parseTabCounts({
+                results: {
+                    subcontracts: 0,
+                    subgrants: 0
+                }
+            });
+
+            expect(container.instance().switchTab).toHaveBeenCalledTimes(1);
+            expect(container.instance().switchTab).toHaveBeenCalledWith('subcontracts');
+        });
     });
 
     describe('updateFilters', () => {
@@ -175,6 +246,32 @@ describe('ResultsTableContainer', () => {
 
             expect(container.instance().performSearch).toHaveBeenCalledTimes(1);
             expect(container.instance().performSearch).toHaveBeenCalledWith(true);
+        });
+    });
+
+    describe('loadColumns', () => {
+        it('should generate a column object in React state for every table type', () => {
+            const expectedKeys = ['contracts', 'grants', 'direct_payments', 'loans', 'other', 'subcontracts', 'subgrants'];
+            const container = shallow(<ResultsTableContainer
+                {...mockActions}
+                {...mockRedux} />);
+
+            container.instance().loadColumns();
+            const columnKeys = Object.keys(container.state().columns);
+            expect(
+                expectedKeys.every((key) => columnKeys.indexOf(key) > -1) &&
+                columnKeys.every((key) => expectedKeys.indexOf(key) > -1)
+            ).toBeTruthy();
+        });
+
+        it('should generate a column object that contains an array representing the order columns should appear in the table', () => {
+            const container = shallow(<ResultsTableContainer
+                {...mockActions}
+                {...mockRedux} />);
+
+            container.instance().loadColumns();
+            const column = container.state().columns.contracts;
+            expect({}.hasOwnProperty.call(column, 'visibleOrder')).toBeTruthy();
         });
     });
 
