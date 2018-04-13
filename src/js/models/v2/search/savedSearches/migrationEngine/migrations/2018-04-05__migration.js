@@ -25,11 +25,11 @@ const migration = {
             }
         }
         const filters = {
-            awardType: inboundFilters.filtersawardType || []
+            awardType: inboundFilters.awardType || []
         };
 
         // keyword has been adapted to an array
-        if (inboundFilters.filterskeyword) {
+        if (inboundFilters.keyword) {
             filters.keyword = [inboundFilters.keyword];
         }
 
@@ -51,7 +51,17 @@ const migration = {
 
         // convert location objects to arrays of objects
         if (inboundFilters.selectedLocations) {
-            filters.location = convertObjectToArray(inboundFilters.selectedLocations);
+            filters.location = {
+                location: convertObjectToArray(inboundFilters.selectedLocations),
+                type: inboundFilters.locationDomesticForeign || 'all'
+            };
+        }
+        // convert location objects to arrays of objects
+        if (inboundFilters.selectedRecipientLocations) {
+            filters.recipientLocation = {
+                location: convertObjectToArray(inboundFilters.selectedRecipientLocations),
+                type: inboundFilters.recipientDomesticForeign || 'all'
+            };
         }
 
         // do the same conversion for funding and awarding agencies
@@ -60,6 +70,22 @@ const migration = {
         }
         if (inboundFilters.selectedAwardingAgencies) {
             filters.awardingAgency = convertObjectToArray(inboundFilters.selectedAwardingAgencies);
+        }
+
+        if (inboundFilters.selectedAwardIDs) {
+            filters.selectedAwardIDs = convertObjectToArray(inboundFilters.selectedAwardIDs);
+        }
+        if (inboundFilters.awardAmounts) {
+            filters.awardAmounts = convertObjectToArray(inboundFilters.awardAmounts);
+        }
+        if (inboundFilters.selectedCFDA) {
+            filters.cfda = convertObjectToArray(inboundFilters.selectedCFDA);
+        }
+        if (inboundFilters.selectedNAICS) {
+            filters.naics = convertObjectToArray(inboundFilters.selectedNAICS);
+        }
+        if (inboundFilters.selectedPSC) {
+            filters.psc = convertObjectToArray(inboundFilters.selectedPSC);
         }
 
         // in previous versions, there was no search view, so use a stock set of values

@@ -4,6 +4,7 @@
  */
 
 import { Set, OrderedMap } from 'immutable';
+import { initialState } from 'redux/reducers/search/searchFiltersReducer';
 import { convertArrayToOrderedMap } from './utils';
 import BaseSavedTimePeriod from './BaseSavedTimePeriod';
 import BaseSavedLocation from './BaseSavedLocation';
@@ -30,16 +31,20 @@ const BaseSavedFilters = {
             data.selectedRecipientLocations,
             data.recipientDomesticForeign
         );
+
+        this.recipientType = data.recipientType.toArray();
+        this.awardType = data.awardType.toArray();
+
+        this.awardIDs = data.selectedAwardIDs.toArray();
+        this.awardAmounts = data.awardAmounts.toArray();
+        this.cfda = data.selectedCFDA.toArray();
+        this.naics = data.selectedNAICS.toArray();
+        this.psc = data.selectedPSC.toArray();
+
     },
     restore(data) {
-        const output = {
-            keyword: '',
-            awardType: [],
-            selectedLocations: new OrderedMap(),
-            selectedFundingAgencies: new OrderedMap(),
-            selectedAwardingAgencies: new OrderedMap(),
-            selectedRecipients: new Set()
-        };
+        const output = Object.assign({}, initialState);
+
         if (data.keyword && data.keyword.length > 0) {
             output.keyword = data.keyword[0];
         }
@@ -49,11 +54,13 @@ const BaseSavedFilters = {
             Object.assign(output, BaseSavedTimePeriod.restore(data.timePeriod));
         }
 
-        if (data.awardType && data.awardType.length > 0) {
+        if (data.awardType) {
             output.awardType = new Set(data.awardType);
         }
 
         if (data.location) {
+            // BaseSavedLocation model is responsible for restoring the data structure
+            // we'll just merge the restored obj back into the output object
             Object.assign(
                 output,
                 BaseSavedLocation.restore(
@@ -74,7 +81,10 @@ const BaseSavedFilters = {
         if (data.recipients) {
             output.selectedRecipients = new Set(data.recipients);
         }
+
         if (data.recipientLocation) {
+            // BaseSavedLocation model is responsible for restoring the data structure
+            // we'll just merge the restored obj back into the output object
             Object.assign(
                 output,
                 BaseSavedLocation.restore(
@@ -83,6 +93,27 @@ const BaseSavedFilters = {
                     'recipientDomesticForeign'
                 )
             );
+        }
+
+        if (data.recipientType) {
+            output.recipientType = new Set(data.recipientType);
+        }
+
+        if (data.awardIDs) {
+            output.selectedAwardIDs = convertArrayToOrderedMap(data.awardIDs);
+        }
+        if (data.awardAmounts) {
+            console.log(data.awardAmounts);
+            output.awardAmounts = convertArrayToOrderedMap(data.awardAmounts);
+        }
+        if (data.cfda) {
+            output.selectedCFDA = convertArrayToOrderedMap(data.cfda, 'identifier');
+        }
+        if (data.naics) {
+            output.selectedNAICS = convertArrayToOrderedMap(data.naics, 'identifier');
+        }
+        if (data.psc) {
+            output.selectedPSC = convertArrayToOrderedMap(data.psc, 'identifier');
         }
 
         return output;

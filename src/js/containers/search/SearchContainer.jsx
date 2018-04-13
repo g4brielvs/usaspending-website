@@ -212,7 +212,7 @@ export class SearchContainer extends React.Component {
 
     applyFilters(data) {
         const output = BaseSavedSearch.restore(data);
-        console.log(output);
+        console.log('restored', output);
         const filters = data.filters;
         const version = data.version;
 

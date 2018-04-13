@@ -25,6 +25,7 @@ const BaseSavedSearch = {
         if (data.version !== currentVersion) {
             data = MigrationEngine.start(response);
         }
+        console.log(data);
 
         return {
             searchView: BaseSavedView.restore(data.view),
