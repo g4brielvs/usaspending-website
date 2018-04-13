@@ -15,3 +15,8 @@ export function convertArrayToOrderedMap(arr, keyProp) {
 
     return new OrderedMap(orderedKeyVals);
 }
+
+export function convertFlatArrayToOrderedMap(arr) {
+    const values = arr.map((value) => ([value, value]));
+    return new OrderedMap(values);
+}

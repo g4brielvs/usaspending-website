@@ -5,7 +5,7 @@
 
 import { Set, OrderedMap } from 'immutable';
 import { initialState } from 'redux/reducers/search/searchFiltersReducer';
-import { convertArrayToOrderedMap } from './utils';
+import { convertArrayToOrderedMap, convertFlatArrayToOrderedMap } from './utils';
 import BaseSavedTimePeriod from './BaseSavedTimePeriod';
 import BaseSavedLocation from './BaseSavedLocation';
 
@@ -34,13 +34,11 @@ const BaseSavedFilters = {
 
         this.recipientType = data.recipientType.toArray();
         this.awardType = data.awardType.toArray();
-
         this.awardIDs = data.selectedAwardIDs.toArray();
         this.awardAmounts = data.awardAmounts.toArray();
         this.cfda = data.selectedCFDA.toArray();
         this.naics = data.selectedNAICS.toArray();
         this.psc = data.selectedPSC.toArray();
-
     },
     restore(data) {
         const output = Object.assign({}, initialState);
@@ -100,10 +98,9 @@ const BaseSavedFilters = {
         }
 
         if (data.awardIDs) {
-            output.selectedAwardIDs = convertArrayToOrderedMap(data.awardIDs);
+            output.selectedAwardIDs = convertFlatArrayToOrderedMap(data.awardIDs);
         }
         if (data.awardAmounts) {
-            console.log(data.awardAmounts);
             output.awardAmounts = convertArrayToOrderedMap(data.awardAmounts);
         }
         if (data.cfda) {
