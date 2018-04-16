@@ -5,7 +5,7 @@
 
 import { Set, OrderedMap } from 'immutable';
 import { initialState } from 'redux/reducers/search/searchFiltersReducer';
-import { convertArrayToOrderedMap, convertFlatArrayToOrderedMap } from './utils';
+import { convertArrayToOrderedMap } from './utils';
 import BaseSavedTimePeriod from './BaseSavedTimePeriod';
 import BaseSavedLocation from './BaseSavedLocation';
 
@@ -35,10 +35,13 @@ const BaseSavedFilters = {
         this.recipientType = data.recipientType.toArray();
         this.awardType = data.awardType.toArray();
         this.awardIDs = data.selectedAwardIDs.toArray();
-        this.awardAmounts = data.awardAmounts.toArray();
+        this.awardAmounts = data.awardAmounts.toJS();
         this.cfda = data.selectedCFDA.toArray();
         this.naics = data.selectedNAICS.toArray();
         this.psc = data.selectedPSC.toArray();
+        this.pricingType = data.pricingType.toArray();
+        this.setAside = data.setAside.toArray();
+        this.extentCompeted = data.extentCompeted.toArray();
     },
     restore(data) {
         const output = Object.assign({}, initialState);
@@ -70,10 +73,16 @@ const BaseSavedFilters = {
         }
 
         if (data.fundingAgency && data.fundingAgency.length > 0) {
-            output.selectedFundingAgencies = convertArrayToOrderedMap(data.fundingAgency);
+            output.selectedFundingAgencies =
+                convertArrayToOrderedMap(data.fundingAgency, (agency) => (
+                    `${agency.id}_${agency.agencyType}`
+                ));
         }
         if (data.awardingAgency && data.awardingAgency.length > 0) {
-            output.selectedAwardingAgencies = convertArrayToOrderedMap(data.awardingAgency);
+            output.selectedAwardingAgencies =
+                convertArrayToOrderedMap(data.awardingAgency, (agency) => (
+                    `${agency.id}_${agency.agencyType}`
+                ));
         }
 
         if (data.recipients) {
@@ -98,10 +107,10 @@ const BaseSavedFilters = {
         }
 
         if (data.awardIDs) {
-            output.selectedAwardIDs = convertFlatArrayToOrderedMap(data.awardIDs);
+            output.selectedAwardIDs = convertArrayToOrderedMap(data.awardIDs, (id) => id);
         }
         if (data.awardAmounts) {
-            output.awardAmounts = convertArrayToOrderedMap(data.awardAmounts);
+            output.awardAmounts = new OrderedMap(data.awardAmounts);
         }
         if (data.cfda) {
             output.selectedCFDA = convertArrayToOrderedMap(data.cfda, 'identifier');
@@ -111,6 +120,15 @@ const BaseSavedFilters = {
         }
         if (data.psc) {
             output.selectedPSC = convertArrayToOrderedMap(data.psc, 'identifier');
+        }
+        if (data.pricingType) {
+            output.pricingType = new Set(data.pricingType);
+        }
+        if (data.setAside) {
+            output.setAside = new Set(data.setAside);
+        }
+        if (data.extentCompeted) {
+            output.extentCompeted = new Set(data.extentCompeted);
         }
 
         return output;

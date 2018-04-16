@@ -33,7 +33,7 @@ const BaseSavedTimePeriod = {
         }
         else {
             output.timePeriodStart = data.value[0] || null;
-            output.timePeriodend = data.value[1] || null;
+            output.timePeriodEnd = data.value[1] || null;
         }
 
         return output;

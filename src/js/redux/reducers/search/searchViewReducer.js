@@ -14,12 +14,12 @@ const searchViewReducer = (state = initialState, action) => {
             return Object.assign({}, state, {
                 type: action.value
             });
-
         case 'SET_SEARCH_VIEW_SUBAWARD':
             return Object.assign({}, state, {
                 subaward: action.value
             });
-
+        case 'RESTORE_SEARCH_VIEW_STATE':
+            return Object.assign({}, state, action.value);
         default:
             return state;
     }

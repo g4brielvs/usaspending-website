@@ -4,14 +4,14 @@ function convertObjectToArray(input) {
 }
 
 const migration = {
-    next: null, // this is the first migration
+    prev: null, // this is the first migration
     inboundVersion: '2017-11-21', // version we are migrating from
     migrate(data) {
         let inboundFilters = data.filters;
         if (data.version !== this.inboundVersion) {
-            if (this.next) {
+            if (this.prev) {
                 // use an earlier migration to bring it up to the inbound version
-                inboundFilters = this.next.migrate(data);
+                inboundFilters = this.prev.migrate(data);
             }
             else {
                 // bad input, return a blank set of data
@@ -25,7 +25,13 @@ const migration = {
             }
         }
         const filters = {
-            awardType: inboundFilters.awardType || []
+            awardType: inboundFilters.awardType || [],
+            recipients: inboundFilters.selectedRecipients || [],
+            recipientType: inboundFilters.recipientType || [],
+            pricingType: inboundFilters.pricingType || [],
+            setAside: inboundFilters.setAside || [],
+            extentCompeted: inboundFilters.extentCompeted || [],
+            awardAmounts: inboundFilters.awardAmounts || {}
         };
 
         // keyword has been adapted to an array
@@ -73,10 +79,7 @@ const migration = {
         }
 
         if (inboundFilters.selectedAwardIDs) {
-            filters.selectedAwardIDs = convertObjectToArray(inboundFilters.selectedAwardIDs);
-        }
-        if (inboundFilters.awardAmounts) {
-            filters.awardAmounts = convertObjectToArray(inboundFilters.awardAmounts);
+            filters.awardIDs = convertObjectToArray(inboundFilters.selectedAwardIDs);
         }
         if (inboundFilters.selectedCFDA) {
             filters.cfda = convertObjectToArray(inboundFilters.selectedCFDA);
@@ -90,7 +93,6 @@ const migration = {
 
         // in previous versions, there was no search view, so use a stock set of values
         const view = {
-            activeTab: 'table',
             subaward: false
         };
 

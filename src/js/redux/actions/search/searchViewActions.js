@@ -12,3 +12,8 @@ export const setSearchViewType = (state) => ({
     type: 'SET_SEARCH_VIEW_TYPE',
     value: state
 });
+
+export const restoreSearchView = (state) => ({
+    type: 'RESTORE_SEARCH_VIEW_STATE',
+    value: state
+});

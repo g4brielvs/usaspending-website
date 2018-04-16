@@ -13,7 +13,7 @@ import moment from 'moment';
 
 import Router from 'containers/router/Router';
 
-import { filterStoreVersion, requiredTypes, initialState } from
+import { initialState } from
     'redux/reducers/search/searchFiltersReducer';
 import * as searchHashActions from 'redux/actions/search/searchHashActions';
 import {
@@ -21,6 +21,7 @@ import {
     setAppliedFilterEmptiness,
     setAppliedFilterCompletion
 } from 'redux/actions/search/appliedFilterActions';
+import { restoreSearchView } from 'redux/actions/search/searchViewActions';
 import { clearAllFilters } from 'redux/actions/search/searchFilterActions';
 import * as SearchHelper from 'helpers/searchHelper';
 import * as DownloadHelper from 'helpers/downloadHelper';
@@ -82,7 +83,10 @@ export class SearchContainer extends React.Component {
         if (nextHash !== this.state.hash) {
             this.receiveHash(nextHash);
         }
-        else if (nextProps.appliedFilters.filters !== this.props.appliedFilters.filters) {
+        else if (
+            nextProps.appliedFilters.filters !== this.props.appliedFilters.filters ||
+            nextProps.searchView.subaward !== this.props.searchView.subaward
+        ) {
             if (this.state.hashState === 'ready') {
                 // the filters changed and it's not because of an inbound/outbound URL hash change
                 this.generateHash(nextProps.appliedFilters.filters);
@@ -212,38 +216,13 @@ export class SearchContainer extends React.Component {
 
     applyFilters(data) {
         const output = BaseSavedSearch.restore(data);
-        console.log('restored', output);
-        const filters = data.filters;
-        const version = data.version;
-
-        if (version !== filterStoreVersion) {
-            // versions don't match, don't populate the filters
-            // TODO: Kevin Li - figure out how we want to deal with Redux structure changes when
-            // a URL hash contains data that no longer applies to the current site
-            console.log("version mismatch");
-            return;
-        }
-
-        // convert values to Immutable object types as necessary
-        const reduxValues = {};
-        Object.keys(filters).forEach((key) => {
-            const value = filters[key];
-            if (requiredTypes[key]) {
-                // Redux expects an Immutable-typed object
-                const ObjType = requiredTypes[key];
-                reduxValues[key] = new ObjType(value);
-            }
-            else {
-                reduxValues[key] = value;
-            }
-        });
-
 
         // apply the filters to both the staged and applied stores
-        this.props.restoreHashedFilters(reduxValues);
+        this.props.restoreHashedFilters(output.filters);
+        this.props.restoreSearchView(output.searchView);
 
         // send the prepopulated filters (received from the hash) to Google Analytics
-        const events = convertFiltersToAnalyticEvents(reduxValues);
+        const events = convertFiltersToAnalyticEvents(output);
         sendAnalyticEvents(events);
         sendFieldCombinations(events);
 
@@ -303,26 +282,20 @@ export class SearchContainer extends React.Component {
             return;
         }
 
-        // TEST TEST TEST: create a BaseSavedSearch object
         const savedSearch = Object.create(BaseSavedSearch);
         savedSearch.populate({
             searchView: this.props.searchView,
             filters: this.props.filters
         });
-        console.log(savedSearch);
 
-        const output = BaseSavedSearch.restore(JSON.parse(JSON.stringify(savedSearch)));
-        console.log(output);
+        console.log(savedSearch.view);
 
         // POST an API request to retrieve the Redux state
         if (this.request) {
             this.request.cancel();
         }
 
-        this.request = SearchHelper.generateUrlHash({
-            filters,
-            version: filterStoreVersion
-        });
+        this.request = SearchHelper.generateUrlHash(savedSearch);
 
         this.request.promise
             .then((res) => {
@@ -432,7 +405,8 @@ export default connect(
         clearAllFilters,
         applyStagedFilters,
         setAppliedFilterEmptiness,
-        setAppliedFilterCompletion
+        setAppliedFilterCompletion,
+        restoreSearchView
     }), dispatch)
 )(SearchContainer);
 

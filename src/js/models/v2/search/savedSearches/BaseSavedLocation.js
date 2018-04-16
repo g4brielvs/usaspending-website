@@ -12,7 +12,7 @@ const BaseSavedLocation = {
     },
     restore(data, ...names) {
         return {
-            [names[0]]: convertArrayToOrderedMap(data.location),
+            [names[0]]: convertArrayToOrderedMap(data.location, 'identifier'),
             [names[1]]: data.type || 'all'
         };
     }
