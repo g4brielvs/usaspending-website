@@ -18,13 +18,13 @@ const migration = {
                 return {
                     filters: {},
                     view: {
-                        activeTab: 'table',
                         subaward: false
                     }
                 };
             }
         }
         const filters = {
+            keyword: inboundFilters.keyword || '',
             awardType: inboundFilters.awardType || [],
             recipients: inboundFilters.selectedRecipients || [],
             recipientType: inboundFilters.recipientType || [],
@@ -33,11 +33,6 @@ const migration = {
             extentCompeted: inboundFilters.extentCompeted || [],
             awardAmounts: inboundFilters.awardAmounts || {}
         };
-
-        // keyword has been adapted to an array
-        if (inboundFilters.keyword) {
-            filters.keyword = [inboundFilters.keyword];
-        }
 
         // time period is a child object
         filters.timePeriod = {

@@ -11,9 +11,9 @@ import BaseSavedLocation from './BaseSavedLocation';
 
 const BaseSavedFilters = {
     populate(data) {
-        this.keyword = [];
+        this.keyword = '';
         if (data.keyword) {
-            this.keyword = [data.keyword];
+            this.keyword = data.keyword;
         }
 
         this.timePeriod = Object.create(BaseSavedTimePeriod);
@@ -46,7 +46,7 @@ const BaseSavedFilters = {
     restore(data) {
         const output = Object.assign({}, initialState);
 
-        if (data.keyword && data.keyword.length > 0) {
+        if (data.keyword) {
             output.keyword = data.keyword[0];
         }
 

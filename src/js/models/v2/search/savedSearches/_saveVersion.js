@@ -1,3 +1,3 @@
-const currentVersion = '2018-04-05';
+const currentVersion = '2018-04-20';
 
 export default currentVersion;

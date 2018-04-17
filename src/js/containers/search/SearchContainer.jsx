@@ -72,8 +72,8 @@ export class SearchContainer extends React.Component {
         this.requestDownloadAvailability(this.props.appliedFilters.filters);
     }
 
-    componentWillReceiveProps(nextProps) {
-        let nextHash = nextProps.params.hash;
+    componentDidUpdate(prevProps) {
+        let nextHash = this.props.params.hash;
         if (!nextHash) {
             // set null hash URL params (because the user went to /search) to an empty string
             // for purposes of state comparison
@@ -84,14 +84,14 @@ export class SearchContainer extends React.Component {
             this.receiveHash(nextHash);
         }
         else if (
-            nextProps.appliedFilters.filters !== this.props.appliedFilters.filters ||
-            nextProps.searchView.subaward !== this.props.searchView.subaward
+            prevProps.appliedFilters.filters !== this.props.appliedFilters.filters ||
+            prevProps.searchView.subaward !== this.props.searchView.subaward
         ) {
             if (this.state.hashState === 'ready') {
                 // the filters changed and it's not because of an inbound/outbound URL hash change
-                this.generateHash(nextProps.appliedFilters.filters);
+                this.generateHash(this.props.appliedFilters.filters);
             }
-            this.requestDownloadAvailability(nextProps.appliedFilters.filters);
+            this.requestDownloadAvailability(this.props.appliedFilters.filters);
         }
     }
 
@@ -287,8 +287,6 @@ export class SearchContainer extends React.Component {
             searchView: this.props.searchView,
             filters: this.props.filters
         });
-
-        console.log(savedSearch.view);
 
         // POST an API request to retrieve the Redux state
         if (this.request) {

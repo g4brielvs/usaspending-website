@@ -5,7 +5,7 @@
 
 import currentVersion from '../_saveVersion';
 
-import lastMigration from './migrations/2018-04-05__migration';
+import lastMigration from './migrations/2018-04-20__migration';
 
 function _migrate(data, migration) {
     return migration.migrate(data);
