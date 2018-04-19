@@ -12,15 +12,19 @@ function _migrate(data, migration) {
 }
 
 function start(data) {
-    if (data._version === currentVersion) {
+    if (data.version === this._currentVersion) {
         // this is the latest version, don't do anything
         return data;
     }
 
     // migrate the data up to the current version
-    return _migrate(data, lastMigration);
+    return _migrate(data, this._lastMigration);
 }
 
-const MigrationEngine = { start };
+const MigrationEngine = {
+    _currentVersion: currentVersion,
+    _lastMigration: lastMigration,
+    start
+};
 
 export default MigrationEngine;
