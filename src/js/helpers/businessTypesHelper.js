@@ -267,7 +267,7 @@ export const getBusinessTypes = () => {
                 fieldName: 'the_ability_one_program'
             },
             {
-                displayName: 'Private University or College ',
+                displayName: 'Private University or College',
                 fieldName: 'private_university_or_college'
             },
             {
