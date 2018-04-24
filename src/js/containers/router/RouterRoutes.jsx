@@ -84,6 +84,15 @@ const routes = {
             }
         },
         {
+            path: '/recipient/:recipientId',
+            parent: '/recipient',
+            component: (cb) => {
+                require.ensure([], (require) => {
+                    cb(require('containers/recipient/RecipientContainer').default);
+                });
+            }
+        },
+        {
             path: '/about',
             parent: '/about',
             component: (cb) => {
