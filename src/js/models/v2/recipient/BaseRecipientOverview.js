@@ -67,7 +67,7 @@ const BaseRecipientOverview = {
         return this[this._idField];
     },
     get isParent() {
-        return this.duns === this.parentDuns && this.duns !== null;
+        return this.duns === this.parentDuns && this.duns && this.parentDuns;
     }
 };
 

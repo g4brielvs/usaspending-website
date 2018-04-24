@@ -91,6 +91,15 @@ describe('BaseRecipientOverview', () => {
 
             expect(model.isParent).toBeFalsy();
         });
+        it('should return false when the parent DUNS value is not specified', () => {
+            const data = Object.assign({}, MockData.mockParent, {
+                parent_duns: null
+            });
+            const model = Object.create(BaseRecipientOverview);
+            model.populate(data);
+
+            expect(model.isParent).toBeFalsy();
+        });
     });
 });
 

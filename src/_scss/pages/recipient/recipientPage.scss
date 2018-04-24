@@ -31,6 +31,8 @@
             border-right: 1px solid $color-gray-border;
             border-bottom: 1px solid $color-gray-border;
             padding: rem(30);
+
+            @import "./overview/overview";
         }
 
     }
