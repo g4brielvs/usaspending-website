@@ -15,7 +15,8 @@
         @import "./_contentWrap";
         @import "elements/_divider";
 
-        @import "./_sidebar";
+        $sidebar-page-name: "agency";
+        @import "elements/_sidebar";
 
         @import "./_overview";
         @import "./_section";

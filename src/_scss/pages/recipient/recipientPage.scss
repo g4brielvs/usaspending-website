@@ -3,10 +3,35 @@
     @import "layouts/default/default";
     @import "layouts/default/stickyHeader/header";
 
-    .main-content {
+    .recipient {
         @import "../../mixins/fullSectionWrap";
         @include fullSectionWrap(($global-mrg * 2), ($global-mrg * 2));
         padding:  0;
+
+        .recipient__sidebar {
+            display: none;
+            @include media($medium-screen) {
+                @include span-columns(4);
+            }
+
+            $sidebar-page-name: "recipient";
+            @import "elements/_sidebar";
+        }
+
+        .recipient__content {
+            @include span-columns(16);
+            @include media($medium-screen) {
+                @include span-columns(12);
+            }
+
+            background-color: $color-white;
+            box-shadow: $container-shadow;
+            color: $color-base;
+            border-top: 1px solid $color-gray-border;
+            border-right: 1px solid $color-gray-border;
+            border-bottom: 1px solid $color-gray-border;
+            padding: rem(30);
+        }
 
     }
 }

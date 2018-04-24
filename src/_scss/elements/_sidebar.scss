@@ -1,11 +1,13 @@
-.agency-sidebar-reference {
+// common shared SASS for sticky sidebars
+
+.#{$sidebar-page-name}-sidebar-reference {
     display: none;
 
     &.float-sidebar {
         display: block;
     }
 }
-.agency-sidebar-content {
+.#{$sidebar-page-name}-sidebar-content {
     &.float-sidebar {
         position: fixed;
         top: rem(96);
