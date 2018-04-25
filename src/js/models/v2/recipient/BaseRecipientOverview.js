@@ -44,8 +44,8 @@ const BaseRecipientOverview = {
 
         this.lei = data.lei || '';
 
-        this._rawCategories = data.business_categories || [];
-        this.businessCategories = parseBusinessCategories(this._rawCategories);
+        this._businessCategories = data.business_categories || [];
+        this.businessCategories = parseBusinessCategories(this._businessCategories);
 
         this.location = Object.create(CoreLocation);
         if (data.location) {

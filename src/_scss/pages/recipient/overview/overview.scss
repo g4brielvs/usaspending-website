@@ -1,5 +1,46 @@
 .overview {
+    display: block;
     .overview__title {
         margin: rem(5) 0;
+    }
+
+    .overview__divider {
+        @import "elements/_divider";
+        @include divider;
+    }
+
+    .overview__badge {
+        @import "./_parentBadge";
+    }
+
+    .overview__body {
+        margin-top: rem(50);
+
+        @include media($medium-screen) {
+            @include display(flex);
+            @include justify-content(flex-start);
+        }
+
+        .overview__amounts {
+            @include media($medium-screen) {
+                @include flex(2 1 auto);
+            }
+            @include media($large-screen) {
+                @include flex(3 1 auto);
+            }
+            @include media($x-large-screen) {
+                @include flex(4 1 auto);
+            }
+        }
+
+        .overview__details {
+            margin-top: 20px;
+            @include media($medium-screen) {
+                margin-top: 0;
+                @include flex(1 1 auto);
+            }
+
+            @import "./_details";
+        }
     }
 }

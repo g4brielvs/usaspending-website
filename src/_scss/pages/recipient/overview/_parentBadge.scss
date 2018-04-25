@@ -1,0 +1,12 @@
+.parent-badge {
+    background-color: #4A4A4A;
+    color: $color-white;
+    width: rem(150);
+    border-radius: rem(5);
+    
+    font-size: rem(14);
+    text-transform: uppercase;
+    font-weight: $font-semibold;
+    text-align: center;
+    line-height: rem(17);
+}

@@ -13,7 +13,7 @@ import Sidebar from 'components/sharedComponents/sidebar/Sidebar';
 import RecipientOverview from './overview/RecipientOverview';
 
 const propTypes = {
-
+    recipient: PropTypes.object
 };
 
 const recipientSections = [
@@ -43,10 +43,8 @@ export default class RecipientContent extends React.Component {
                         stickyHeaderHeight={stickyHeaderHeight} />
                 </div>
                 <div className="recipient__content">
-                    <div className="agency-padded-content overview">
-                        <RecipientOverview
-                            {...this.props} />
-                    </div>
+                    <RecipientOverview
+                        {...this.props.recipient} />
                 </div>
             </div>
         );

@@ -1,7 +1,6 @@
-hr.results-divider {
+@mixin divider() {
     border: none;
     border-bottom: 1px solid #D8D8D8;
-    float: left;
     position: relative;
     margin-bottom: 2.6rem;
     margin-top: 1.1rem;
@@ -23,3 +22,8 @@ hr.results-divider {
         top: 6px;
     }
 }
+
+hr.results-divider {
+    @include divider;
+}
+

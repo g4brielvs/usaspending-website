@@ -1,0 +1,23 @@
+.overview-details {
+    display: table;
+    width: 100%;
+
+    .overview-details__row {
+        display: table-row;
+        font-size: rem(14);
+
+        &:nth-child(odd) {
+            background-color: $color-gray-lightest;
+        }
+    }
+
+    .overview-details__label {
+        display: table-cell;
+        padding: rem(5) rem(10);
+    }
+    .overview-details__value {
+        display: table-cell;
+        padding: rem(5) rem(10);
+        white-space: pre;
+    }
+}

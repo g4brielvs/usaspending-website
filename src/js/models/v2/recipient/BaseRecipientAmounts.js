@@ -7,7 +7,7 @@ import { formatMoney } from 'helpers/moneyFormatter';
 
 const BaseRecipientAmounts = {
     populate(data) {
-        this.fy = data.fy || '';
+        this.fy = String(data.fy) || '';
         this._total = Number(data.total) || 0;
         this._average = Number(data.average) || 0;
     },
