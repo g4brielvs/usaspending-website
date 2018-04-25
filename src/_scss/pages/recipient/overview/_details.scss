@@ -13,11 +13,17 @@
 
     .overview-details__label {
         display: table-cell;
-        padding: rem(5) rem(10);
+        padding: rem(10);
     }
     .overview-details__value {
         display: table-cell;
-        padding: rem(5) rem(10);
+        padding: rem(10);
         white-space: pre;
+    }
+
+    .overview-parent__duns-label {
+        font-size: rem(10);
+        font-weight: $font-semibold;
+        margin-top: rem(5);
     }
 }

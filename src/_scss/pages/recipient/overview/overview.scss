@@ -11,6 +11,7 @@
 
     .overview__badge {
         @import "./_parentBadge";
+        @import "./_childBadge";
     }
 
     .overview__body {
@@ -31,6 +32,8 @@
             @include media($x-large-screen) {
                 @include flex(4 1 auto);
             }
+
+            @import "./_amounts";
         }
 
         .overview__details {

@@ -1,12 +1,32 @@
 .parent-badge {
     background-color: #4A4A4A;
     color: $color-white;
-    width: rem(150);
+    width: rem(175);
+    padding: rem(5) rem(10);
     border-radius: rem(5);
-    
-    font-size: rem(14);
-    text-transform: uppercase;
-    font-weight: $font-semibold;
-    text-align: center;
-    line-height: rem(17);
+
+    @include display(flex);
+    @include justify-content(center);
+    @include align-items(center);
+
+    .parent-badge__label {
+        @include flex(1 1 auto);
+        font-size: rem(14);
+        text-transform: uppercase;
+        font-weight: $font-semibold;
+        line-height: rem(17);
+    }
+
+    .parent-badge__info {
+        @include flex(0 0 rem(15));
+        margin-left: rem(15);
+        @include button-unstyled;
+
+        svg {
+            width: rem(12);
+            height: rem(12);
+            fill: $color-white;
+            margin-top: rem(2);
+        }
+    }
 }

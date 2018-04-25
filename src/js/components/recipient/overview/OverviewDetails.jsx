@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import OverviewParentCell from './OverviewParentCell';
 
 const propTypes = {
-    isParent: PropTypes.bool
+    recipient: PropTypes.object
 };
 
 const rowTypes = [
@@ -60,12 +60,12 @@ const OverviewDetails = (props) => {
                     {row.label}
                 </div>
                 <div className="overview-details__value">
-                    {row.value(props)}
+                    {row.value(props.recipient)}
                 </div>
             </div>
         );
 
-        if (!props.isParent) {
+        if (!props.recipient.isParent) {
             // non-parents include every row
             relevantRows.push(rowComponent);
             return relevantRows;

@@ -7,23 +7,30 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import BadgeParent from './BadgeParent';
+import BadgeChild from './BadgeChild';
 
 import OverviewDetails from './OverviewDetails';
 import OverviewAmounts from './OverviewAmounts';
 
 const propTypes = {
-    name: PropTypes.string,
-    amounts: PropTypes.object
+    recipient: PropTypes.object
 };
 
 const RecipientOverview = (props) => {
     let badge = <BadgeParent />;
+    if (!props.recipient.isParent) {
+        badge = (
+            <BadgeChild
+                parentName={props.recipient.parentName || '--'} />
+        );
+    }
+
     return (
         <div
             className="overview"
             id="recipient-overview">
             <div className="overview__header">
-                <h3 className="overview__title">{props.name}</h3>
+                <h3 className="overview__title">{props.recipient.name}</h3>
                 <hr className="overview__divider" />
                 <div className="overview__badge">
                     {badge}

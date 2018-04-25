@@ -21,7 +21,8 @@ export const prepareLocation = (data) => ({
     stateCode: data.state_code || '',
     country: data.country_name || '',
     countryCode: data.location_country_code || '',
-    zip5: data.zip5 || ''
+    zip5: data.zip5 || '',
+    congressionalDistrict: data.congressional_code || ''
 });
 
 export const parseBusinessCategories = (rawArr) => (
