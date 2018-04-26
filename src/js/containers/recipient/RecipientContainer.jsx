@@ -63,6 +63,9 @@ export class RecipientContainer extends React.Component {
                 });
             })
             .catch((err) => {
+                if (isCancel(err)) {
+                    return;
+                }
                 console.log(err);
                 const state = {
                     loading: false
