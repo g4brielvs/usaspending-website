@@ -15,5 +15,10 @@
     }
     .overview-amounts__average {
         margin-top: rem(30);
+        margin-bottom: rem(30);
+
+        @include media($medium-screen) {
+            margin-bottom: 0;
+        }
     }
 }
