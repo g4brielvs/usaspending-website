@@ -39,9 +39,9 @@ export class RecipientContainer extends React.Component {
         this.loadRecipientOverview(this.props.params.recipientId);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.params.recipientId !== nextProps.params.recipientId) {
-            this.loadRecipientOverview(nextProps.params.recipientId);
+    componentDidUpdate(prevProps) {
+        if (this.props.params.recipientId !== prevProps.params.recipientId) {
+            this.loadRecipientOverview(this.props.params.recipientId);
         }
     }
 
