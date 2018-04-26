@@ -68,7 +68,11 @@ const BaseRecipientOverview = {
         return this[this._idField];
     },
     get businessCategories() {
-        return this._businessTypeDescription || parseBusinessCategories(this._businessCategories);
+        if (this._businessTypeDescription) {
+            return [this._businessTypeDescription];
+        }
+
+        return parseBusinessCategories(this._businessCategories);
     },
     get isParent() {
         return !this.parentDuns || this.duns === this.parentDuns;
