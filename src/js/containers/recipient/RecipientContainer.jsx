@@ -51,62 +51,32 @@ export class RecipientContainer extends React.Component {
         }
 
         this.setState({
-            loading: false
+            loading: true
         });
-        this.parseRecipient({
-            "name": "Recipient Name",
-    "duns": "12345",
-    "lei": "99999",
-    "parent_name": "Recipient Name",
-    "parent_duns": "12345",
-    "location": {
-        "address_line1": "200 Clarendon Street",
-        "address_line2": "Suite 123",
-        "address_line3": "Receiving Department",
-        "city_name": "Boston",
-        "state_code": "MA",
-        "zip5": "02116",
-        "location_country_code": "USA",
-        "country_name": "UNITED STATES"
-    },
-    "business_categories": [
-        "woman_owned_business",
-        "sole_proprietorship"
-    ],
-    "amounts": {
-        "fy": 2018,
-        "total": 38412345.67,
-        "average": 12345.67
-    }
-});
 
-        // this.setState({
-        //     loading: true
-        // });
+        this.request = loadRecipientDuns(id);
+        this.request.promise
+            .then((res) => {
+                this.parseRecipient(res.data);
+                this.setState({
+                    loading: false
+                });
+            })
+            .catch((err) => {
+                if (isCancel(err)) {
+                    return;
+                }
+                console.log(err);
+                const state = {
+                    loading: false
+                };
 
-        // this.request = loadRecipientDuns(id);
-        // this.request.promise
-        //     .then((res) => {
-        //         this.parseRecipient(res.data);
-        //         this.setState({
-        //             loading: false
-        //         });
-        //     })
-        //     .catch((err) => {
-        //         if (isCancel(err)) {
-        //             return;
-        //         }
-        //         console.log(err);
-        //         const state = {
-        //             loading: false
-        //         };
+                if (err.response) {
+                    state.error = true;
+                }
 
-        //         if (err.response) {
-        //             state.error = true;
-        //         }
-
-        //         this.setState(state);
-        //     });
+                this.setState(state);
+            });
     }
 
     parseRecipient(data) {
