@@ -28,14 +28,14 @@ export class RecipientContainer extends React.Component {
         super(props);
 
         this.state = {
-            loading: false,
+            loading: true,
             error: false
         };
 
         this.request = null;
         this.updateRequest = null;
     }
-    componentWillMount() {
+    componentDidMount() {
         this.loadRecipientOverview(this.props.params.recipientId);
     }
 
@@ -51,32 +51,62 @@ export class RecipientContainer extends React.Component {
         }
 
         this.setState({
-            loading: true
+            loading: false
         });
+        this.parseRecipient({
+            "name": "Recipient Name",
+    "duns": "12345",
+    "lei": "99999",
+    "parent_name": "Recipient Name",
+    "parent_duns": "12345",
+    "location": {
+        "address_line1": "200 Clarendon Street",
+        "address_line2": "Suite 123",
+        "address_line3": "Receiving Department",
+        "city_name": "Boston",
+        "state_code": "MA",
+        "zip5": "02116",
+        "location_country_code": "USA",
+        "country_name": "UNITED STATES"
+    },
+    "business_categories": [
+        "woman_owned_business",
+        "sole_proprietorship"
+    ],
+    "amounts": {
+        "fy": 2018,
+        "total": 38412345.67,
+        "average": 12345.67
+    }
+});
 
-        this.request = loadRecipientDuns(id);
-        this.request.promise
-            .then((res) => {
-                this.parseRecipient(res.data);
-                this.setState({
-                    loading: false
-                });
-            })
-            .catch((err) => {
-                if (isCancel(err)) {
-                    return;
-                }
-                console.log(err);
-                const state = {
-                    loading: false
-                };
+        // this.setState({
+        //     loading: true
+        // });
 
-                if (err.response) {
-                    state.error = true;
-                }
+        // this.request = loadRecipientDuns(id);
+        // this.request.promise
+        //     .then((res) => {
+        //         this.parseRecipient(res.data);
+        //         this.setState({
+        //             loading: false
+        //         });
+        //     })
+        //     .catch((err) => {
+        //         if (isCancel(err)) {
+        //             return;
+        //         }
+        //         console.log(err);
+        //         const state = {
+        //             loading: false
+        //         };
 
-                this.setState(state);
-            });
+        //         if (err.response) {
+        //             state.error = true;
+        //         }
+
+        //         this.setState(state);
+        //     });
     }
 
     parseRecipient(data) {

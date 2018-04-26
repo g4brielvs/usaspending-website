@@ -3,14 +3,9 @@
  * Created by Kevin Li 4/23/18
  */
 
-import { getBusinessTypes } from 'helpers/businessTypesHelper';
+import { recipientTypes } from 'dataMapping/search/recipientType';
 import CoreLocation from '../CoreLocation';
 import BaseRecipientAmounts from './BaseRecipientAmounts';
-
-const businessCategoryMapping = getBusinessTypes()
-    .reduce((parsed, type) => Object.assign({}, parsed, {
-        [type.fieldName]: type
-    }), {});
 
 export const prepareLocation = (data) => ({
     // map the API response to the data structure required to populate a CoreLocation object
@@ -24,16 +19,6 @@ export const prepareLocation = (data) => ({
     zip5: data.zip5 || '',
     congressionalDistrict: data.congressional_code || ''
 });
-
-export const parseBusinessCategories = (rawArr) => (
-    rawArr.map((rawCategory) => {
-        const parsed = businessCategoryMapping[rawCategory];
-        if (parsed) {
-            return parsed.displayName;
-        }
-        return rawCategory;
-    })
-);
 
 const BaseRecipientOverview = {
     populate(data, idField = 'duns') {
@@ -72,7 +57,7 @@ const BaseRecipientOverview = {
             return [this._businessTypeDescription];
         }
 
-        return parseBusinessCategories(this._businessCategories);
+        return this._businessCategories.map((apiValue) => recipientTypes[apiValue] || apiValue);
     },
     get isParent() {
         return !this.parentDuns || this.duns === this.parentDuns;
