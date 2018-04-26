@@ -11,7 +11,7 @@ export const loadRecipientDuns = (duns) => {
     const source = CancelToken.source();
     return {
         promise: Axios.request({
-            url: `v2/duns/${duns}/`,
+            url: `v2/recipient/duns/${duns}/`,
             baseURL: kGlobalConstants.API,
             method: 'get',
             cancelToken: source.token
