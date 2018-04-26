@@ -45,8 +45,8 @@ const BaseRecipientOverview = {
 
         this.lei = data.lei || '';
 
+        this._businessTypeDescription = data.business_types_description || '';
         this._businessCategories = data.business_categories || [];
-        this.businessCategories = parseBusinessCategories(this._businessCategories);
 
         this.location = Object.create(CoreLocation);
         if (data.location) {
@@ -66,6 +66,9 @@ const BaseRecipientOverview = {
     },
     get id() {
         return this[this._idField];
+    },
+    get businessCategories() {
+        return this._businessTypeDescription || parseBusinessCategories(this._businessCategories);
     },
     get isParent() {
         return !this.parentDuns || this.duns === this.parentDuns;
