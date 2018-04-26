@@ -18,8 +18,9 @@ export const mockParent = {
         "woman_owned_business",
         "sole_proprietorship"
     ],
+    "business_types_description": null,
     "amounts": {
-        "fy": 2018,
+        "fy": "2018",
         "total": 38412345.67,
         "average": 12345.67
     }
@@ -45,8 +46,9 @@ export const mockChild = {
         "woman_owned_business",
         "sole_proprietorship"
     ],
+    "business_types_description": null,
     "amounts": {
-        "fy": 2018,
+        "fy": "2018",
         "total": 38412345.67,
         "average": 12345.67
     }

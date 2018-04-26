@@ -66,7 +66,33 @@ describe('BaseRecipientOverview', () => {
             expect(model.id).toEqual(model.lei);
         });
     });
+    describe('businessCategories', () => {
+        it('should return the business_types_description as a single-item array if it is populated', () => {
+            const data = Object.assign({}, MockData.mockChild, {
+                business_types_description: 'Hello world'
+            });
+            const model = Object.create(BaseRecipientOverview);
+            model.populate(data);
 
+            expect(model._businessTypeDescription).toBeTruthy();
+            expect(model.businessCategories).toEqual(['Hello world']);
+        });
+        it('should return an array of business_categories strings mapped to their recipient type values if it there is no business type description', () => {
+            const data = MockData.mockChild;
+            const model = Object.create(BaseRecipientOverview);
+            model.populate(data);
+
+            expect(model._businessTypeDescription).toBeFalsy();
+            expect(model._businessCategories).toEqual([
+                'woman_owned_business',
+                'sole_proprietorship'
+            ]);
+            expect(model.businessCategories).toEqual([
+                'Women Owned Business',
+                'Sole Proprietorship'
+            ]);
+        });
+    });
     describe('isParent', () => {
         it('should return true when the DUNS value matches the Parent DUNS value', () => {
             const data = MockData.mockParent;
@@ -91,14 +117,14 @@ describe('BaseRecipientOverview', () => {
 
             expect(model.isParent).toBeFalsy();
         });
-        it('should return false when the parent DUNS value is not specified', () => {
+        it('should return true when the parent DUNS value is not specified', () => {
             const data = Object.assign({}, MockData.mockParent, {
                 parent_duns: null
             });
             const model = Object.create(BaseRecipientOverview);
             model.populate(data);
 
-            expect(model.isParent).toBeFalsy();
+            expect(model.isParent).toBeTruthy();
         });
     });
 });
@@ -116,23 +142,5 @@ describe('prepareLocation', () => {
         expect(output.country).toEqual(data.country_name);
         expect(output.countryCode).toEqual(data.location_country_code);
         expect(output.zip5).toEqual(data.zip5);
-    });
-});
-
-describe('parseBusinessCategories', () => {
-    it('should iterate through the API response business categories and remap them to user-readable strings', () => {
-        const data = ['local_government_owned', 'private_university_or_college'];
-        const output = parseBusinessCategories(data);
-
-        expect(output).toEqual([
-            'Local Government Owned',
-            'Private University or College'
-        ]);
-    });
-    it('should use the API response value when it is not mappable to a user-readable string', () => {
-        const data = ['westworld_style_amusement_park'];
-        const output = parseBusinessCategories(data);
-
-        expect(output).toEqual(['westworld_style_amusement_park']);
     });
 });

@@ -9,13 +9,13 @@ describe('BaseRecipientAmounts', () => {
             const output = Object.create(BaseRecipientAmounts);
             output.populate(data);
 
-            expect(output.fy).toEqual(2018);
+            expect(output.fy).toEqual('2018');
             expect(output._total).toEqual(38412345.67);
             expect(output._average).toEqual(12345.67);
         });
         it('should box the _total and _average fields to numbers', () => {
             const stringData = {
-                fy: 2018,
+                fy: '2018',
                 total: '1234',
                 avarege: '2222'
             };
