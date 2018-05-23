@@ -9,8 +9,8 @@ before_install:
   - docker build -t usaspending/usaspending-website .
 
 script:
-  - docker run -it --name=usaspending-website usaspending/usaspending-website /bin/sh -c "npm dev"
-  - docker exec -ti usaspending-website sh -c "npm test"
+  - docker run -it --name=usaspending-website usaspending/usaspending-website /bin/sh -c "npm run dev"
+  - docker exec -ti usaspending-website /bin/sh -c "npm test"
 
 # node_js:
 #   # latest in each series
