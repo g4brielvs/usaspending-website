@@ -17,12 +17,16 @@ cache:
 before_script:
   - cp sampleGlobalConstants_dev.js GlobalConstants_dev.js
   - cp sampleGlobalConstants_prod.js GlobalConstants_prod.js
-  - cd ./api_contracts
-  - npm install
-  - cd ../
 script:
-  - npm run dev
-  - npm run travis
+  # - npm run dev
+  # - npm run travis
+  - cd ./api_contracts && npm install && "./node_modules/.bin/dredd ./contracts/**/*.md https://dev-api.usaspending.gov"
+  # - if [ $TRAVIS_PULL_REQUEST == "true" ]; then
+  #     if [ $TRAVIS_BRANCH_NAME == "dev"]; then
+  #       cd ./api_contracts && npm install && "./node_modules/.bin/dredd ./contracts/**/*.md https://dev-api.usaspending.gov"
+  #     fi
+  #   if
+
 after_success:
   - npm install -g codeclimate-test-reporter
   - codeclimate-test-reporter < coverage/lcov.info
