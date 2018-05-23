@@ -7,10 +7,11 @@ before_install:
   - cp sampleGlobalConstants_dev.js GlobalConstants_dev.js
   - cp sampleGlobalConstants_prod.js GlobalConstants_prod.js
   - docker build -t usaspending/usaspending-website .
-  - docker run usaspending/usaspending-website -i -t --name usaspending-website
+  - docker run -it --name=usaspending-website usaspending/usaspending-website /bin/sh
+  # - docker run usaspending/usaspending-website  -it --name usaspending-website /bin/sh
 
 script:
-  - docker exec usaspending-website -d ls
+  - docker exec -ti usaspending-website sh -c "npm dev"
 
 # node_js:
 #   # latest in each series
