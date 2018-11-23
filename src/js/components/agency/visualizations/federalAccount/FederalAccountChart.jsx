@@ -6,7 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { AngleLeft, AngleRight } from 'components/sharedComponents/icons/Icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import HorizontalChart from 'components/search/visualizations/rank/chart/HorizontalChart';
 import BarChartLegend from 'components/search/visualizations/time/chart/BarChartLegend';
 
@@ -141,7 +141,7 @@ export default class FederalAccountChart extends React.Component {
                             disabled={this.props.loading || this.props.page === 1}>
                             <div className="pager-content">
                                 <div className="icon">
-                                    <AngleLeft alt="Show previous ten" />
+                                    <FontAwesomeIcon icon="angle-left" title="Show previous ten" />
                                 </div>
                                 <div className="pager-label">
                                     Show previous ten
@@ -161,7 +161,7 @@ export default class FederalAccountChart extends React.Component {
                                     Show next ten
                                 </div>
                                 <div className="icon">
-                                    <AngleRight alt="Show next ten" />
+                                    <FontAwesomeIcon icon="angle-right" title="Show next ten" />
                                 </div>
                             </div>
                         </button>

@@ -90,7 +90,8 @@
 	        .info-icon-circle {
 		        @include align-self(center);
 		        display: inline-block;
-		        fill: $color-gray;
+                fill: $color-gray;
+                color: $color-gray;
 		        height: rem(17);
 		        left: rem(5);
 		        position: relative;
@@ -119,10 +120,10 @@
 
                 svg {
                     margin-right: rem(5);
-                    height: rem(11);
-                    width: rem(11);
+                    font-size: rem(20);
                     transform: rotate(270deg);
                     fill: $color-gray-lighter;
+                    color: $color-gray-lighter;
                     box-shadow: 0 1px 0 0 #FFFFFF;
                 }
             }

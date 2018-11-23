@@ -8,8 +8,7 @@ import PropTypes from 'prop-types';
 import { throttle, find } from 'lodash';
 
 import * as MoneyFormatter from 'helpers/moneyFormatter';
-import * as Icons from 'components/sharedComponents/icons/Icons';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MajorObjectClasses from './MajorObjectClasses';
 import MinorObjectClasses from './MinorObjectClasses';
 
@@ -78,7 +77,7 @@ export default class ObjectClassTreeMap extends React.Component {
                 <button
                     className="back"
                     onClick={this.toggleMinorObjectClass}>
-                    <Icons.ArrowUp /> Back to Major Object Classes
+                    <FontAwesomeIcon icon="caret-up" /> Back to Major Object Classes
                 </button>
             );
         }
