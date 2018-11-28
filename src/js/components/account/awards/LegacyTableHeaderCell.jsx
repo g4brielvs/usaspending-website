@@ -5,7 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ArrowUp, ArrowDown } from 'components/sharedComponents/icons/Icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const propTypes = {
     isLast: PropTypes.bool,
@@ -80,8 +80,7 @@ const TableHeaderCell = (props) => {
                             value="asc"
                             title={`Sort table by ascending ${props.title}`}
                             aria-label={`Sort table by ascending ${props.title}`}>
-                            <ArrowUp
-                                alt={`Sort table by ascending ${props.title}`} />
+                            <FontAwesomeIcon icon="caret-up" title={`Sort table by ascending ${props.title}`} />
                         </button>
                         <button
                             onClick={clickedSort}
@@ -89,8 +88,7 @@ const TableHeaderCell = (props) => {
                             value="desc"
                             title={`Sort table by descending ${props.title}`}
                             aria-label={`Sort table by descending ${props.title}`}>
-                            <ArrowDown
-                                alt={`Sort table by descending ${props.title}`} />
+                            <FontAwesomeIcon icon="caret-down" title={`Sort table by descending ${props.title}`} />
                         </button>
                     </div>
                 </div>

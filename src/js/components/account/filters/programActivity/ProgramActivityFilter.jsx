@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { OrderedSet } from 'immutable';
 import { sortBy, keyBy } from 'lodash';
 
-import * as Icons from 'components/sharedComponents/icons/Icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PrimaryCheckboxType from 'components/sharedComponents/checkbox/PrimaryCheckboxType';
 
 const propTypes = {
@@ -98,11 +98,11 @@ export default class ProgramActivityFilter extends React.Component {
         if (programActivities && Object.keys(programActivities).length > 10) {
             const remaining = Object.keys(programActivities).length - this.state.shown;
             let shownStatement = `${remaining} ${this.state.shownType}`;
-            let arrow = (<Icons.AngleDown alt={`See ${shownStatement}`} />);
+            let arrow = (<FontAwesomeIcon icon="angle-down" title={`See ${shownStatement}`} />);
 
             if (remaining === 0) {
                 shownStatement = this.state.shownType;
-                arrow = (<Icons.AngleUp alt={`See ${shownStatement}`} />);
+                arrow = (<FontAwesomeIcon icon="angle-up" title={`See ${shownStatement}`} />);
             }
 
             toggleButton = (

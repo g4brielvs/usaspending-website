@@ -6,7 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import * as Icons from 'components/sharedComponents/icons/Icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LegacyTopFilterItem from '../LegacyTopFilterItem';
 
 const propTypes = {
@@ -67,8 +67,7 @@ export default class LegacyBaseTopFilterGroup extends React.Component {
                                 aria-label={`Clear all ${this.props.filter.name} filters`}
                                 onClick={this.clearFilterGroup}>
                                 <span className="close-icon">
-                                    <Icons.Close
-                                        alt={`Clear all ${this.props.filter.name} filters`} />
+                                    <FontAwesomeIcon icon="times" title={`Clear all ${this.props.filter.name} filters`} />
                                 </span>
                             </button>
                         </div>

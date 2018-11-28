@@ -34,14 +34,15 @@
                     text-align: center;
 
                     svg {
-                        fill: #86888E;
-                        height: 11px;
-                        width: 11px;
+                        color: #86888E;
+                        width: rem(11);
+                        height: rem(11);
                     }
 
                     &.active {
                         svg {
                             fill: $color-active;
+                            color: $color-active;
                         }
                     }
                 }

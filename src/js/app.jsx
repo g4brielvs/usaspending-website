@@ -4,12 +4,12 @@ import { render } from 'react-dom';
 import kGlobalConstants from 'GlobalConstants';
 import AppContainer from 'containers/AppContainer';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faAngleRight, faAngleLeft, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight, faAngleLeft, faAngleDown, faAngleUp, faCaretUp, faCaretDown, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 require('babel-polyfill');
 require('helpers/rafPolyfill');
 
-library.add(faAngleRight, faAngleLeft, faCaretUp);
+library.add(faAngleRight, faAngleLeft, faAngleDown, faAngleUp, faCaretUp, faCaretDown, faTimes);
 const appDiv = document.getElementById('app');
 render(
     <AppContainer />,

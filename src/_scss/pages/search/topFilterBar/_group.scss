@@ -32,9 +32,9 @@
                     
                     .close-icon {
                         svg {
-                            height: 10px;
-                            width: 10px;
+                            font-size: rem(15);
                             fill: $top-clear-button-color;
+                            color: $top-clear-button-color;
                         }
                     }
                 }
