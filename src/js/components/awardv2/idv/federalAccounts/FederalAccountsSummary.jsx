@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { formatMoneyWithPrecision } from '../../../helpers/moneyFormatter';
-import { Table } from "../../sharedComponents/icons/Icons";
-import ComingSoonSection from "./ComingSoonSection";
-import InfoTooltip from './InfoTooltip';
-import { federalAccountsInfo } from './InfoTooltipContent';
+import { formatMoneyWithPrecision } from '../../../../helpers/moneyFormatter';
+import { Table } from "../../../sharedComponents/icons/Icons";
 
 const propTypes = {
     totalTransactionObligatedAmount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -15,25 +11,14 @@ const propTypes = {
     jumpToFederalAccountsHistory: PropTypes.func
 };
 
-const FundingSummary = ({
+const FederalAccountsSummary = ({
     totalTransactionObligatedAmount,
     awardingAgencyCount,
     federalAccountCount,
     jumpToFederalAccountsHistory
 }) => (
-    <div className="award__col award-viz federal-accounts">
-        <div className="award__col__content">
-            <div className="award-viz__heading">
-                <div className="award-viz__icon">
-                    <FontAwesomeIcon size="lg" icon="chart-pie" />
-                </div>
-                <h3 className="award-viz__title">Federal Accounts</h3>
-                <InfoTooltip left wide>
-                    {federalAccountsInfo}
-                </InfoTooltip>
-            </div>
-            <hr />
-            <ComingSoonSection className="federal-accounts__section" />
+    <div>
+        <div className="federal-accounts-summary__section">
             <h4>Summary of Federal Accounts used by this IDV</h4>
             <div className="award-funding-summary__table">
                 <div className="award-funding-summary__data">
@@ -45,7 +30,7 @@ const FundingSummary = ({
                     </span>
                 </div>
                 <div className="award-funding-summary__data">
-                    <span>Total Count Of Awarding Agencies</span>
+                    <span>Total Count Of Funding Agencies</span>
                     <span>{awardingAgencyCount}</span>
                 </div>
                 <div className="award-funding-summary__data">
@@ -53,16 +38,16 @@ const FundingSummary = ({
                     <span>{federalAccountCount}</span>
                 </div>
             </div>
-            <button onClick={jumpToFederalAccountsHistory} className="award-viz__button">
-                <div className="award-viz__link-icon">
-                    <Table />
-                </div>
-                <div className="award-viz__link-text">View federal funding submissions</div>
-            </button>
         </div>
+        <button onClick={jumpToFederalAccountsHistory} className="award-viz__button">
+            <div className="award-viz__link-icon">
+                <Table />
+            </div>
+            <div className="award-viz__link-text">View Federal Account Funding</div>
+        </button>
     </div>
 );
 
-FundingSummary.propTypes = propTypes;
+FederalAccountsSummary.propTypes = propTypes;
 
-export default FundingSummary;
+export default FederalAccountsSummary;
