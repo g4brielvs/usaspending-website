@@ -1,19 +1,13 @@
-.related-awards-tt {
-    p:nth-of-type(2) {
-        padding-bottom:0;
-        margin-bottom: 0;
-    }
-}
-.transaction-history-tt {
-    p:nth-of-type(3) {
-        margin-bottom: 0;
-    }
-}
+// award-amounts-viz tool tips
 .combined-obligated-tt,
 .combined-current-tt,
 .combined-potential-tt,
 .combined-exceeds-potential-tt,
-.combined-exceeds-current-tt {
+.combined-exceeds-current-tt,
+// info tool tips
+.info-tt__container,
+.transaction-history-tt,
+.related-awards-tt {
     @include display(flex);
     @include flex-direction(column);
     @include align-items(center);
@@ -23,5 +17,17 @@
     }
     .tooltip__list li {
         font-style: italic;
+    }
+}
+
+.related-awards-tt {
+    p:nth-of-type(2) {
+        padding-bottom:0;
+        margin-bottom: 0;
+    }
+}
+.transaction-history-tt {
+    p:nth-of-type(3) {
+        margin-bottom: 0;
     }
 }
