@@ -4,8 +4,8 @@ import React from 'react';
 
 export const transactionHistoryInfo = (
     <div className="transaction-history-tt">
-        <div className="info-tooltip__title">Transaction History</div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__title">Transaction History</div>
+        <div className="tooltip__text">
             <p>
                The Transaction History tab displays modification records
                for an award.
@@ -36,7 +36,7 @@ export const transactionHistoryInfo = (
                reason behind a modification. It uses a letter code system
                that maps to the following descriptions:
             </p>
-            <ul className="info-tooltip__list">
+            <ul className="tooltip__list">
                 <li>
                     <strong>A</strong> – Additional Work
                 </li>
@@ -87,11 +87,11 @@ export const transactionHistoryInfo = (
 );
 
 export const federalAccountFundingInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Federal Account Funding
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 Each row in this table represents a submission of a transaction
                 by the awarding agency  that commits a specific amount of funding
@@ -133,10 +133,10 @@ export const federalAccountFundingInfo = (
 
 export const relatedAwardsInfo = (
     <div className="related-awards-tt">
-        <div className="info-tooltip__title">
+        <div className="tooltip__title">
              Orders Made Under this IDV
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 This section displays the child award orders*, child IDV orders*,
                 and grandchild award orders that have been made under this Indefinite
@@ -155,7 +155,7 @@ export const relatedAwardsInfo = (
                 The award orders made under an IDV are sometimes known or referred
                 to as:
             </p>
-            <ul className="info-tooltip__list">
+            <ul className="tooltip__list">
                 <li>&bull; Task Order</li>
                 <li>&bull; Delivery Order</li>
                 <li>&bull; Purchase Order</li>
@@ -200,11 +200,11 @@ export const relatedAwardsInfo = (
 );
 
 export const awardAmountsOverspendingInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Exceeds Combined Current Award Amount
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 The award orders underneath this IDV have a combined
                 obligated amount that exceeds their combined current award
@@ -222,11 +222,11 @@ export const awardAmountsOverspendingInfo = (
 );
 
 export const awardAmountsExtremeOverspendingInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
              Exceeds Combined Potential Award Amounts
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 The award orders made underneath this IDV have a combined obligated
                 amount that exceeds their combined potential award amounts. In other
@@ -243,11 +243,11 @@ export const awardAmountsExtremeOverspendingInfo = (
 );
 
 export const summaryRelatedAwardsInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Related Awards
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 Related Awards refers to two possible types of awards related to
                 this indefinite delivery vehicle (IDV):
@@ -280,11 +280,11 @@ export const summaryRelatedAwardsInfo = (
 );
 
 export const descriptionInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Description
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 The description of the award is provided by the contract officer
                 who submitted this award data. The quality of these descriptions
@@ -304,11 +304,11 @@ export const descriptionInfo = (
 );
 
 export const awardAmountsInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Award Amounts
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 This section provides information on the value of this indefinite
                 delivery vehicle (IDV) at two different levels, shown separately
@@ -373,11 +373,11 @@ export const awardAmountsInfo = (
 );
 
 export const awardHistoryInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Award History
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 <strong>Transaction History</strong> – This table contains historical
                 changes made to this award, shown as individual modification records.
@@ -395,11 +395,11 @@ export const awardHistoryInfo = (
 );
 
 export const datesInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Dates
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>The dates below are described in more detail:</p>
             <ul>
                 <li>
@@ -416,11 +416,11 @@ export const datesInfo = (
 );
 
 export const idvActivityInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             IDV Activity
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 <strong>How to read this visual:</strong><br />
                 Each bar represents a child award order* or grandchild award order*
@@ -490,11 +490,11 @@ export const idvActivityInfo = (
 );
 
 export const federalAccountsInfo = (
-    <div>
-        <div className="info-tooltip__title">
+    <div className="info-tt__container">
+        <div className="tooltip__title">
             Federal Accounts
         </div>
-        <div className="info-tooltip__text">
+        <div className="tooltip__text">
             <p>
                 <strong>How to read this visual:</strong><br />
                 The funding committed to the award orders made under this indefinite
