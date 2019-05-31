@@ -105,7 +105,7 @@ export default class ActivityYAxis extends React.Component {
                 <line
                     className="y-axis"
                     x1={this.props.padding.left}
-                    y1={0}
+                    y1={-20} // offsetting the y-axis line by the height of the label text (20px)
                     x2={this.props.padding.left}
                     y2={this.props.height}
                     style={lineStyle} />

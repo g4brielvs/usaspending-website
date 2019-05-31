@@ -112,7 +112,7 @@ export default class ActivityChart extends React.Component {
                     height={10}
                     start={start}
                     width={width}
-                    yPosition={yPosition}
+                    yPosition={yPosition - 12} // - offsetting the height of the bar by its height (10px) + 2px of padding
                     data={bar}
                     description={description} />
             );
