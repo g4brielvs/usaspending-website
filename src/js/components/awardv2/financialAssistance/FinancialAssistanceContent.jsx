@@ -5,12 +5,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { startCase } from "lodash";
 
-import { Glossary } from 'components/sharedComponents/icons/Icons';
 import { glossaryLinks } from 'dataMapping/search/awardType';
 import AwardRecipient from '../shared/overview/AgencyRecipient';
 import AwardDates from '../shared/overview/AwardDates';
+import { AwardPageWrapper, AwardSection } from '../shared';
+import ComingSoonSection from "../shared/ComingSoonSection";
+import AwardAmounts from "../contract/AwardAmounts";
 
 const propTypes = {
     awardId: PropTypes.string,
@@ -18,43 +19,77 @@ const propTypes = {
     jumpToSection: PropTypes.func
 };
 
+const overviewProperties = [
+    "id",
+    "generatedId",
+    "_totalObligation", // obligation
+    "_baseExercisedOptions", // current
+    "_baseAndAllOptions", // potential
+    "totalObligation",
+    "totalObligationFormatted",
+    "baseExercisedOptions",
+    "baseExercisedOptionsFormatted",
+    "baseAndAllOptions",
+    "baseAndAllOptionsFormatted"
+];
+
+// Does this need to go in a model or a data mapping?
+const awardAmountValueByOverviewKey = {
+    _totalObligation: "_obligation",
+    totalObligation: "obligationFormatted",
+    totalObligationFormatted: "obligation",
+    _baseExercisedOptions: "_combinedCurrentAwardAmounts",
+    baseExercisedOptions: "combinedCurrentAwardAmountsFormatted",
+    baseExercisedOptionsFormatted: "combinedCurrentAwardAmounts",
+    _baseAndAllOptions: "_combinedPotentialAwardAmounts",
+    baseAndAllOptions: "combinedPotentialAwardAmountsFormatted",
+    baseAndAllOptionsFormatted: "combinedPotentialAwardAmounts"
+};
+
+const defaultTooltipProps = {
+    controlledProps: {
+        isControlled: true,
+        isVisible: false,
+        closeCurrentTooltip: () => console.log("close tooltip"),
+        showTooltip: () => console.log("open tooltip")
+    }
+};
+
 export default class FinancialAssistanceContent extends React.Component {
     render() {
-        const glossarySlug = glossaryLinks[this.props.overview.type];
-        let glossaryLink = null;
-        if (glossarySlug) {
-            glossaryLink = (
-                <a href={`/#/award_v2/${this.props.awardId}?glossary=${glossarySlug}`}>
-                    <Glossary />
-                </a>
-            );
-        }
+        const { typeDescription, id } = this.props.overview;
+        const link = `/#/award_v2/${this.props.awardId}?glossary=${glossaryLinks[this.props.overview.type]}`;
+        const awardAmountsProps = overviewProperties
+            .reduce((acc, key) => ({
+                ...acc,
+                [awardAmountValueByOverviewKey[key] || key]: this.props.overview[key]
+            }), { _obligation: 0, _combinedCurrentAwardAmounts: 0, _combinedPotentialAwardAmounts: 0 });
         // TODO: Determine if we should label with FAIN/ URI instead of ID
         return (
-            <div className="award award-financial-assistance">
-                <div className="award__heading">
-                    <div className="award__heading-text">{startCase(this.props.overview.typeDescription)}</div>
-                    <div className="award__heading-icon">
-                        {glossaryLink}
-                    </div>
-                    <div className="award__heading-id">
-                        <div className="award__heading-label">{this.props.overview.id ? 'ID' : ''}</div>
-                        <div>{this.props.overview.id}</div>
-                    </div>
-                </div>
-                <hr className="award__divider" />
-                <div className="award__row award-overview" id="award-overview">
+            <AwardPageWrapper
+                type="financial-assistance"
+                glossaryLink={link}
+                awardTypeDescription={typeDescription}
+                identifier={id}>
+                <AwardSection type="row" id="award-overview" className="award-overview">
                     <AwardRecipient
                         jumpToSection={this.props.jumpToSection}
                         awardingAgency={this.props.overview.awardingAgency}
                         category={this.props.overview.category}
                         recipient={this.props.overview.recipient} />
-                    <div className="award__col award-amountdates">
-                        <AwardDates
-                            overview={this.props.overview} />
-                    </div>
-                </div>
-            </div>
+                    <AwardSection type="column" className="award-amountdates">
+                        <AwardDates overview={this.props.overview} />
+                    </AwardSection>
+                </AwardSection>
+                <AwardSection type="row">
+                    <AwardSection type="column">
+                        <AwardAmounts
+                            awardAmountsProps={awardAmountsProps}
+                            tooltipProps={defaultTooltipProps} />
+                    </AwardSection>
+                    <ComingSoonSection title="Description" includeHeader />
+                </AwardSection>
+            </AwardPageWrapper>
         );
     }
 }
