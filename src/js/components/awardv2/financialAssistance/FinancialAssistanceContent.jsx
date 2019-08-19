@@ -33,17 +33,23 @@ const overviewProperties = [
     "baseAndAllOptionsFormatted"
 ];
 
+/**
+ * totalObligation // obligated
+ * nonFederalFunding // current
+ * totalFunding // potential
+ **/
+
 // Does this need to go in a model or a data mapping?
 const awardAmountValueByOverviewKey = {
     _totalObligation: "_obligation",
     totalObligation: "obligationFormatted",
     totalObligationFormatted: "obligation",
-    _baseExercisedOptions: "_combinedCurrentAwardAmounts",
-    baseExercisedOptions: "combinedCurrentAwardAmountsFormatted",
-    baseExercisedOptionsFormatted: "combinedCurrentAwardAmounts",
-    _baseAndAllOptions: "_combinedPotentialAwardAmounts",
-    baseAndAllOptions: "combinedPotentialAwardAmountsFormatted",
-    baseAndAllOptionsFormatted: "combinedPotentialAwardAmounts"
+    _nonFederalFunding: "_combinedCurrentAwardAmounts",
+    nonFederalFunding: "combinedCurrentAwardAmountsFormatted",
+    nonFederalFundingFormatted: "combinedCurrentAwardAmounts",
+    _totalFunding: "_combinedPotentialAwardAmounts",
+    totalFunding: "combinedPotentialAwardAmountsFormatted",
+    totalFundingFormatted: "PotentialAwardAmounts"
 };
 
 const defaultTooltipProps = {
