@@ -33,6 +33,8 @@ const propTypes = {
     })
 };
 
+// TODO: Abstract awardAmountsProps to work with IDV/Grants/Contracts
+
 const AwardAmounts = ({
     awardAmountsProps,
     tooltipProps
