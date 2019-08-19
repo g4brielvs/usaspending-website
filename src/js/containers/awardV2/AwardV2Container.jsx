@@ -132,6 +132,7 @@ export class AwardContainer extends React.Component {
             this.props.setAward(idv);
         }
         else {
+            console.log("heres the data we need", data);
             const financialAssistance = Object.create(BaseFinancialAssistance);
             financialAssistance.populate(data);
             this.props.setAward(financialAssistance);
