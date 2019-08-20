@@ -132,7 +132,9 @@ export class AwardContainer extends React.Component {
             this.props.setAward(idv);
         }
         else {
-            console.log("heres the data we need", data);
+            console.log("non-federal-funding", data.non_federal_funding);
+            console.log("obligation === total funding", data.total_obligation === data.total_funding);
+            console.log("obligation < total funding", data.total_obligation < data.total_funding);
             const financialAssistance = Object.create(BaseFinancialAssistance);
             financialAssistance.populate(data);
             this.props.setAward(financialAssistance);
