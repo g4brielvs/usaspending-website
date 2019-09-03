@@ -5,6 +5,8 @@
 
 import * as MoneyFormatter from 'helpers/moneyFormatter';
 
+const financialAssistanceAwardTypes = ['grant', 'direct payment', 'loans', 'other']; 
+
 const BaseAwardAmounts = {
     populateBase(data) {
         this.id = (data.award_id && `${data.award_id}`) || '';
@@ -24,7 +26,7 @@ const BaseAwardAmounts = {
             data.child_award_base_exercised_options_val + data.grandchild_award_base_exercised_options_val
         ) || 0;
     },
-    populateGrant(data) {
+    populateFinancialAward(data) {
         this._totalObligation = data._totalObligation;
         this._totalFunding = data._totalFunding;
         this._nonFederalFunding = data._nonFederalFunding;
@@ -34,8 +36,8 @@ const BaseAwardAmounts = {
         if (awardType === 'idv') {
             this.populateIdv(data);
         }
-        else if (awardType === 'grant') {
-            this.populateGrant(data);
+        else if (financialAssistanceAwardTypes.includes(awardType)) {
+            this.populateFinancialAward(data);
         }
     },
     get baseAndAllOptionsFormatted() {
