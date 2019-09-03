@@ -12,6 +12,12 @@ const propTypes = {
 const contractAndIdvCategories = ['totalObligationFormatted', 'baseExercisedOptionsFormatted', 'baseAndAllOptionsFormatted'];
 const grantCategories = ['totalObligationFormatted', 'nonFederalFundingFormatted', 'totalFundingFormatted'];
 
+const financialAssistanceTableTitleByAwardCategoryMap = {
+    totalFundingFormatted: 'Total Funding',
+    nonFederalFundingFormatted: 'Non-Federal Funding',
+    totalObligationFormatted: 'Obligated Amount'
+};
+
 const tableTitleByAwardTypeByCategory = {
     idv: {
         baseExercisedOptionsFormatted: 'Combined Current Amounts',
@@ -23,11 +29,10 @@ const tableTitleByAwardTypeByCategory = {
         baseAndAllOptionsFormatted: 'Potential Amount',
         totalObligationFormatted: 'Obligated Amount'
     },
-    grant: {
-        totalFundingFormatted: 'Total Funding',
-        nonFederalFundingFormatted: 'Non-Federal Funding',
-        totalObligationFormatted: 'Obligated Amount'
-    }
+    direct_payment: financialAssistanceTableTitleByAwardCategoryMap,
+    grant: financialAssistanceTableTitleByAwardCategoryMap,
+    loan: financialAssistanceTableTitleByAwardCategoryMap,
+    other: financialAssistanceTableTitleByAwardCategoryMap
 };
 
 const awardTableClassMap = {
@@ -57,7 +62,7 @@ const AwardAmountsTable = ({
     // Returns: { titleInTable: AwardCategoryAmount }
     const buildAmountMapByCategoryTitle = (accumulator, category) => ({
         ...accumulator,
-        [tableTitleByAwardTypeByCategory[awardType][category]]: awardData[category]
+        [tableTitleByAwardTypeByCategory[awardType.replace(" ", "_")][category]]: awardData[category]
     });
 
     // build a map using the relevant keys for the awardType
