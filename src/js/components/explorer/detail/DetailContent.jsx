@@ -6,7 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import LoadingSpinner from 'components/sharedComponents/LoadingSpinner';
+import LoadingBars from 'components/sharedComponents/Loading';
 import RootHeader from './header/RootHeader';
 import DetailHeader from './header/DetailHeader';
 import ExplorerVisualization from './visualization/ExplorerVisualization';
@@ -152,7 +152,7 @@ export default class DetailContent extends React.Component {
                     }}>
                     <div className="explorer-detail-content__loading">
                         <div className="explorer-detail-content__loading-message">
-                            <LoadingSpinner />
+                            <LoadingBars />
                             <div className="explorer-detail-content__loading-title">Gathering your data...</div>
                             <div className="explorer-detail-content__loading-subtitle">Updating Spending Explorer.</div>
                             <div>This should only take a few moments...</div>

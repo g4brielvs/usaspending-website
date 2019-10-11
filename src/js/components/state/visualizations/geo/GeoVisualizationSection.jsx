@@ -6,7 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import LoadingSpinner from 'components/sharedComponents/LoadingSpinner';
+import LoadingBars from 'components/sharedComponents/Loading';
 import { ExclamationTriangle } from 'components/sharedComponents/icons/Icons';
 
 import GeoVisualizationTooltip from 'components/search/visualizations/geo/GeoVisualizationTooltip';
@@ -70,7 +70,7 @@ export default class GeoVisualizationSection extends React.Component {
             message = (
                 <MapMessage>
                     <div className="map-loading">
-                        <LoadingSpinner />
+                        <LoadingBars />
                         <div className="loading-message">
                             Gathering your data...
                         </div>

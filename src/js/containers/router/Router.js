@@ -78,7 +78,7 @@ export class RouterSingleton {
         this.loaderTime = window.setTimeout(() => {
             // have the React router container show a loading spinner
             this.reactContainer.showSpinner();
-        }, 1500);
+        }, 0);
 
         this.loadComponent(componentReference)
             .then((component) => {
@@ -91,7 +91,7 @@ export class RouterSingleton {
 
                 if (this.loaderTime) {
                     // the module loaded, cancel the spinner timer
-                    window.clearTimeout(this.loaderTime);
+                    // window.clearTimeout(this.loaderTime);
                 }
             });
     }

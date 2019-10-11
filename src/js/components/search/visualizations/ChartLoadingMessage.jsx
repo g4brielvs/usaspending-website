@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import LoadingSpinner from 'components/sharedComponents/LoadingSpinner';
+import LoadingBars from 'components/sharedComponents/Loading';
 
 const ChartLoadingMessage = () => (
     <div className="visualization-message-container">
         <div className="visualization-loading">
-            <LoadingSpinner />
+            <LoadingBars />
             <div className="message">
                 Gathering your data...
             </div>

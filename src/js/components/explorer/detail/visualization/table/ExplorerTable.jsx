@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { uniqueId } from 'lodash';
 
 import Pagination from 'components/sharedComponents/Pagination';
-import LoadingSpinner from 'components/sharedComponents/LoadingSpinner';
+import LoadingBars from 'components/sharedComponents/Loading';
 import LegacyTableHeaderCell from 'components/account/awards/LegacyTableHeaderCell';
 import TableRow from './TableRow';
 
@@ -70,7 +70,7 @@ export default class ExplorerTable extends React.Component {
             loadingMessage = (
                 <div className="explorer-detail-content__loading">
                     <div className="explorer-detail-content__loading-message">
-                        <LoadingSpinner />
+                        <LoadingBars />
                         <div className="explorer-detail-content__loading-title">Gathering your data...</div>
                         <div className="explorer-detail-content__loading-subtitle">Updating Spending Explorer.</div>
                         <div>This should only take a few moments...</div>

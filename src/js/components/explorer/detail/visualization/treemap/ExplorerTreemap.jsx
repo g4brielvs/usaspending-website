@@ -11,7 +11,7 @@ import { scaleLinear } from 'd3-scale';
 import { remove } from 'lodash';
 
 import { measureTreemapHeader, measureTreemapValue } from 'helpers/textMeasurement';
-import LoadingSpinner from 'components/sharedComponents/LoadingSpinner';
+import LoadingBars from 'components/sharedComponents/Loading';
 import TreemapCell from 'components/sharedComponents/TreemapCell';
 
 const propTypes = {
@@ -221,7 +221,7 @@ export default class ExplorerTreemap extends React.Component {
             loadingMessage = (
                 <div className="explorer-detail-content__loading">
                     <div className="explorer-detail-content__loading-message">
-                        <LoadingSpinner />
+                        <LoadingBars />
                         <div className="explorer-detail-content__loading-title">Gathering your data...</div>
                         <div className="explorer-detail-content__loading-subtitle">Updating Spending Explorer.</div>
                         <div>This should only take a few moments...</div>

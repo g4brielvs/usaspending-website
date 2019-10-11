@@ -5,11 +5,11 @@
 
 import React from 'react';
 
-import LoadingSpinner from 'components/sharedComponents/LoadingSpinner';
+import LoadingBars from 'components/sharedComponents/Loading';
 
 const ResultsTableLoadingMessage = () => (
     <div className="results-table-loading">
-        <LoadingSpinner />
+        <LoadingBars />
         <div className="loading-message">
             Gathering your data...
         </div>

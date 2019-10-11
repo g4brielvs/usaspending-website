@@ -9,6 +9,7 @@ import Analytics from 'helpers/analytics/Analytics';
 
 import GlossaryListenerSingleton from './GlossaryListenerSingleton';
 import Router from './Router';
+import { LoadingSpinner } from '../../components/sharedComponents/Loading';
 
 
 export default class RouterContainer extends React.Component {
@@ -89,15 +90,12 @@ export default class RouterContainer extends React.Component {
         if (!this.state.content) {
             return null;
         }
-
-        // TODO: Kevin Li - implement loading spinner for long-load modules
-        const loadingSpinner = null;
+        if (this.state.showSpinner) return <LoadingSpinner />;
 
         const ContentComponent = this.state.content;
         return (
             <div>
                 <ContentComponent params={this.state.route.params} />
-                { loadingSpinner }
             </div>
         );
     }

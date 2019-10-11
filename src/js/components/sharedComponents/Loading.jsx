@@ -5,7 +5,7 @@
 
 import React from 'react';
 
-const LoadingSpinner = () => (
+const LoadingBars = () => (
     <div className="loading-animation">
         <svg
             className="loading-bars"
@@ -45,4 +45,10 @@ const LoadingSpinner = () => (
     </div>
 );
 
-export default LoadingSpinner;
+export const LoadingSpinner = (
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="50" />
+    </svg>
+);
+
+export default LoadingBars;
