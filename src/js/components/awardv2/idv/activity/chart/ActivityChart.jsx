@@ -370,7 +370,11 @@ export default class ActivityChart extends React.Component {
         // const bars = this.createBars();
         const { width, height, padding } = this.props;
         // const currentDate = Date.now();
-
+        const style = {
+            fill: 'none',
+            stroke: 'steelblue',
+            'stroke-width': '1.5px'
+        };
         const {
             xScale,
             xRange,
@@ -406,7 +410,7 @@ export default class ActivityChart extends React.Component {
                     <g
                         className="activity-chart-data">
                         {/* {bars} */}
-                        <path d={newLine} />
+                        <path style={style} d={newLine} />
                         {/* Today Line */}
                         {/* {xScale && <VerticalLine
                             xScale={xScale}
