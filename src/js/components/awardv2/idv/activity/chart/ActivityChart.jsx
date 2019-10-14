@@ -7,10 +7,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { isEqual, min, max } from 'lodash';
 import { scaleLinear } from 'd3-scale';
+import { line } from 'd3-shape';
 import { calculateTreemapPercentage } from 'helpers/moneyFormatter';
 import { nearestQuarterDate } from 'helpers/fiscalYearHelper';
 import TwoRectangles from 'components/sharedComponents/patterns/TwoRectangles';
-import VerticalLine from 'components/sharedComponents/VerticalLine';
+// import VerticalLine from 'components/sharedComponents/VerticalLine';
 import ActivityChartBar from './ActivityChartBar';
 import ActivityXAxis from './ActivityXAxis';
 import ActivityYAxis from './ActivityYAxis';
@@ -52,7 +53,8 @@ export default class ActivityChart extends React.Component {
             xAxisPos: 0,
             graphWidth: 0,
             graphHeight: 0,
-            bars: []
+            bars: [],
+            newLine: null
         };
     }
 
@@ -221,23 +223,23 @@ export default class ActivityChart extends React.Component {
         const xRange = [];
         // If there is only one item, manually set the min and max values
         // Y Axis (Awarded Amounts) will go from zero to the one award's amount
-        let minValueY = 0;
-        let maxValueY = this.props.awards[0]._obligatedAmount;
+        // let minValueY = 0;
+        // let maxValueY = this.props.awards[0]._obligatedAmount;
         // X Axis (Dates) will go from the award's start date to its end date
-        let minValueX = this.props.awards[0]._startDate.valueOf();
-        let maxValueX = this.props.awards[0]._endDate.valueOf();
+        // let minValueX = this.props.awards[0]._startDate.valueOf();
+        // let maxValueX = this.props.awards[0]._endDate.valueOf();
 
         // Otherwise, find the min and max of all values for awarded amounts and dates
-        if (this.props.awards.length > 1) {
-            minValueY = min(this.props.ySeries);
-            maxValueY = max(this.props.ySeries);
-            minValueX = min(this.props.xSeries);
-            maxValueX = max(this.props.xSeries);
-        }
-        yRange.push(minValueY);
-        yRange.push(maxValueY);
-        xRange.push(minValueX);
-        xRange.push(maxValueX);
+        // if (this.props.awards.length > 1) {
+        //     minValueY = min(this.props.ySeries);
+        //     maxValueY = max(this.props.ySeries);
+        //     minValueX = min(this.props.xSeries);
+        //     maxValueX = max(this.props.xSeries);
+        // }
+        // yRange.push(minValueY);
+        // yRange.push(maxValueY);
+        // xRange.push(minValueX);
+        // xRange.push(maxValueX);
         return { xRange, yRange };
     }
 
@@ -251,61 +253,131 @@ export default class ActivityChart extends React.Component {
 
     createXTicks(xScale, graphWidth) {
         const xTicks = xScale.ticks(5);
-        const startOfGraphMillis = xScale.invert(0);
-        const endOfGraphMillis = xScale.invert(graphWidth);
-        return xTicks.reduce((acc, tick) => {
-            // find nearest quarter date
-            const quarterMillis = nearestQuarterDate(tick);
-            // since we are finding the nearest quarter date from D3's generated ticks
-            // we could be manipulating the date to a position off the graph
-            // this if statement removes those dates
-            if (startOfGraphMillis <= quarterMillis && quarterMillis <= endOfGraphMillis) {
-                // format tick with date and label
-                acc.push(this.getXTickDateAndLabel(quarterMillis));
-                return acc;
-            }
-            return acc;
-        }, []);
+        const newXTicks = xTicks.map((data) => {
+            const someStuff = { date: data, label: data };
+            return someStuff;
+        });
+        return newXTicks;
+        // const startOfGraphMillis = xScale.invert(0);
+        // const endOfGraphMillis = xScale.invert(graphWidth);
+        // return xTicks.reduce((acc, tick) => {
+        //     // find nearest quarter date
+        //     const quarterMillis = nearestQuarterDate(tick);
+        //     // since we are finding the nearest quarter date from D3's generated ticks
+        //     // we could be manipulating the date to a position off the graph
+        //     // this if statement removes those dates
+        //     if (startOfGraphMillis <= quarterMillis && quarterMillis <= endOfGraphMillis) {
+        //         // format tick with date and label
+        //         acc.push(this.getXTickDateAndLabel(quarterMillis));
+        //         return acc;
+        //     }
+        //     return acc;
+        // }, []);
     }
 
     generateChartData() {
-        const { xRange, yRange } = this.xyRange();
+        // const { xRange, yRange } = this.xyRange();
         const { graphWidth, graphHeight } = this.graphWidthAndHeight();
         // Create the scales using D3
         // domain is the data range, and range is the
         // range of possible pixel positions along the axis
-        const xScale = scaleLinear()
-            .domain(xRange)
-            .range([0, graphWidth])
-            .nice();
-        const yScale = scaleLinear()
-            .domain(yRange)
-            .range([0, graphHeight])
-            .nice();
+
+        // const xScale = scaleLinear()
+        //     .domain(xRange)
+        //     .range([0, graphWidth])
+        //     .nice();
+        // const yScale = scaleLinear()
+        //     .domain(yRange)
+        //     .range([0, graphHeight])
+        //     .nice();
+
+        // from http://bl.ocks.org/mbostock/4349187
+        // Sample from a normal distribution with mean 0, stddev 1.
+        const normal = () => {
+            let x = 0;
+            let y = 0;
+            let rds = null;
+            let c = null;
+            do {
+                x = (Math.random() * 2) - 1;
+                y = (Math.random() * 2) - 1;
+                rds = (x * x) + (y * y);
+            } while (rds === 0 || rds > 1);
+            c = Math.sqrt((-2 * Math.log(rds)) / rds); // Box-Muller transform
+            return x * c; // throw away extra sample y * c
+        }
+
+        // taken from Jason Davies science library
+        // https://github.com/jasondavies/science.js/
+        function gaussian(x) {
+            let newX = x;
+            const gaussianConstant = 1 / Math.sqrt(2 * Math.PI);
+            const mean = 0;
+            const sigma = 1;
+
+            newX = (x - mean) / sigma;
+            return (gaussianConstant * Math.exp(-0.5 * newX * x)) / sigma;
+        };
+
+        // loop to populate data array with
+        // probabily - quantile pairs
+        const data = [];
+        for (let i = 0; i < 100000; i++) {
+            const q = normal(); // calc random draw from normal dist
+            const p = gaussian(q); // calc prob of rand draw
+            const el = {
+                q,
+                p
+            };
+            data.push(el);
+        }
+
+        // need to sort for plotting
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+        data.sort((x, y) => x.q - y.q);
+        const newData = [...data];
+        const yData = newData.map((d) => d.p);
+        yData.sort((x, y) => x - y);
+        const xRange = [data[0].q, data[data.length - 1].q];
+        const yRange = [yData[0], yData[yData.length - 1]];
+
+        const xScale = scaleLinear().domain(xRange).range([45, graphWidth]);
+
+        const yScale = scaleLinear().domain(yRange).range([graphHeight, 0]);
+
+        const theLineFunction = line()
+            .x((d) => xScale(d.q))
+            .y((d) => yScale(d.p));
+
+        const newLine = theLineFunction(data);
 
         const xTicks = this.createXTicks(xScale, graphWidth);
-
         this.setState({
             xRange,
             yRange,
+            newLine,
             xScale,
             yScale,
             graphWidth,
             graphHeight,
+            data,
             yTicks: yScale.ticks(6),
             xTicks
         }, this.generateBarData);
     }
 
     render() {
-        const bars = this.createBars();
+        // const bars = this.createBars();
         const { width, height, padding } = this.props;
-        const currentDate = Date.now();
+        // const currentDate = Date.now();
+
         const {
             xScale,
             xRange,
-            graphWidth
+            graphWidth,
+            newLine
         } = this.state;
+        console.log(' New Line : ', newLine);
         return (
             <svg
                 className="activity-chart"
@@ -313,6 +385,7 @@ export default class ActivityChart extends React.Component {
                 // adds back in the original bottom padding from graphWidthAndHeight()
                 // and adds the labels
                 height={height + 70}>
+                
                 <g
                     className="activity-chart-body"
                     transform="translate(0,45)">
@@ -332,9 +405,10 @@ export default class ActivityChart extends React.Component {
                         scale={xScale} />
                     <g
                         className="activity-chart-data">
-                        {bars}
+                        {/* {bars} */}
+                        <path d={newLine} />
                         {/* Today Line */}
-                        {xScale && <VerticalLine
+                        {/* {xScale && <VerticalLine
                             xScale={xScale}
                             y1={-10}
                             y2={height - padding.bottom}
@@ -344,7 +418,7 @@ export default class ActivityChart extends React.Component {
                             xMin={xRange[0]}
                             xValue={currentDate}
                             showTextPosition="top"
-                            adjustmentX={padding.left} />}
+                            adjustmentX={padding.left} />} */}
                     </g>
                 </g>
             </svg>

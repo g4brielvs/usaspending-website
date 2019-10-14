@@ -43,19 +43,19 @@ export default class ActivityYAxis extends React.Component {
         }
 
         // determine the numerical unit to display in the Y axis labels
-        const units = MoneyFormatter.calculateUnits(props.data);
+        // const units = MoneyFormatter.calculateUnits(props.data);
 
         // generate the labels
         const tickLabels = props.ticks.map((tick) => {
-            let formattedValue = MoneyFormatter.formatMoneyWithPrecision(tick / units.unit, units.precision);
-            if (tick === 0) {
-                formattedValue = '$0';
-            }
-            else {
-                formattedValue = `${formattedValue} ${units.unitLabel}`;
-            }
+            // let formattedValue = MoneyFormatter.formatMoneyWithPrecision(tick / units.unit, units.precision);
+            // if (tick === 0) {
+            //     formattedValue = '$0';
+            // }
+            // else {
+            //     formattedValue = `${formattedValue} ${units.unitLabel}`;
+            // }
 
-            return formattedValue;
+            return tick;
         });
 
         // draw the grid lines
