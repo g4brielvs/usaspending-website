@@ -8,8 +8,6 @@ import PropTypes from 'prop-types';
 import { throttle } from 'lodash';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-require('../../src/_scss/pages/awardV2/shared/_infoTooltip.scss');
-
 const propTypes = {
     children: PropTypes.node,
     left: PropTypes.bool,

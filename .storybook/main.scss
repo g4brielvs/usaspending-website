@@ -1,1 +1,6 @@
 @import '../src/_scss/all.scss';
+@import 'src/_scss/pages/awardV2/shared/_infoTooltip.scss';
+#root {
+    height: 100vh;
+    border: 1px solid red;
+}
