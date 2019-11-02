@@ -3,4 +3,9 @@
 #root {
     height: 100vh;
     border: 1px solid red;
+    .tooltip-story__container {
+        width: 20px;
+        border: 1px solid red;
+        margin-top: 15px;
+    }
 }
