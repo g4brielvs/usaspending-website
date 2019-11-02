@@ -23,7 +23,10 @@ module.exports = {
     context: path.resolve(__dirname, "../src"),
     resolve: {
         extensions: [".js", ".jsx"],
-        modules: ["node_modules", path.resolve(__dirname, "../src/_scss")]
+        modules: ["node_modules", path.resolve(__dirname, "../src/_scss")],
+        alias: {
+            styleGuide: path.resolve(__dirname, "../.storybook/components")
+        }
     },
     optimization: {
         splitChunks: {
