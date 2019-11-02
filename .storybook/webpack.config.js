@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = async ({ config, mode }) => {
   config.resolve = {
@@ -18,9 +19,27 @@ module.exports = async ({ config, mode }) => {
   config.module.rules.push(
     ...[
       {
+        test: /\.css$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader
+            },
+            "css-loader"
+        ]
+      },
+      {
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-        include: path.resolve(__dirname, '../src'),
+        use: [
+            { loader: MiniCssExtractPlugin.loader },
+            { loader: "css-loader", options: { url: false, sourceMap: true } },
+            {
+                loader: "sass-loader",
+                options: {
+                    sourceMap: true,
+                    includePaths: ["./src/_scss", "./node_modules"]
+                }
+            }
+        ]
       },
       {
         test: /\.js$|jsx$/,
@@ -28,6 +47,11 @@ module.exports = async ({ config, mode }) => {
         include: path.resolve(__dirname, '../src/js'),
       },
     ]
+  );
+  config.plugins.push(
+    new MiniCssExtractPlugin({
+      filename: "[name].[contenthash].css"
+    })
   );
   return config;
 };
