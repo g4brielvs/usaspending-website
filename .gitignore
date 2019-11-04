@@ -53,3 +53,5 @@ cache/
 
 # bash script
 usa_spending.sh
+
+.out/
