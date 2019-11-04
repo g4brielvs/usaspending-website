@@ -15,7 +15,7 @@
         "travis": "./node_modules/.bin/eslint --config .eslintrc --ext .jsx,.js \"src/js/**\" && ./node_modules/.bin/jest --runInBand;",
         "storybook": "start-storybook",
         "build-storybook": "build-storybook -c .storybook -o .out",
-        "deploy-storybook": "npm run build-storybook && git subtree push --prefix .out/ usas gh-pages"
+        "deploy-storybook": "git subtree push --prefix .out/ storybook gh-pages"
     },
     "author": "",
     "engines": {
