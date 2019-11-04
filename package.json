@@ -13,7 +13,9 @@
         "dev": "webpack --progress --config ./webpack/webpack.dev.config.js",
         "prod": "webpack --progress --config ./webpack/webpack.prod.config.js",
         "travis": "./node_modules/.bin/eslint --config .eslintrc --ext .jsx,.js \"src/js/**\" && ./node_modules/.bin/jest --runInBand;",
-        "storybook": "start-storybook"
+        "storybook": "start-storybook",
+        "build-storybook": "build-storybook -c .storybook -o .out",
+        "deploy-storybook": "npm run build-storybook && git subtree push --prefix .out/ usas gh-pages"
     },
     "author": "",
     "engines": {
