@@ -6,6 +6,7 @@
 import BaseContract from 'models/v2/awardsV2/BaseContract';
 import CoreLocation from "models/v2/CoreLocation";
 import BaseAwardRecipient from "models/v2/awardsV2/BaseAwardRecipient";
+import BaseParentAwardDetails from 'models/v2/awardsV2/BaseParentAwardDetails';
 import CoreAwardAgency from "models/v2/awardsV2/CoreAwardAgency";
 import BaseContractAdditionalDetails from "models/v2/awardsV2/additionalDetails/BaseContractAdditionalDetails";
 import CorePeriodOfPerformance from 'models/v2/awardsV2/CorePeriodOfPerformance';
@@ -17,17 +18,6 @@ const contract = Object.create(BaseContract);
 contract.populate(mockContract);
 
 describe('BaseContract', () => {
-    describe('monetary values', () => {
-        it('should format the contract amount', () => {
-            expect(contract.amount).toEqual('$234,234');
-        });
-        it('should format the obligated amount with a label', () => {
-            expect(contract.totalObligation).toEqual('$123.23 million');
-        });
-        it('should format the obligated amount', () => {
-            expect(contract.totalObligationFormatted).toEqual('$123,231,313');
-        });
-    });
     describe('agencies', () => {
         it('should only populate an awarding/funding agency if it is available in the API response', () => {
             const emptyAgency = Object.create(CoreAwardAgency);
@@ -62,5 +52,31 @@ describe('BaseContract', () => {
         it('should be an object with CoreExecutiveDetails in its prototype chain', () => {
             expect(Object.getPrototypeOf(contract.executiveDetails)).toEqual(CoreExecutiveDetails);
         });
+    });
+    it(' should create a parent award details property', () => {
+        expect(Object.getPrototypeOf(contract.parentAwardDetails)).toEqual(BaseParentAwardDetails);
+    });
+    describe('Deducing the PSC Type based on the PSC Top Tier Code from the API', () => {
+        it.each([
+            ['PRODUCTS', '4'],
+            ['RESEARCH AND DEVELOPMENT', 'A'],
+            ['SERVICES', 'B'],
+            ['PRODUCTS', undefined]
+        ])(
+            ('psc.toptier_code.description should be %s when %s is the psc.toptier_code.code'),
+            (result, pscCode) => {
+                const mockData = {
+                    ...mockContract,
+                    psc_hierarchy: {
+                        toptier_code: {
+                            code: pscCode,
+                            description: ''
+                        }
+                    }
+                };
+                contract.populate(mockData);
+                expect(contract.psc.pscType.description).toEqual(result);
+            }
+        );
     });
 });

@@ -3,37 +3,99 @@
  * Created by michaelbray on 3/7/17.
  */
 
-import Accounting from 'accounting';
-import * as MoneyFormatter from 'helpers/moneyFormatter';
+import { formatMoneyWithPrecision } from 'helpers/moneyFormatter';
+import { spendingCategoriesByAwardType, asstAwardTypesWithSimilarAwardAmountData } from '../dataMapping/awardsv2/awardAmountsSection';
 
-export const formatAwardAmountRange = (range) => {
-    const min = MoneyFormatter.calculateUnitForSingleValue(range[0]);
-    const max = MoneyFormatter.calculateUnitForSingleValue(range[1]);
-
-    const minValue = Math.round((10 * range[0]) / min.unit) / 10;
-    const maxValue = Math.round((10 * range[1]) / max.unit) / 10;
-
-    const minLabel = `${minValue}${min.unitLabel}`;
-    const maxLabel = `${maxValue}${max.unitLabel}`;
-
-    if (range[0] === 0 && range[1] === 0) {
-        return `$0 & Above`;
+// formats the specific checkboxes
+// options are NPM accounting package options
+export const formatAwardAmountRange = (range, options = 2) => {
+    const minLabel = formatMoneyWithPrecision(range[0], options);
+    const maxLabel = formatMoneyWithPrecision(range[1], options);
+    let label = `${minLabel} - ${maxLabel}`;
+    if (!range[0] && (range[0] !== 0)) {
+        label = `Under ${maxLabel}`;
     }
-    else if (range[0] === 0) {
-        return `Under $${maxLabel}`;
+    if (!range[1] && (range[1] !== 0)) {
+        label = `${minLabel} & Above`;
     }
-    else if (range[1] === 0) {
-        return `$${minLabel} & Above`;
-    }
-    return `$${minLabel} - $${maxLabel}`;
+    return label;
 };
 
-export const ensureInputIsNumeric = (input) => {
-    // Format user input
-    const cleanInput = Accounting.unformat(input.toString());
+/**
+ * This fn & map together are designed to return the appropriate parameters for each award type
+ * for the determineSpendingScenario fn.
 
-    if (isNaN(Number(cleanInput)) || cleanInput === '') {
-        return null;
+* In the fn getAscendingSpendingCategoriesByAwardType:
+ * @awardType is one of grant, loan, other, contract, idv
+ * @awardAmountObj is the object from the api, parsed by our models, keyed by spending-category w/ integer values.
+*/
+
+export const getAscendingSpendingCategoriesByAwardType = (awardType, awardAmountObj) => {
+    if (Object.keys(spendingCategoriesByAwardType).includes(awardType)) {
+        return spendingCategoriesByAwardType[awardType]
+            .map((category) => awardAmountObj[category]);
     }
-    return Number(cleanInput);
+    return [];
 };
+
+// includes logic for grant, loan, insurance, and other award types
+export const determineSpendingScenarioAsstAwards = (awardAmountObj) => {
+    const { _totalObligation, _nonFederalFunding, _totalFunding } = awardAmountObj;
+    // if any of the values are negative, return insufficient data
+    if (_totalObligation < 0 || _nonFederalFunding < 0 || _totalFunding < 0) {
+        return 'insufficientData';
+    }
+    else if (_totalObligation === 0 && _nonFederalFunding === 0 && _totalObligation === 0) {
+        return 'insufficientData';
+    }
+    // if total funding is sum of obligation and non federal funding, return normal
+    else if ((_totalObligation + _nonFederalFunding) === _totalFunding) {
+        return 'normal';
+    }
+    // if totalObligation equals totalFunding or is less than total funding while nonFederalFunding is null or zero
+    else if ((_totalObligation <= _totalFunding) && !_nonFederalFunding) {
+        return 'normal';
+    }
+    return 'insufficientData';
+};
+
+// includes logic for idvs, contracts, loan award types
+export const determineSpendingScenario = (small = 0, bigger = 0, biggest = null) => {
+    const allCategoriesAreInPlay = (small && bigger && biggest);
+
+    if (small === 0 && bigger === 0 && biggest === 0) {
+        return 'insufficientData';
+    }
+    else if (small < 0 || bigger < 0 || biggest < 0) {
+        return 'insufficientData';
+    }
+    else if (allCategoriesAreInPlay) {
+        if (small <= bigger && bigger <= biggest) {
+            return 'normal';
+        }
+        else if (bigger <= small && small <= biggest) {
+            return 'exceedsBigger';
+        }
+        else if (bigger <= biggest && biggest <= small) {
+            return 'exceedsBiggest';
+        }
+    }
+    else if (small >= 0) {
+        if (small <= bigger && bigger > 0) {
+            return 'normal';
+        }
+    }
+
+    return 'insufficientData';
+};
+export const determineSpendingScenarioByAwardType = (awardType, awardAmountObj) => {
+    if (asstAwardTypesWithSimilarAwardAmountData.includes(awardType)) {
+        return determineSpendingScenarioAsstAwards(awardAmountObj);
+    }
+    // Small, bigger, and biggest define the expected ratio between spending categories
+    const [small, bigger, biggest] = getAscendingSpendingCategoriesByAwardType(awardType, awardAmountObj);
+    return determineSpendingScenario(small, bigger, biggest);
+};
+
+export const generatePercentage = (value) => `${(value * 100).toFixed(2)}%`;
+

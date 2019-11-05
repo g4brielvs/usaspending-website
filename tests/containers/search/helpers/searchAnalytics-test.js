@@ -52,7 +52,7 @@ describe('searchAnalytics', () => {
                 toptier_agency: {
                     name: 'Test',
                     abbreviation: 'ABC',
-                    cgac_code: '123'
+                    toptier_code: '123'
                 }
             };
             const agency = searchAnalytics.parseAgency(data);
@@ -64,7 +64,7 @@ describe('searchAnalytics', () => {
                 toptier_agency: {
                     name: 'Test',
                     abbreviation: 'ABC',
-                    cgac_code: '123'
+                    toptier_code: '123'
                 },
                 subtier_agency: {
                     name: 'Sub',
@@ -73,22 +73,6 @@ describe('searchAnalytics', () => {
             };
             const agency = searchAnalytics.parseAgency(data);
             expect(agency).toEqual('Sub/2222 - Test/123');
-        });
-        it('should return the office information for an office agency', () => {
-            const data = {
-                agencyType: 'office',
-                toptier_agency: {
-                    name: 'Test',
-                    abbreviation: 'ABC',
-                    cgac_code: '123'
-                },
-                office_agency: {
-                    name: 'Office',
-                    aac_code: '333'
-                }
-            };
-            const agency = searchAnalytics.parseAgency(data);
-            expect(agency).toEqual('Office/333 - Test/123');
         });
         it('should return null for an invalid or unexpected agency object structure', () => {
             const bad = {

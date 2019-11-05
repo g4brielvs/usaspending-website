@@ -6,6 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as Icons from 'components/sharedComponents/icons/Icons';
+import AwardSection from '../AwardSection';
 
 const propTypes = {
     awardingAgency: PropTypes.object,
@@ -34,22 +35,20 @@ export default class AgencyRecipient extends React.Component {
     }
     render() {
         let additionalInfoLink = null;
-        if (this.props.category === 'contract' || this.props.category === 'idv') {
-            additionalInfoLink = (
-                <div>
-                    <button
-                        className="agency-recipient__awarding-info"
-                        onClick={this.jumpToAdditionalInfo}>
-                        <span className="agency-recipient__awarding-icon">
-                            <Icons.ArrowDown />
-                        </span>
-                        View additional information
-                    </button>
-                </div>
-            );
-        }
+        additionalInfoLink = (
+            <div>
+                <button
+                    className="agency-recipient__awarding-info"
+                    onClick={this.jumpToAdditionalInfo}>
+                    <span className="agency-recipient__awarding-icon">
+                        <Icons.ArrowDown />
+                    </span>
+                    View additional information
+                </button>
+            </div>
+        );
         return (
-            <div className="award__col agency-recipient">
+            <AwardSection type="column" className="agency-recipient">
                 <div className="agency-recipient__wrapper">
                     <div className="agency-recipient__awarding">
                         <div className="agency-recipient__title">Awarding Agency</div>
@@ -67,7 +66,7 @@ export default class AgencyRecipient extends React.Component {
                     </div>
                 </div>
                 {additionalInfoLink}
-            </div>
+            </AwardSection>
         );
     }
 }

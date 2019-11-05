@@ -44,7 +44,6 @@ export const mockCgacApi = {
     results: [
         {
             id: 123,
-            office_agency: null,
             subtier_agency: {
                 abbreviation: 'FNS',
                 name: 'Food and Nutrition Service',
@@ -52,7 +51,7 @@ export const mockCgacApi = {
             },
             toptier_agency: {
                 abbreviation: '',
-                cgac_code: '1200',
+                toptier_code: '1200',
                 name: 'Under Secretary for Rural Development'
             },
             toptier_flag: true
@@ -63,7 +62,6 @@ export const mockCgacApi = {
 export const mockCgacLoad = {
     agency: {
         id: 123,
-        office_agency: null,
         subtier_agency: {
             abbreviation: 'FNS',
             name: 'Food and Nutrition Service',
@@ -71,7 +69,7 @@ export const mockCgacLoad = {
         },
         toptier_agency: {
             abbreviation: '',
-            cgac_code: '1200',
+            toptier_code: '1200',
             name: 'Under Secretary for Rural Development'
         },
         toptier_flag: true

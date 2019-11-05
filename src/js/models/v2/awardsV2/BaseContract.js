@@ -2,10 +2,10 @@
  * BaseContract.js
  * Created by David Trinh 10/9/18
  */
-
 import * as MoneyFormatter from 'helpers/moneyFormatter';
 import CoreLocation from 'models/v2/CoreLocation';
 import BaseAwardRecipient from './BaseAwardRecipient';
+import BaseParentAwardDetails from './BaseParentAwardDetails';
 import CoreAwardAgency from './CoreAwardAgency';
 import BaseContractAdditionalDetails from './additionalDetails/BaseContractAdditionalDetails';
 import CoreAward from './CoreAward';
@@ -14,10 +14,47 @@ import CorePeriodOfPerformance from '../awardsV2/CorePeriodOfPerformance';
 
 const BaseContract = Object.create(CoreAward);
 
+const emptyPscObj = {
+    base_code: {},
+    midtier_code: {},
+    subtier_code: {},
+    toptier_code: {}
+};
+
+const getPscTypeByToptierCode = (toptierCode) => {
+    // Undefined toptierCode code is always a product
+    if (toptierCode === undefined) return 'PRODUCTS';
+
+    const topTierCodeAsInt = parseInt(toptierCode, 10);
+    if (isNaN(topTierCodeAsInt)) {
+        if (toptierCode && toptierCode[0].toUpperCase() === 'A') {
+            return 'RESEARCH AND DEVELOPMENT';
+        }
+        // all letters other than 'A' are services
+        return 'SERVICES';
+    }
+    // all numbers are PRODUCTS
+    return 'PRODUCTS';
+};
+
+const deducePscType = (acc, keyValueArray) => {
+    const [key, value] = keyValueArray;
+    const description = getPscTypeByToptierCode(value.code);
+    if (key === 'toptier_code') {
+        const pscType = { code: "--", description };
+        if (description === 'RESEARCH AND DEVELOPMENT') {
+            // replace toptier_code w/ psc type
+            return { ...acc, pscType };
+        }
+        return { ...acc, pscType, [key]: value };
+    }
+    return { ...acc, [key]: value };
+};
+
 BaseContract.populate = function populate(data) {
     // reformat some fields that are required by the CoreAward
     const coreData = {
-        id: data.piid,
+        id: data.id,
         generatedId: data.generated_unique_award_id,
         type: data.type,
         typeDescription: data.type_description,
@@ -27,7 +64,10 @@ BaseContract.populate = function populate(data) {
         subawardCount: data.subaward_count,
         totalObligation: data.total_obligation,
         baseExercisedOptions: data.base_exercised_options,
-        dateSigned: data.date_signed
+        dateSigned: data.date_signed,
+        baseAndAllOptions: data.base_and_all_options,
+        naics: data.naics_hierarchy,
+        psc: Object.entries(data.psc_hierarchy).reduce(deducePscType, emptyPscObj)
     };
     this.populateCore(coreData);
 
@@ -71,9 +111,9 @@ BaseContract.populate = function populate(data) {
         const awardingAgencyData = {
             id: data.awarding_agency.id,
             toptierName: data.awarding_agency.toptier_agency.name,
-            toptierAbbr: data.awarding_agency.toptier_agency.abbreviation,
+            toptierAbbr: data.awarding_agency.toptier_agency.abbreviation || '',
             subtierName: data.awarding_agency.subtier_agency.name,
-            subtierAbbr: data.awarding_agency.subtier_agency.abbreviation,
+            subtierAbbr: data.awarding_agency.subtier_agency.abbreviation || '',
             officeName: data.awarding_agency.office_agency_name
         };
         const awardingAgency = Object.create(CoreAwardAgency);
@@ -86,10 +126,11 @@ BaseContract.populate = function populate(data) {
 
     if (data.funding_agency) {
         const fundingAgencyData = {
+            id: data.funding_agency.id,
             toptierName: data.funding_agency.toptier_agency.name,
-            toptierAbbr: data.funding_agency.toptier_agency.abbreviation,
+            toptierAbbr: data.funding_agency.toptier_agency.abbreviation || '',
             subtierName: data.funding_agency.subtier_agency.name,
-            subtierAbbr: data.funding_agency.subtier_agency.abbreviation,
+            subtierAbbr: data.funding_agency.subtier_agency.abbreviation || '',
             officeName: data.funding_agency.office_agency_name
         };
         const fundingAgency = Object.create(CoreAwardAgency);
@@ -106,14 +147,17 @@ BaseContract.populate = function populate(data) {
         this.additionalDetails = additionalDetails;
     }
 
+    const parentAwardDetails = Object.create(BaseParentAwardDetails);
+    parentAwardDetails.populateCore(data.parent_award || {});
+    this.parentAwardDetails = parentAwardDetails;
+
     const executiveDetails = Object.create(CoreExecutiveDetails);
     executiveDetails.populateCore(data.executive_details);
     this.executiveDetails = executiveDetails;
 
-    this.parentAward = data.parent_award_piid || '--';
     this.pricing = data.latest_transaction_contract_data || '--';
-
     this._amount = parseFloat(data.base_and_all_options) || 0;
+    this.piid = data.piid || '';
 };
 
 

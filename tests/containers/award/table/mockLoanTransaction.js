@@ -18,7 +18,7 @@ const items = {
         awarding_agency: {
             id: 802,
             toptier_agency: {
-                cgac_code: "075",
+                toptier_code: "075",
                 abbreviation: "HHS",
                 name: "Department of Health and Human Services"
             },
@@ -26,18 +26,16 @@ const items = {
                 subtier_code: "7530",
                 abbreviation: "",
                 name: "Centers for Medicare and Medicaid Services"
-            },
-            office_agency: null
+            }
         },
         funding_agency: {
             id: 1404,
             toptier_agency: {
-                cgac_code: "480",
+                toptier_code: "480",
                 abbreviation: "WW1CC",
                 name: "World War I Centennial Commission"
             },
-            subtier_agency: null,
-            office_agency: null
+            subtier_agency: null
         },
         recipient: {
             legal_entity_id: 113704139,

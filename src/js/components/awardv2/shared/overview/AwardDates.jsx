@@ -1,107 +1,162 @@
 /**
- * AwardDates.jsx
- * Created by David Trinh 11/14/2018
+ * IdvDates.jsx now AwardDates
+ * Created by Lizzie Salita 12/10/18
  **/
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as TimeRangeHelper from 'helpers/timeRangeHelper';
 import moment from 'moment';
+import * as TimeRangeHelper from 'helpers/timeRangeHelper';
+import { getToolTipBySectionAndAwardType } from 'dataMapping/awardsv2/tooltips';
+import { titles } from 'dataMapping/awardsv2/datesSection';
 
-import * as Icons from 'components/sharedComponents/icons/Icons';
+import InfoTooltip from '../InfoTooltip';
+import AwardSection from '../AwardSection';
 
 const propTypes = {
-    overview: PropTypes.object
+    dates: PropTypes.object,
+    awardType: PropTypes.string
 };
 
 export default class AwardDates extends React.Component {
-    render() {
-        const award = this.props.overview;
-        const timeRange = TimeRangeHelper.convertDatesToRange(award.periodOfPerformance._endDate, award.periodOfPerformance._potentialEndDate);
-        let popDate = timeRange || '--';
-
-        const unformattedEndDate = award.periodOfPerformance._endDate;
-        const unformattedAwardDate = award._dateSigned;
-        const unformattedPotentialEndDate = award.periodOfPerformance._potentialEndDate;
-
-        let dateLabel = "";
-        let timeStyle = {
-            display: 'none'
-        };
-
-        let lineStyle = {
-            display: 'none'
-        };
-
-        let lineContentStyle = {
-            display: 'none'
-        };
-
-        if (unformattedEndDate && unformattedAwardDate && unformattedPotentialEndDate) {
-            dateLabel = "Remains";
+    timelineInfo(startDate, endDate) {
+        let timeline = (
+            <div className="timeline" />
+        );
+        let remainingText = '';
+        let remainingLabel = '';
+        if (startDate && endDate) {
             const today = moment();
-            const todayMarker = Math.round(((today.diff(unformattedAwardDate, "days")) / (unformattedPotentialEndDate.diff(unformattedAwardDate, "days"))) * 100);
-            const totalDate = (unformattedPotentialEndDate.diff(unformattedAwardDate, "days"));
-            const timePercentage = Math.round((unformattedEndDate.diff(unformattedAwardDate, 'days') / totalDate) * 100);
+            const totalTime = endDate.diff(startDate, 'days');
+            const remainingDays = endDate.diff(today, 'days');
 
-            timeStyle = {
-                width: `${timePercentage}%`,
-                backgroundColor: '#9b9b9b'
-            };
-
-            lineStyle = {
-                position: 'absolute',
-                left: `${todayMarker}%`,
-                border: 'solid 1px rgba(245, 166, 35, 0.5)',
-                height: '13px',
-                top: '-10px'
-            };
-
-            lineContentStyle = {
-                position: 'absolute',
-                textTransform: 'uppercase',
-                left: `${todayMarker + 2}%`,
-                top: '-11px',
-                color: 'rgb(245, 166, 35)',
-                fontSize: '8px'
-            };
-
-            if (timePercentage === 100) {
-                lineStyle.display = 'none';
-                popDate = '';
-                lineContentStyle.display = 'none';
-                dateLabel = 'Completed';
+            let remainingPercent = 0;
+            if (remainingDays > 0) {
+                remainingText = TimeRangeHelper.convertDatesToRange(today, endDate);
+                remainingLabel = 'Remain';
+                remainingPercent = Math.round((remainingDays / totalTime) * 100);
             }
+            else {
+                remainingLabel = 'Completed';
+            }
+            const elapsedPercent = 100 - remainingPercent;
+
+            const timelineStyle = {
+                width: `${elapsedPercent}%`
+            };
+            const todayStyle = {
+                left: `${elapsedPercent + 2}%`
+            };
+            const lineStyle = {
+                left: `${elapsedPercent}%`
+            };
+
+            timeline = (
+                <div
+                    role="figure"
+                    aria-labelledby="timeline-caption"
+                    className="timeline">
+                    <div
+                        style={timelineStyle}
+                        className="timeline__wrapper">
+                        <div
+                            style={lineStyle}
+                            className="timeline__today-line" />
+                        <div
+                            style={todayStyle}
+                            className="timeline__today">
+                            Today
+                        </div>
+                    </div>
+                    <p
+                        className="hide"
+                        id="timeline-caption">
+                        A progress bar showing that as of today, {elapsedPercent}% of the total time from this
+                        award&apos;s start date to end date has elapsed, and {remainingPercent}% remains.
+                    </p>
+                </div>
+            );
         }
-        // TODO: handle Financial Assistance awards, which have no potential end date
+
+        return { timeline, remainingText, remainingLabel };
+    }
+
+    datesByAwardType() {
+        const { awardType, dates } = this.props;
+        const startDate = dates._startDate;
+        let endDate = dates._endDate;
+        if (awardType === 'contract' || awardType === 'definitive contract') {
+            endDate = dates._potentialEndDate;
+        }
+        return { startDate, endDate };
+    }
+
+    titles() {
+        const { awardType } = this.props;
+        if (!awardType) return ['', '', ''];
+        return [
+            titles[awardType][0],
+            titles[awardType][1],
+            titles[awardType][2]
+        ];
+    }
+
+    render() {
+        const { dates, awardType } = this.props;
+        const { startDate, endDate } = this.datesByAwardType();
+        const { timeline, remainingText, remainingLabel } = this.timelineInfo(startDate, endDate);
+        const tooltipInfo = getToolTipBySectionAndAwardType('dates', awardType);
+        const datesTitles = this.titles();
 
         return (
-            <div className="award-amountdates__amounts">
-                <div className="award-amountdates__heading">
-                    <span className="award-amountdates__heading-title">Dates <span className="award-amountdates__heading-info award-amountdates__heading-info_hide"><Icons.InfoCircle /></span></span> <span className="award-amountdates__heading-remaining">{popDate}<span className="award-amountdates__heading-remaining-text">{dateLabel}</span></span>
+            <AwardSection type="column">
+                <div className="award-dates">
+                    <div className="award-dates__heading">
+                        <div className="award-overview__title award-dates__title">
+                            Dates
+                            <InfoTooltip left>
+                                {tooltipInfo}
+                            </InfoTooltip>
+                        </div>
+                        <div className="award-dates__remaining">
+                            {remainingText}
+                            <span className="award-dates__remaining award-dates__remaining_label">
+                                {remainingLabel}
+                            </span>
+                        </div>
+                    </div>
+                    {timeline}
+                    <div className="award-dates__row">
+                        <div className="award-dates__label">
+                            {datesTitles[0]}
+                        </div>
+                        <div className="award-dates__date">
+                            {dates.startDateLong || 'not provided'}
+                        </div>
+                    </div>
+                    <div className="award-dates__row">
+                        <div className="award-dates__label">
+                            {datesTitles[1]}
+                        </div>
+                        <div className="award-dates__date">
+                            {dates.endDateLong || 'not provided'}
+                        </div>
+                    </div>
+                    {
+                        datesTitles[2] &&
+                        <div className="award-dates__row">
+                            <div className="award-dates__label">
+                                {datesTitles[2]}
+                            </div>
+                            <div className="award-dates__date">
+                                {dates.potentialEndDateLong || 'not provided'}
+                            </div>
+                        </div>
+                    }
                 </div>
-                <div className="award-amountdates__stats-dates">
-                    <div className="award-amountdates__stats-inner" style={timeStyle}>
-                        <div style={lineStyle} />
-                        <div style={lineContentStyle}>Today</div>
-                    </div>
-                </div>
-                <div className="award-amountdates__details-container">
-                    <div className="award-amountdates__details award-amountdates__details_indent">
-                        <span>Awarded on</span> <span>{award.dateSignedLong || '--'}</span>
-                    </div>
-                    <div className="award-amountdates__details award-amountdates__details_indent">
-                        <span>Last Modified on</span> <span>{award.periodOfPerformance.lastModifiedDateLong || '--'}</span>
-                    </div>
-                    <div className="award-amountdates__details">
-                        <span><span className="award-amountdates__circle_dark-gray" />Current Completion Date</span> <span>{award.periodOfPerformance.endDateLong || '--'}</span>
-                    </div>
-                    <div className="award-amountdates__details">
-                        <span><span className="award-amountdates__circle_light-gray" />Potential Completion Date</span> <span>{award.periodOfPerformance.potentialEndDateLong || '--'}</span>
-                    </div>
-                </div>
-            </div>
+            </AwardSection>
         );
     }
 }
+
 AwardDates.propTypes = propTypes;

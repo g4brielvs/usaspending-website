@@ -7,13 +7,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { map } from 'lodash';
 import { formatNumber } from 'helpers/moneyFormatter';
-import InfoTooltip from '../../idv/InfoTooltip';
-import { summaryRelatedAwardsInfo } from '../../idv/InfoTooltipContent';
+import InfoTooltip from '../../shared/InfoTooltip';
+import { summaryRelatedAwardsInfoIdv, summaryRelatedAwardsInfo } from '../../shared/InfoTooltipContent';
+import AwardSection from '../AwardSection';
 
 const propTypes = {
     overview: PropTypes.object,
     jumpToSection: PropTypes.func,
     setRelatedAwardsTab: PropTypes.func,
+    jumpToSubAwardHistoryTable: PropTypes.func,
     counts: PropTypes.object
 };
 
@@ -41,31 +43,51 @@ export default class RelatedAwards extends React.Component {
         this.props.setRelatedAwardsTab('grandchild_awards');
         this.props.jumpToSection('referenced-awards');
     }
+    jumpToAwardHistoryTableSubAwardsTab = () => {
+        this.props.jumpToSubAwardHistoryTable('subaward');
+        this.props.jumpToSection('award-history');
+    }
 
     referencedAwardCounts() {
-        const { counts } = this.props;
+        const { counts, overview } = this.props;
         if (!counts) return null;
-        const childData = [
-            {
-                count: formatNumber(counts.child_awards),
-                name: 'Child Award',
-                funcName: 'ChildAwards',
-                glossary: 'contract'
-            },
-            {
-                count: formatNumber(counts.child_idvs),
-                name: 'Child IDV',
-                funcName: 'ChildIDVs',
-                glossary: 'IDV'
-            },
-            {
-                count: formatNumber(counts.grandchild_awards),
-                name: 'Grandchild Award',
-                funcName: 'GrandchildAwards',
-                glossary: 'award'
-            }
-        ];
-
+        let childData = [];
+        if (overview.category === 'idv') {
+            childData = [
+                {
+                    count: formatNumber(counts.child_awards),
+                    name: 'Child Award',
+                    funcName: 'jumpToReferencedAwardsTableChildAwardsTab',
+                    glossary: 'contract',
+                    postText: counts.child_awards === 1 ? 'Order' : 'Orders'
+                },
+                {
+                    count: formatNumber(counts.child_idvs),
+                    name: 'Child IDV',
+                    funcName: 'jumpToReferencedAwardsTableChildIDVsTab',
+                    glossary: 'IDV',
+                    postText: counts.child_idvs === 1 ? 'Order' : 'Orders'
+                },
+                {
+                    count: formatNumber(counts.grandchild_awards),
+                    name: 'Grandchild Award',
+                    funcName: 'jumpToReferencedAwardsTableGrandchildAwardsTab',
+                    glossary: 'award',
+                    postText: counts.grandchild_awards === 1 ? 'Order' : 'Orders'
+                }
+            ];
+        }
+        else {
+            childData = [
+                {
+                    count: formatNumber(counts.subawardCount),
+                    name: 'Sub-Awards',
+                    funcName: 'jumpToAwardHistoryTableSubAwardsTab',
+                    glossary: 'contract',
+                    postText: ''
+                }
+            ];
+        }
         return (
             <div className="related-awards__label related-awards__label_count">
                 <div className="related-awards__counts">
@@ -73,7 +95,7 @@ export default class RelatedAwards extends React.Component {
                         <button
                             key={`${data.glossary}count`}
                             className="award-viz__button"
-                            onClick={this[`jumpToReferencedAwardsTable${data.funcName}Tab`]}>
+                            onClick={this[`${data.funcName}`]}>
                             {data.count}
                         </button>
                     ))}
@@ -81,7 +103,7 @@ export default class RelatedAwards extends React.Component {
                 <div className="related-awards__description">
                     {map(childData, (data) => (
                         <div key={`${data.glossary}text`} className="related-awards__text">
-                            {data.name} {data.count === 1 ? 'Order' : 'Orders'}
+                            {data.name} {data.postText}
                         </div>
                     ))}
                 </div>
@@ -89,36 +111,55 @@ export default class RelatedAwards extends React.Component {
         );
     }
 
+    tooltipInfo() {
+        const { overview } = this.props;
+        const awardType = overview.category;
+        if (awardType === 'idv') return summaryRelatedAwardsInfoIdv;
+        if (awardType === 'contract') return summaryRelatedAwardsInfo;
+        if (awardType === 'definitive contract') return null;
+        if (awardType === 'grant') return null;
+        if (awardType === 'loan') return null;
+        if (awardType === 'direct payment') return null;
+        if (awardType === 'other') return null;
+
+        return null;
+    }
+
     render() {
+        const { overview } = this.props;
+        const tooltipInfo = this.tooltipInfo();
+        const awardTitle = overview.category === 'idv' ? 'Parent Award' : 'Parent IDV';
         let parentLink = 'N/A';
-        if (this.props.overview.parentAward && this.props.overview.parentId) {
+        if (overview.parentAwardDetails.piid && overview.parentAwardDetails.awardId) {
             parentLink = (
                 <a
                     className="related-awards__link"
-                    href={`#/award/${this.props.overview.parentId}`}>
-                    {this.props.overview.parentAward}
+                    href={`#/award/${overview.parentAwardDetails.awardId}`}>
+                    {overview.parentAwardDetails.piid}
                 </a>
             );
         }
 
         return (
-            <div className="award-viz related-awards">
-                <div className="award-overview__title related-awards__title">
-                    Related Awards
-                    <InfoTooltip left>
-                        {summaryRelatedAwardsInfo}
-                    </InfoTooltip>
-                </div>
-                <div className="related-awards__parent">
-                    <div className="related-awards__label">
-                        Parent Award
+            <AwardSection type="column">
+                <div className="award-viz related-awards">
+                    <div className="award-overview__title related-awards__title">
+                        Related Awards
+                        <InfoTooltip left>
+                            {tooltipInfo}
+                        </InfoTooltip>
                     </div>
-                    {parentLink}
+                    <div className="related-awards__parent">
+                        <div className="related-awards__label">
+                            {awardTitle}
+                        </div>
+                        {parentLink}
+                    </div>
+                    <div className="related-awards__children">
+                        {this.referencedAwardCounts()}
+                    </div>
                 </div>
-                <div className="related-awards__children">
-                    {this.referencedAwardCounts()}
-                </div>
-            </div>
+            </AwardSection>
         );
     }
 }

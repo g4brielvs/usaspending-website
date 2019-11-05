@@ -5,7 +5,6 @@ export const mockContract = {
     description: 'MANAGEMENT AND OPERATION OF SANDIA NATIONAL LABORATORIES BY SANDIA CORPORATION, CONTRACT NO. DE-AC04-94AL85000',
     piid: '34242',
     generated_unique_award_id: '6657452ew23',
-    parent_award_piid: '1301',
     date_signed: '2005-02-18',
     total_obligation: 123231313,
     base_and_all_options: 234234.00,
@@ -118,8 +117,25 @@ export const mockContract = {
             name: 'Jake Doe',
             amount: null
         }]
+    },
+    psc_hierarchy: {},
+    naics_hierarchy: {},
+    parent_award: {
+        agency_id: '123',
+        agency_name: 'Department of Justice',
+        award_id: 5738,
+        generated_unique_award_id: '45',
+        idv_type_description: 'test',
+        multiple_or_single_aw_desc: 'something',
+        piid: '345',
+        type_of_idc_description: 'r3w'
     }
+};
 
+export const mockGrant = {
+    ...mockContract,
+    _totalFunding: 1130000000, // 1.13 Billion
+    _nonFederalFunding: 1130000 // 1.13 Million
 };
 
 export const mockLoan = {
@@ -129,15 +145,14 @@ export const mockLoan = {
     description: 'MANAGEMENT AND OPERATION OF SANDIA NATIONAL LABORATORIES BY SANDIA CORPORATION, CONTRACT NO. DE-AC04-94AL85000',
     fain: '342332',
     generated_unique_award_id: '6657452ew23',
-    parent_award_piid: '1301',
     date_signed: '2005-02-18',
     cfda_objectives: 'Testing testing testing',
     cfda_number: '0.434',
     cfda_title: 'Flood Insurance',
     total_obligation: 123231313,
     subaward_count: 23423343,
-    total_subsidy_cost: 123,
-    total_loan_value: 24343,
+    total_subsidy_cost: 1290000.00, // subsidy 1.3 M
+    total_loan_value: 2497000000.00, // faceValue 2.5 B
     total_subaward_amount: 32423342,
     awarding_agency: {
         id: '323',
@@ -193,7 +208,24 @@ export const mockLoan = {
         country_name: 'UNITED STATES',
         location_country_code: null,
         congressional_code: null
-    }
+    },
+    cfda_info: [
+        {
+            cfda_number: 0.3,
+            total_funding_amount: 2,
+            cfda_title: 'bigger'
+        },
+        {
+            cfda_number: 0.2,
+            total_funding_amount: 1,
+            cfda_title: 'smaller'
+        },
+        {
+            cfda_number: 0.1,
+            total_funding_amount: 0,
+            cfda_title: 'zero'
+        }
+    ]
 };
 
 export const mockIdv = {
@@ -202,8 +234,6 @@ export const mockIdv = {
     type_description: 'Blanket Purchase Agreement',
     piid: 'W31P4Q15A0024',
     generated_unique_award_id: '6657452ew23',
-    parent_award_piid: '1301',
-    parent_generated_unique_award_id: '',
     description: 'ewraijwrw',
     date_signed: '2005-02-18',
     awarding_agency: {
@@ -242,6 +272,7 @@ export const mockIdv = {
         business_categories: ['Testing 1', 'Testing 2']
     },
     parent_award: {
+        generated_unique_award_id: '',
         award_id: 5738,
         idv_type_description: 'test',
         type_of_idc_description: 'r3w',
@@ -362,7 +393,6 @@ export const mockAwardAmounts = {
     grandchild_award_base_and_all_options_value: 53493660.55,
     child_award_total_obligation: 811660.51,
     grandchild_award_total_obligation: 811660.51
-
 };
 
 export const mockReferencedAwards = {
@@ -426,12 +456,33 @@ export const mockFederalAccountFunding = {
 export const mockAwardFundingMetaData = {
     total_transaction_obligated_amount: 42946881.56,
     awarding_agency_count: 27,
+    funding_agency_count: 28,
     federal_account_count: 47
 };
 
-export const mockFileDownloadResponse = {
+export const mockFileDownloadResponseIdv = {
     total_size: 35.055,
-    file_name: `012_account_balances_20180613140845.zip`,
+    file_name: `idv.zip`,
+    total_rows: 652,
+    total_columns: 27,
+    url: `S3/path_to/bucket/012_account_balances_20180613140845.zip`,
+    status: `finished`,
+    seconds_elapsed: `10.061132`
+};
+
+export const mockFileDownloadResponseContract = {
+    total_size: 35.055,
+    file_name: `contract.zip`,
+    total_rows: 652,
+    total_columns: 27,
+    url: `S3/path_to/bucket/012_account_balances_20180613140845.zip`,
+    status: `finished`,
+    seconds_elapsed: `10.061132`
+};
+
+export const mockFileDownloadResponseAssistance = {
+    total_size: 35.055,
+    file_name: `assistance.zip`,
     total_rows: 652,
     total_columns: 27,
     url: `S3/path_to/bucket/012_account_balances_20180613140845.zip`,
@@ -498,7 +549,7 @@ export const mockIdvActivity = {
         awarded_amount: 10000.0,
         period_of_performance_start_date: "2016-01-14",
         parent_award_id: 69001298,
-        parent_generated_unique_award_id: "CONT_IDV_V509P6176_3600",
+        parent_award: {},
         parent_award_piid: "V509P6176",
         piid: "INR17PA00008",
         recipient_name: "Booz Allen Hamilton",
@@ -514,7 +565,7 @@ export const mockIdvActivity = {
         awarded_amount: 20000.0,
         period_of_performance_start_date: "2014-10-01",
         parent_award_id: 69001298,
-        parent_generated_unique_award_id: "CONT_IDV_V509P6176_3600",
+        parent_award: {},
         parent_award_piid: "V509P6176",
         piid: "GS33FCA001",
         recipient_name: "Booz Allen Hamilton",
@@ -530,7 +581,7 @@ export const mockIdvActivity = {
         obligated_amount: 12000.0,
         period_of_performance_start_date: "2014-04-07",
         parent_award_id: 69001298,
-        parent_generated_unique_award_id: "CONT_IDV_V509P6176_3600",
+        parent_award: {},
         parent_award_piid: "V509P6176",
         piid: "AG3151B140009",
         recipient_name: "Booz Allen Hamilton",

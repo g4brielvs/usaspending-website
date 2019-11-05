@@ -75,7 +75,7 @@ export const mockAward = {
                 "id": 915,
                 "toptier_flag": true,
                 "toptier_agency": {
-                    "cgac_code": "089",
+                    "toptier_code": "089",
                     "abbreviation": "DOE",
                     "name": "Department of Energy"
                 },
@@ -83,14 +83,13 @@ export const mockAward = {
                     "subtier_code": "8900",
                     "abbreviation": "DOE",
                     "name": "Department of Energy"
-                },
-                "office_agency": null
+                }
             },
             "funding_agency": {
                 "id": 915,
                 "toptier_flag": true,
                 "toptier_agency": {
-                    "cgac_code": "089",
+                    "toptier_code": "089",
                     "abbreviation": "DOE",
                     "name": "Department of Energy"
                 },
@@ -98,8 +97,7 @@ export const mockAward = {
                     "subtier_code": "8900",
                     "abbreviation": "DOE",
                     "name": "Department of Energy"
-                },
-                "office_agency": null
+                }
             },
             "recipient": {
                 "legal_entity_id": 106877,

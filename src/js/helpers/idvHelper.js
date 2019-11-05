@@ -1,5 +1,5 @@
 /**
-  * searchHelper.js
+  * idvHelper.js
   * Created by Lizzie Salita 2/14/19
   **/
 
@@ -10,7 +10,7 @@ export const fetchReferencedAwards = (params) => {
     const source = CancelToken.source();
     return {
         promise: Axios.request({
-            url: 'v2/awards/idvs/awards/',
+            url: 'v2/idvs/awards/',
             baseURL: kGlobalConstants.API,
             method: 'post',
             data: params,
@@ -40,9 +40,10 @@ export const fetchReferencedAwardsCounts = (params) => {
 
 export const fetchAwardAmounts = (awardId) => {
     const source = CancelToken.source();
+    const parsedAwardId = encodeURI(awardId);
     return {
         promise: Axios.request({
-            url: `v2/awards/idvs/amounts/${awardId}/`,
+            url: `v2/idvs/amounts/${parsedAwardId}/`,
             baseURL: kGlobalConstants.API,
             method: 'get',
             cancelToken: source.token
@@ -58,7 +59,7 @@ export const fetchAwardFedAccountFunding = (params) => {
     const source = CancelToken.source();
     return {
         promise: Axios.request({
-            url: 'v2/awards/idvs/funding/',
+            url: 'v2/idvs/funding/',
             baseURL: kGlobalConstants.API,
             method: 'post',
             data: params,
@@ -70,11 +71,11 @@ export const fetchAwardFedAccountFunding = (params) => {
     };
 };
 
-export const fetchAwardFundingSummary = (awardId) => {
+export const fetchIdvFundingSummary = (awardId) => {
     const source = CancelToken.source();
     return {
         promise: Axios.request({
-            url: 'v2/awards/idvs/funding_rollup/',
+            url: 'v2/idvs/funding_rollup/',
             baseURL: kGlobalConstants.API,
             method: "post",
             data: { award_id: awardId },
@@ -105,11 +106,11 @@ export const fetchIdvDownloadFile = (awardId) => {
     };
 };
 
-export const fetchAwardFederalAccounts = (data) => {
+export const fetchIdvFederalAccounts = (data) => {
     const source = CancelToken.source();
     return {
         promise: Axios.request({
-            url: 'v2/awards/idvs/accounts/',
+            url: 'v2/idvs/accounts/',
             baseURL: kGlobalConstants.API,
             method: 'post',
             data,
@@ -125,7 +126,7 @@ export const fetchIdvActivity = (data) => {
     const source = CancelToken.source();
     return {
         promise: Axios.request({
-            url: 'v2/awards/idvs/activity/',
+            url: 'v2/idvs/activity/',
             baseURL: kGlobalConstants.API,
             method: 'post',
             data,

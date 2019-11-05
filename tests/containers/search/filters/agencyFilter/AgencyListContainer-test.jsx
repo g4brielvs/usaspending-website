@@ -5,13 +5,11 @@
 
 import React from 'react';
 import { mount, shallow } from 'enzyme';
-import sinon from 'sinon';
 import { OrderedMap } from 'immutable';
 
 import AgencyListContainer from 'containers/search/filters/AgencyListContainer';
 
-import { mockAgencies } from './mockAgencies';
-import { mockSecondaryResults, mockFemaResults, mockResults } from './mockLocalSearch';
+import { mockSecondaryResults, mockFemaResults, mockResults, mockNullAgencyResults } from './mockLocalSearch';
 
 jest.mock('helpers/searchHelper', () => require('../searchHelper'));
 jest.mock('js-search', () => require('./mockLocalSearch'));
@@ -63,7 +61,7 @@ describe('AgencyListContainer', () => {
 
         it('should make an autocomplete API call when more than one character has '
             + 'been input in the autocomplete text field', async () => {
-             // setup the agency list container and call the function to type a single letter
+            // setup the agency list container and call the function to type a single letter
             const agencyListContainer = setup(initialFilters);
             agencyListContainer.instance().parseAutocompleteAgencies = jest.fn();
             agencyListContainer.instance().queryAutocompleteAgencies('ABC');
@@ -94,7 +92,7 @@ describe('AgencyListContainer', () => {
                     id: 14,
                     toptier_flag: true,
                     toptier_agency: {
-                        cgac_code: "004",
+                        toptier_code: "004",
                         abbreviation: "GPO",
                         name: "Government Publishing Office"
                     },
@@ -102,8 +100,7 @@ describe('AgencyListContainer', () => {
                         subtier_code: "0400",
                         abbreviation: "",
                         name: "Government Publishing Office"
-                    },
-                    office_agency: null
+                    }
                 }
             ]);
 
@@ -118,7 +115,7 @@ describe('AgencyListContainer', () => {
             expect(agencyListContainer.state().autocompleteAgencies.length).toEqual(1);
 
             agencyListContainer.instance().clearAutocompleteSuggestions();
-            expect(agencyListContainer.state().autocompleteAgencies.length).toEqual(0);            
+            expect(agencyListContainer.state().autocompleteAgencies.length).toEqual(0);
         });
     });
 
@@ -149,6 +146,18 @@ describe('AgencyListContainer', () => {
             expect(container.state().autocompleteAgencies[1].title).toEqual('Department XYZ (XYZ)');
             expect(container.state().autocompleteAgencies[2].title).toEqual('DEF Agency (DEF)');
             expect(container.state().autocompleteAgencies[2].subtitle).toEqual('Sub-Agency of Department ABC (ABC)');
+        });
+        it('should not contain null agency abbreviations', async () => {
+            const container = setupShallow(initialFilters);
+            container.setState({
+                agencySearchString: 'abc'
+            });
+
+            container.instance().parseAutocompleteAgencies(mockNullAgencyResults);
+
+            // Agency titles/subtitles should not have abbreviations.
+            expect(container.state().autocompleteAgencies[0].title).toEqual('QQ Agency ');
+            expect(container.state().autocompleteAgencies[0].subtitle).toEqual('Sub-Agency of Department QQ ');
         });
         it('should not change the order of results when searching for FEMA', async () => {
             const container = setupShallow(initialFilters);

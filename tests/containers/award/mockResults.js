@@ -21,7 +21,6 @@ export const mockApi = {
     "certified_date": "2018-02-23",
     "create_date": "2018-02-03T18:54:06.983782Z",
     "update_date": "2018-03-01T01:57:23.050458Z",
-    "parent_award_piid": null,
     "generated_unique_award_id": "CONT_AW_8900_-NONE-_DEAC0500OR22725_-NONE-",
     "is_fpds": true,
     "transaction_unique_id": "8900_-NONE-_DEAC0500OR22725_1033_-NONE-_0",
@@ -37,7 +36,7 @@ export const mockApi = {
             "toptier_agency_id": 78,
             "create_date": "2018-01-31T19:53:06.173880Z",
             "update_date": "2018-03-07T19:54:57.995826Z",
-            "cgac_code": "089",
+            "toptier_code": "089",
             "abbreviation": "DOE",
             "name": "Department of Energy",
             "mission": "The mission of the Energy Department is to ensure America's security and prosperity by addressing its energy, environmental and nuclear challenges through transformative science and technology solutions.",
@@ -51,8 +50,7 @@ export const mockApi = {
             "subtier_code": "8900",
             "abbreviation": "DOE",
             "name": "Department of Energy"
-        },
-        "office_agency": null
+        }
     },
     "funding_agency": {
         "id": 930,
@@ -63,7 +61,7 @@ export const mockApi = {
             "toptier_agency_id": 78,
             "create_date": "2018-01-31T19:53:06.173880Z",
             "update_date": "2018-03-07T19:54:57.995826Z",
-            "cgac_code": "089",
+            "toptier_code": "089",
             "abbreviation": "DOE",
             "name": "Department of Energy",
             "mission": "The mission of the Energy Department is to ensure America's security and prosperity by addressing its energy, environmental and nuclear challenges through transformative science and technology solutions.",
@@ -77,8 +75,7 @@ export const mockApi = {
             "subtier_code": "8900",
             "abbreviation": "DOE",
             "name": "Department of Energy"
-        },
-        "office_agency": null
+        }
     },
     "recipient": {
         "legal_entity_id": 98140463,
@@ -308,7 +305,7 @@ export const mockApi = {
                 "toptier_agency_id": 78,
                 "create_date": "2018-01-31T19:53:06.173880Z",
                 "update_date": "2018-03-07T19:54:57.995826Z",
-                "cgac_code": "089",
+                "toptier_code": "089",
                 "abbreviation": "DOE",
                 "name": "Department of Energy",
                 "mission": "The mission of the Energy Department is to ensure America's security and prosperity by addressing its energy, environmental and nuclear challenges through transformative science and technology solutions.",
@@ -322,8 +319,7 @@ export const mockApi = {
                 "subtier_code": "8900",
                 "abbreviation": "DOE",
                 "name": "Department of Energy"
-            },
-            "office_agency": null
+            }
         },
         "funding_agency": {
             "id": 930,
@@ -334,7 +330,7 @@ export const mockApi = {
                 "toptier_agency_id": 78,
                 "create_date": "2018-01-31T19:53:06.173880Z",
                 "update_date": "2018-03-07T19:54:57.995826Z",
-                "cgac_code": "089",
+                "toptier_code": "089",
                 "abbreviation": "DOE",
                 "name": "Department of Energy",
                 "mission": "The mission of the Energy Department is to ensure America's security and prosperity by addressing its energy, environmental and nuclear challenges through transformative science and technology solutions.",
@@ -348,8 +344,7 @@ export const mockApi = {
                 "subtier_code": "8900",
                 "abbreviation": "DOE",
                 "name": "Department of Energy"
-            },
-            "office_agency": null
+            }
         },
         "recipient": {
             "legal_entity_id": 98140463,
@@ -864,7 +859,6 @@ export const mockFinancialAssistanceApi = {
     "certified_date": "2018-01-03",
     "create_date": "2018-02-03T18:54:06.983782Z",
     "update_date": "2018-02-03T18:54:06.983782Z",
-    "parent_award_piid": null,
     "generated_unique_award_id": "ASST_AW_7530_1805NY5MAP_-NONE-",
     "is_fpds": false,
     "transaction_unique_id": "5_7530_1805NY5MAP_7530-227-1805NY5MAP-5-1-2018-93778-75-0512-NON",
@@ -880,7 +874,7 @@ export const mockFinancialAssistanceApi = {
             "toptier_agency_id": 68,
             "create_date": "2018-01-31T19:53:04.542546Z",
             "update_date": "2018-03-07T19:54:56.115928Z",
-            "cgac_code": "075",
+            "toptier_code": "075",
             "abbreviation": "HHS",
             "name": "Department of Health and Human Services",
             "mission": "It is the mission of the U.S. Department of Health & Human Services (HHS) to enhance and protect the health and well-being of all Americans. We fulfill that mission by providing for effective health and human services and fostering advances in medicine, public health, and social services.",
@@ -894,8 +888,7 @@ export const mockFinancialAssistanceApi = {
             "subtier_code": "7530",
             "abbreviation": "CMS",
             "name": "Centers for Medicare and Medicaid Services"
-        },
-        "office_agency": null
+        }
     },
     "funding_agency": null,
     "recipient": {
@@ -1127,7 +1120,7 @@ export const mockFinancialAssistanceApi = {
                 "toptier_agency_id": 68,
                 "create_date": "2018-01-31T19:53:04.542546Z",
                 "update_date": "2018-03-07T19:54:56.115928Z",
-                "cgac_code": "075",
+                "toptier_code": "075",
                 "abbreviation": "HHS",
                 "name": "Department of Health and Human Services",
                 "mission": "It is the mission of the U.S. Department of Health & Human Services (HHS) to enhance and protect the health and well-being of all Americans. We fulfill that mission by providing for effective health and human services and fostering advances in medicine, public health, and social services.",
@@ -1141,8 +1134,7 @@ export const mockFinancialAssistanceApi = {
                 "subtier_code": "7530",
                 "abbreviation": "CMS",
                 "name": "Centers for Medicare and Medicaid Services"
-            },
-            "office_agency": null
+            }
         },
         "funding_agency": null,
         "recipient": {

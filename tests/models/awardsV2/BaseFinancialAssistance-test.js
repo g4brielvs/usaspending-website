@@ -3,7 +3,7 @@
  * Created by David Trinh 10/10/18
  */
 
-import BaseFinancialAssistance from 'models/v2/awardsV2/BaseFinancialAssistance';
+import BaseFinancialAssistance, { emptyCfda } from 'models/v2/awardsV2/BaseFinancialAssistance';
 import CoreLocation from "models/v2/CoreLocation";
 import BaseAwardRecipient from "models/v2/awardsV2/BaseAwardRecipient";
 import CoreAwardAgency from "models/v2/awardsV2/CoreAwardAgency";
@@ -15,17 +15,9 @@ const loan = Object.create(BaseFinancialAssistance);
 loan.populate(mockLoan);
 
 describe('Base Financial Assistance', () => {
-    describe('monetary values', () => {
-        it('should format the loan face value', () => {
-            expect(loan.faceValue).toEqual('$24,343');
-        });
-        it('should format the subsidy amount', () => {
-            expect(loan.subsidy).toEqual('$123');
-        });
-    });
     describe('cfdaProgram', () => {
         it('should format the CFDA fields', () => {
-            expect(loan.cfdaProgram).toEqual('0.434 - Flood Insurance');
+            expect(loan.cfdaProgram).toEqual('0.3 - bigger');
         });
     });
     describe('agencies', () => {
@@ -51,6 +43,19 @@ describe('Base Financial Assistance', () => {
     describe('Recipient', () => {
         it('should be an object with BaseAwardRecipient in its prototype chain', () => {
             expect(Object.getPrototypeOf(loan.recipient)).toEqual(BaseAwardRecipient);
+        });
+    });
+
+    describe('biggestCfda', () => {
+        it('should return the largest CFDA', () => {
+            const award = Object.create(BaseFinancialAssistance);
+            award.populate(mockLoan);
+            expect(award.biggestCfda.cfdaTitle).toEqual('bigger');
+        });
+        it('should handle an empty array', () => {
+            const award = Object.create(BaseFinancialAssistance);
+            award.populate({ ...mockLoan, cfda_info: [{}] });
+            expect(award.biggestCfda).toEqual(emptyCfda);
         });
     });
 });

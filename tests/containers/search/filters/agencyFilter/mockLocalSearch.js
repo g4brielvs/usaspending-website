@@ -3,7 +3,7 @@ export const mockSecondaryResults = [
         id: 14,
         toptier_flag: true,
         toptier_agency: {
-            cgac_code: '004',
+            toptier_code: '004',
             abbreviation: 'GPO',
             name: 'Government Publishing Office'
         },
@@ -11,14 +11,13 @@ export const mockSecondaryResults = [
             subtier_code: '0400',
             abbreviation: '',
             name: 'Government Publishing Office'
-        },
-        office_agency: null
+        }
     },
     {
         id: 1125,
         toptier_flag: true,
         toptier_agency: {
-            cgac_code: '434',
+            toptier_code: '434',
             abbreviation: 'OGE',
             name: 'Office of Government Ethics'
         },
@@ -26,8 +25,7 @@ export const mockSecondaryResults = [
             subtier_code: '9549',
             abbreviation: '',
             name: 'Office of Government Ethics'
-        },
-        office_agency: null
+        }
     }
 ];
 
@@ -120,6 +118,21 @@ export const mockResults = [
         subtier_agency: {
             abbreviation: 'ABC',
             name: 'Department ABC'
+        }
+    }
+];
+
+export const mockNullAgencyResults = [
+    {
+        id: 14,
+        toptier_flag: false,
+        toptier_agency: {
+            abbreviation: null,
+            name: 'Department QQ'
+        },
+        subtier_agency: {
+            abbreviation: null,
+            name: 'QQ Agency'
         }
     }
 ];

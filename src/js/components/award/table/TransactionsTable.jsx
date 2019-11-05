@@ -6,17 +6,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import contractMapping from 'dataMapping/contracts/transactionTable';
-import assistanceMapping from
-    'dataMapping/financialAssistance/financialAssistanceTransactionTable';
-import loanMapping from 'dataMapping/financialAssistance/loanTransactionTable';
-
 import { measureTableHeader } from 'helpers/textMeasurement';
-
+import transactionHistoryV2Mapping from
+    'dataMapping/awardsv2/transactionHistoryTable/transactionHistoryTable';
+import loanTransactionHistoryTable from
+    'dataMapping/awardsv2/transactionHistoryTable/loanTransactionHistoryTable';
+import contractMapping from 'dataMapping/contracts/transactionTable';
+import assistanceMapping from 'dataMapping/financialAssistance/financialAssistanceTransactionTable';
 import IBTable from 'components/sharedComponents/IBTable/IBTable';
-import TransactionTableHeaderCell from './cells/TransactionTableHeaderCell';
 
+import TransactionTableHeaderCell from './cells/TransactionTableHeaderCell';
 import TransactionTableGenericCell from './cells/TransactionTableGenericCell';
+import ResultsTableNoResults from '../../search/table/ResultsTableNoResults';
+import ResultsTableErrorMessage from '../../search/table/ResultsTableErrorMessage';
+
 
 const rowHeight = 40;
 // setting the table height to a partial row prevents double bottom borders and also clearly
@@ -31,7 +34,8 @@ const propTypes = {
     sort: PropTypes.object,
     nextTransactionPage: PropTypes.func.isRequired,
     changeSort: PropTypes.func.isRequired,
-    category: PropTypes.string
+    category: PropTypes.string,
+    error: PropTypes.bool
 };
 
 export default class TransactionsTable extends React.Component {
@@ -50,15 +54,17 @@ export default class TransactionsTable extends React.Component {
         }
     }
 
-    tableMapping() {
-        let tableMapping = assistanceMapping;
-        if (this.props.category === 'contract') {
-            tableMapping = contractMapping;
+    tableMapping(category = this.props.category) {
+        if (category === 'idv') {
+            return transactionHistoryV2Mapping;
         }
-        else if (this.props.category === 'loan') {
-            tableMapping = loanMapping;
+        else if (category === 'loan') {
+            return loanTransactionHistoryTable;
         }
-        return tableMapping;
+        else if (category === 'contract') {
+            return contractMapping;
+        }
+        return assistanceMapping;
     }
 
     headerCellRender(columnIndex) {
@@ -131,8 +137,17 @@ export default class TransactionsTable extends React.Component {
         const tableValues = this.buildTable();
 
         let loadingClass = '';
+        let message;
         if (this.props.inFlight) {
             loadingClass = 'loading';
+        }
+        if (this.props.transactions.length === 0) {
+            if (this.props.error) {
+                message = <ResultsTableErrorMessage />;
+            }
+            else {
+                message = <ResultsTableNoResults />;
+            }
         }
 
         return (
@@ -155,6 +170,7 @@ export default class TransactionsTable extends React.Component {
                     ref={(table) => {
                         this.tableComponent = table;
                     }} />
+                <div className="results-table-message-container">{message}</div>
             </div>
         );
     }

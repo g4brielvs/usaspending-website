@@ -17,7 +17,7 @@ const BaseIdv = Object.create(CoreAward);
 BaseIdv.populate = function populate(data) {
     // reformat some fields that are required by the CoreAward
     const coreData = {
-        id: data.piid,
+        id: data.id,
         generatedId: data.generated_unique_award_id,
         type: data.type,
         typeDescription: data.type_description,
@@ -33,12 +33,9 @@ BaseIdv.populate = function populate(data) {
 
     this.populateCore(coreData);
 
-    this.parentAward = data.parent_award_piid || '';
-    this.parentId = data.parent_generated_unique_award_id || '';
-
     const parentAwardDetails = Object.create(BaseParentAwardDetails);
     if (data.parent_award) {
-        parentAwardDetails.populateCore(data.parent_award);
+        parentAwardDetails.populateCore(data.parent_award || {});
     }
     this.parentAwardDetails = parentAwardDetails;
 
@@ -85,9 +82,9 @@ BaseIdv.populate = function populate(data) {
     if (data.funding_agency) {
         const fundingAgencyData = {
             toptierName: data.funding_agency.toptier_agency.name,
-            toptierAbbr: data.funding_agency.toptier_agency.abbreviation,
+            toptierAbbr: data.funding_agency.toptier_agency.abbreviation || '',
             subtierName: data.funding_agency.subtier_agency.name,
-            subtierAbbr: data.funding_agency.subtier_agency.abbreviation,
+            subtierAbbr: data.funding_agency.subtier_agency.abbreviation || '',
             officeName: data.funding_agency.office_agency_name
         };
         fundingAgency.populateCore(fundingAgencyData);
@@ -99,9 +96,9 @@ BaseIdv.populate = function populate(data) {
         const awardingAgencyData = {
             id: data.awarding_agency.id,
             toptierName: data.awarding_agency.toptier_agency.name,
-            toptierAbbr: data.awarding_agency.toptier_agency.abbreviation,
+            toptierAbbr: data.awarding_agency.toptier_agency.abbreviation || '',
             subtierName: data.awarding_agency.subtier_agency.name,
-            subtierAbbr: data.awarding_agency.subtier_agency.abbreviation,
+            subtierAbbr: data.awarding_agency.subtier_agency.abbreviation || '',
             officeName: data.awarding_agency.office_agency_name
         };
         awardingAgency.populateCore(awardingAgencyData);
@@ -117,6 +114,7 @@ BaseIdv.populate = function populate(data) {
     const executiveDetails = Object.create(CoreExecutiveDetails);
     executiveDetails.populateCore(data.executive_details);
     this.executiveDetails = executiveDetails;
+    this.piid = data.piid || '';
 };
 
 export default BaseIdv;

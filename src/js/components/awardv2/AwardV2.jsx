@@ -29,8 +29,7 @@ const propTypes = {
         mounted: PropTypes.bool,
         hideModal: PropTypes.func
     }),
-    isDownloadPending: PropTypes.bool,
-    isV2url: PropTypes.bool
+    isDownloadPending: PropTypes.bool
 };
 
 const awardSections = [
@@ -92,8 +91,8 @@ export default class Award extends React.Component {
     render() {
         let content = null;
         let summaryBar = null;
-        const overview = this.props.award.overview;
-        const { isV2url } = this.props;
+        const { overview } = this.props.award;
+        const { awardId } = this.props;
         if (overview) {
             summaryBar = (
                 <SummaryBar
@@ -104,16 +103,16 @@ export default class Award extends React.Component {
             if (overview.category === 'contract') {
                 content = (
                     <ContractContent
-                        awardId={this.props.awardId}
+                        awardId={awardId}
                         overview={overview}
+                        counts={{ subawardCount: overview.subawardCount }}
                         jumpToSection={this.jumpToSection} />
                 );
             }
             else if (overview.category === 'idv') {
                 content = (
                     <IdvContent
-                        isV2url={isV2url}
-                        awardId={this.props.awardId}
+                        awardId={awardId}
                         overview={overview}
                         counts={this.props.award.counts}
                         jumpToSection={this.jumpToSection} />
@@ -122,13 +121,16 @@ export default class Award extends React.Component {
             else {
                 content = (
                     <FinancialAssistanceContent
-                        awardId={this.props.awardId}
+                        awardId={awardId}
                         overview={overview}
                         jumpToSection={this.jumpToSection} />
                 );
             }
         }
         if (this.props.noAward) {
+            summaryBar = (
+                <SummaryBar isInvalidId />
+            );
             content = (
                 <div className="wrapper">
                     <Error

@@ -5,12 +5,12 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import IdvAmountsContainer from 'containers/awardV2/idv/IdvAmountsContainer';
+import IdvAwardAmountsSectionContainer from 'containers/awardV2/idv/IdvAwardAmountsSectionContainer';
 import ResultsTableTabs from 'components/search/table/ResultsTableTabs';
 import ResultsTablePicker from 'components/search/table/ResultsTablePicker';
 import IDVAmounts from './IDVAmounts';
-import InfoTooltip from '../../idv/InfoTooltip';
-import { awardAmountsInfo } from '../../idv/InfoTooltipContent';
+import InfoTooltip from '../../shared/InfoTooltip';
+import { awardAmountsInfo } from '../../shared/InfoTooltipContent';
 
 const propTypes = {
     overview: PropTypes.object,
@@ -48,12 +48,13 @@ export default class AwardAmounts extends React.Component {
 
         const awards = this.props.overview;
         const content = this.state.active === 'awards' ? (
-            <IdvAmountsContainer
+            <IdvAwardAmountsSectionContainer
                 jumpToSection={this.props.jumpToSection} />
         ) : (
             <IDVAmounts
                 awards={awards} />
         );
+        const tabsClassName = 'idv-award-amounts-tabs';
         return (
             <div className="award__col award-viz award-amounts">
                 <div className="award-viz__heading">
@@ -70,6 +71,7 @@ export default class AwardAmounts extends React.Component {
                         types={tabTypes}
                         active={this.state.active}
                         switchTab={this.switchTab}
+                        tabsClassName={tabsClassName}
                         hideCounts />
                     <ResultsTablePicker
                         types={tabTypes}

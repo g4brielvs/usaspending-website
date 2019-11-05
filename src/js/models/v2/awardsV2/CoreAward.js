@@ -2,10 +2,11 @@
  * CoreAward.js
  * Created by David Trinh 10/9/18
  */
-import { startCase } from 'lodash';
+import { upperFirst } from 'lodash';
 import * as MoneyFormatter from 'helpers/moneyFormatter';
+import { descriptionsForAwardTypes }
+    from 'dataMapping/awardsv2/descriptionsForAwardTypes';
 import { parseDate, formatDate } from './CorePeriodOfPerformance';
-import { longTypeDescriptionsByAwardTypes } from "../../../dataMapping/awardsv2/longAwardTypeDescriptions";
 
 const CoreAward = {
     populateCore(data) {
@@ -14,10 +15,6 @@ const CoreAward = {
         this.generatedId = data.generatedId || '';
         this.type = data.type || '';
         this.typeDescription = data.typeDescription || "--";
-        this.longTypeDescription =
-          longTypeDescriptionsByAwardTypes[data.type] ||
-          startCase(data.typeDescription) ||
-          "--";
         this.description = data.description || '--';
         this._subawardTotal = parseFloat(data.subawardTotal) || 0;
         this.subawardCount = parseFloat(data.subawardCount) || 0;
@@ -25,6 +22,8 @@ const CoreAward = {
         this._baseExercisedOptions = parseFloat(data.baseExercisedOptions) || 0;
         this._baseAndAllOptions = parseFloat(data.baseAndAllOptions) || 0;
         this._dateSigned = (data.dateSigned && parseDate(data.dateSigned)) || '';
+        this.naics = data.naics || {};
+        this.psc = data.psc || {};
     },
     get subawardTotal() {
         if (this._subawardTotal >= MoneyFormatter.unitValues.MILLION) {
@@ -32,36 +31,6 @@ const CoreAward = {
             return `${MoneyFormatter.formatMoneyWithPrecision(this._subawardTotal / units.unit, 2)} ${units.longLabel}`;
         }
         return MoneyFormatter.formatMoneyWithPrecision(this._subawardTotal, 0);
-    },
-    get totalObligation() {
-        if (this._totalObligation >= MoneyFormatter.unitValues.MILLION) {
-            const units = MoneyFormatter.calculateUnitForSingleValue(this._totalObligation);
-            return `${MoneyFormatter.formatMoneyWithPrecision(this._totalObligation / units.unit, 2)} ${units.longLabel}`;
-        }
-        return MoneyFormatter.formatMoneyWithPrecision(this._totalObligation, 0);
-    },
-    get totalObligationFormatted() {
-        return MoneyFormatter.formatMoney(this._totalObligation);
-    },
-    get baseExercisedOptions() {
-        if (this._baseExercisedOptions >= MoneyFormatter.unitValues.MILLION) {
-            const units = MoneyFormatter.calculateUnitForSingleValue(this._baseExercisedOptions);
-            return `${MoneyFormatter.formatMoneyWithPrecision(this._baseExercisedOptions / units.unit, 2)} ${units.longLabel}`;
-        }
-        return MoneyFormatter.formatMoneyWithPrecision(this._baseExercisedOptions, 0);
-    },
-    get baseExercisedOptionsFormatted() {
-        return MoneyFormatter.formatMoney(this._baseExercisedOptions);
-    },
-    get baseAndAllOptions() {
-        if (this._baseAndAllOptions >= MoneyFormatter.unitValues.MILLION) {
-            const units = MoneyFormatter.calculateUnitForSingleValue(this._baseAndAllOptions);
-            return `${MoneyFormatter.formatMoneyWithPrecision(this._baseAndAllOptions / units.unit, 2)} ${units.longLabel}`;
-        }
-        return MoneyFormatter.formatMoneyWithPrecision(this._baseAndAllOptions, 0);
-    },
-    get baseAndAllOptionsFormatted() {
-        return MoneyFormatter.formatMoney(this._baseAndAllOptions);
     },
     get category() {
         if (this._category === 'loans') {
@@ -74,6 +43,44 @@ const CoreAward = {
             return formatDate(this._dateSigned);
         }
         return '';
+    },
+    get overspendingFormatted() {
+        return MoneyFormatter.formatMoneyWithPrecision(this._totalObligation - this._baseExercisedOptions, 2);
+    },
+    get overspendingAbbreviated() {
+        if (this._totalObligation - this._baseExercisedOptions >= MoneyFormatter.unitValues.MILLION) {
+            const units = MoneyFormatter.calculateUnitForSingleValue(this._totalObligation - this._baseExercisedOptions);
+            return `${MoneyFormatter.formatMoneyWithPrecision((this._totalObligation - this._baseExercisedOptions) / units.unit, 1)} ${units.unitLabel}`;
+        }
+        return MoneyFormatter.formatMoney(this._totalObligation - this._baseExercisedOptions);
+    },
+    get extremeOverspendingFormatted() {
+        return MoneyFormatter.formatMoneyWithPrecision(this._totalObligation - this._baseAndAllOptions, 2);
+    },
+    get extremeOverspendingAbbreviated() {
+        if (this._totalObligation - this._baseAndAllOptions >= MoneyFormatter.unitValues.MILLION) {
+            const units = MoneyFormatter.calculateUnitForSingleValue(this._totalObligation - this._baseAndAllOptions);
+            return `${MoneyFormatter.formatMoneyWithPrecision((this._totalObligation - this._baseAndAllOptions) / units.unit, 1)} ${units.unitLabel}`;
+        }
+        return MoneyFormatter.formatMoney(this._totalObligation - this._baseAndAllOptions);
+    },
+    get subAwardedPercent() {
+        let percent = (this._subawardTotal / this._totalObligation) * 100;
+        if (percent <= 0 || isNaN(percent)) return '0%';
+        percent = MoneyFormatter.formatNumberWithPrecision(percent, 1);
+        return `${percent}%`;
+    },
+    get title() {
+        if (descriptionsForAwardTypes[this.type]) {
+            return descriptionsForAwardTypes[this.type];
+        }
+        if (this.category) {
+            if (this.category === 'idv') {
+                return 'IDV';
+            }
+            return upperFirst(this.category);
+        }
+        return '--';
     }
 };
 
