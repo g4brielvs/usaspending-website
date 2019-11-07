@@ -42,10 +42,6 @@ const additionalDetails = (awardData) => {
             'Parent IDV Agency Name': {
                 type: 'link',
                 data: {
-                    // TODO - when backend updates the API response
-                    // uncomment this link
-                    // path: parentAwardDetails.agencyId ?
-                    //     `/#/agency/${parentAwardDetails.agencyId}` : null,
                     path: null,
                     title: parentAwardDetails.agencyName
                 }

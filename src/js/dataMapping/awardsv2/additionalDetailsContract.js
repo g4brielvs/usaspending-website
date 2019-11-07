@@ -69,8 +69,6 @@ const additionalDetailsContracts = (awardData) => {
             'Parent IDV Agency Name': {
                 type: 'link',
                 data: {
-                    // path: parentAwardDetails.agencyId ?
-                    //     `/#/agency/${parentAwardDetails.agencyId}` : null,
                     path: null,
                     title: parentAwardDetails.agencyName
                 }
