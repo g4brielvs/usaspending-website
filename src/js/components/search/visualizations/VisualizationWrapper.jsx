@@ -22,6 +22,7 @@ import NoFiltersScreen from './screens/NoFiltersScreen';
 
 import VisualizationTabItem from './VisualizationTabItem';
 import SubawardToggle from './SubawardToggle';
+import ElasticsearchToggle from './ElasticsearchToggle';
 
 const propTypes = {
     isMobile: PropTypes.bool,
@@ -30,7 +31,8 @@ const propTypes = {
     type: PropTypes.string,
     subaward: PropTypes.bool,
     setSearchViewType: PropTypes.func,
-    setSearchViewSubaward: PropTypes.func
+    setSearchViewSubaward: PropTypes.func,
+    elasticsearch: PropTypes.bool
 };
 
 export default class VisualizationWrapper extends React.Component {
@@ -126,6 +128,9 @@ export default class VisualizationWrapper extends React.Component {
                         {tabs}
                     </ul>
                     <div className="visualization-tabs__toggle">
+                        <ElasticsearchToggle
+                            elasticsearch={this.props.elasticsearch}
+                            setSearchViewElasticsearch={this.props.setSearchViewElasticsearch} />
                         <SubawardToggle
                             subaward={this.props.subaward}
                             setSearchViewSubaward={this.props.setSearchViewSubaward} />

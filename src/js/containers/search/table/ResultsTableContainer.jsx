@@ -30,7 +30,8 @@ const propTypes = {
     filters: PropTypes.object,
     setAppliedFilterCompletion: PropTypes.func,
     noApplied: PropTypes.bool,
-    subaward: PropTypes.bool
+    subaward: PropTypes.bool,
+    elasticsearch: PropTypes.bool
 };
 
 const tableTypes = [
@@ -125,6 +126,9 @@ export class ResultsTableContainer extends React.Component {
             // subaward toggle changed, update the search object
             this.pickDefaultTab();
         }
+        else if (prevProps.elasticsearch !== this.props.elasticsearch && !this.props.noApplied) {
+            this.pickDefaultTab();
+        }
     }
 
     loadColumns() {
@@ -187,7 +191,7 @@ export class ResultsTableContainer extends React.Component {
         const searchParams = new SearchAwardsOperation();
         searchParams.fromState(this.props.filters);
         this.tabCountRequest = SearchHelper.performSpendingByAwardTabCountSearch({
-            filters: searchParams.toParams(),
+            filters: this.props.elasticsearch ? {...searchParams.toParams(), elasticsearch: this.props.elasticsearch} : searchParams.toParams(),
             subawards: this.props.subaward,
             auditTrail: 'Award Table - Tab Counts'
         });
@@ -323,7 +327,7 @@ export class ResultsTableContainer extends React.Component {
         }
 
         const params = {
-            filters: searchParams.toParams(),
+            filters: this.props.elasticsearch ? {...searchParams.toParams(), elasticsearch: this.props.elasticsearch} : searchParams.toParams(),
             fields: requestFields,
             page: pageNumber,
             limit: resultLimit,
@@ -466,7 +470,8 @@ export default connect(
     (state) => ({
         filters: state.appliedFilters.filters,
         noApplied: state.appliedFilters._empty,
-        subaward: state.searchView.subaward
+        subaward: state.searchView.subaward,
+        elasticsearch: state.searchView.elasticsearch
     }),
     (dispatch) => bindActionCreators(Object.assign({}, searchActions, appliedFilterActions), dispatch)
 )(ResultsTableContainer);

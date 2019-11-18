@@ -5,7 +5,8 @@
 
 export const initialState = {
     type: 'table',
-    subaward: false
+    subaward: false,
+    elasticsearch: false
 };
 
 const searchViewReducer = (state = initialState, action) => {
@@ -19,6 +20,11 @@ const searchViewReducer = (state = initialState, action) => {
             return Object.assign({}, state, {
                 subaward: action.value
             });
+
+        case 'SET_SEARCH_VIEW_ELASTICSEARCH':
+            return Object.assign({}, state, {
+                elasticsearch: action.value
+            })
 
         default:
             return state;

@@ -12,3 +12,9 @@ export const setSearchViewType = (state) => ({
     type: 'SET_SEARCH_VIEW_TYPE',
     value: state
 });
+
+
+export const setSearchViewElasticsearch = (state) => ({
+    type: 'SET_SEARCH_VIEW_ELASTICSEARCH',
+    value: state
+});

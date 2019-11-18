@@ -30,7 +30,8 @@ const propTypes = {
     reduxFilters: PropTypes.object,
     setAppliedFilterCompletion: PropTypes.func,
     noApplied: PropTypes.bool,
-    subaward: PropTypes.bool
+    subaward: PropTypes.bool,
+    elasticsearch: PropTypes.bool
 };
 
 const logPeriodEvent = (period) => {
@@ -70,6 +71,11 @@ export class TimeVisualizationSectionContainer extends React.Component {
             // subaward toggle changed, update the search object
             this.fetchData();
         }
+        else if (prevProps.elasticsearch !== this.props.elasticsearch && !this.props.noApplied) {
+            // elasticsearch toggle changed, update the search object
+            this.fetchData();
+        }
+
     }
 
     updateVisualizationPeriod(visualizationPeriod) {
@@ -100,7 +106,7 @@ export class TimeVisualizationSectionContainer extends React.Component {
     fetchAwards(auditTrail = null) {
         const operation = new SearchAwardsOperation();
         operation.fromState(this.props.reduxFilters);
-        const searchParams = operation.toParams();
+        const searchParams =  this.props.elasticsearch ? {...operation.toParams(), elasticsearch: this.props.elasticsearch} : operation.toParams();
 
         // Generate the API parameters
         const apiParams = {
@@ -214,7 +220,8 @@ export default connect(
     (state) => ({
         reduxFilters: state.appliedFilters.filters,
         noApplied: state.appliedFilters._empty,
-        subaward: state.searchView.subaward
+        subaward: state.searchView.subaward,
+        elasticsearch: state.searchView.elasticsearch
     }),
     (dispatch) => bindActionCreators(combinedActions, dispatch)
 )(TimeVisualizationSectionContainer);
