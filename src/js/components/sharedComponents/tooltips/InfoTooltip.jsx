@@ -23,7 +23,7 @@ const propTypes = {
 
 
 export const InfoTooltip = (props) => (
-    <TooltipWrapper tooltipComponent={props.children} {...props} />
+    <TooltipWrapper tooltipComponent={props.children} {...props} icon="info" />
 );
 
 InfoTooltip.propTypes = propTypes;
