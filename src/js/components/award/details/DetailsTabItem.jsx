@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { formatNumber } from 'helpers/moneyFormatter';
 
 import ComingSoonLabel from 'components/sharedComponents/ComingSoonLabel';
-import InfoTooltip from 'components/awardv2/shared/InfoTooltip';
+import { InfoTooltip } from 'components/sharedComponents/tooltips/InfoTooltip';
 
 const propTypes = {
     label: PropTypes.string,

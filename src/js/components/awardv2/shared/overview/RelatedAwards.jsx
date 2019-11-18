@@ -7,7 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { map } from 'lodash';
 import { formatNumber } from 'helpers/moneyFormatter';
-import InfoTooltip from '../../shared/InfoTooltip';
+import { InfoTooltip } from 'components/sharedComponents/tooltips/InfoTooltip';
 import { summaryRelatedAwardsInfoIdv, summaryRelatedAwardsInfo } from '../../shared/InfoTooltipContent';
 import AwardSection from '../AwardSection';
 

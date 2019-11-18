@@ -9,7 +9,7 @@ import IdvAwardAmountsSectionContainer from 'containers/awardV2/idv/IdvAwardAmou
 import ResultsTableTabs from 'components/search/table/ResultsTableTabs';
 import ResultsTablePicker from 'components/search/table/ResultsTablePicker';
 import IDVAmounts from './IDVAmounts';
-import InfoTooltip from '../../shared/InfoTooltip';
+import { InfoTooltip } from 'components/sharedComponents/tooltips/InfoTooltip';
 import { awardAmountsInfo } from '../../shared/InfoTooltipContent';
 
 const propTypes = {

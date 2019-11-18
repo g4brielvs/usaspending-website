@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import ResultsTableTabs from 'components/search/table/ResultsTableTabs';
 import ReferencedAwardsTable from './ReferencedAwardsTable';
-import InfoToolTip from "../../shared/InfoTooltip";
+import { InfoTooltip } from 'components/sharedComponents/tooltips/InfoTooltip';
 import { relatedAwardsInfo } from '../../shared/InfoTooltipContent';
 
 const propTypes = {
