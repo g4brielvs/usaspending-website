@@ -3,6 +3,9 @@ const path = require('path');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require('./webpack.common');
+const postcssPresetEnv = require('postcss-preset-env');
+const flexBugFixes = require('postcss-flexbugs-fixes');
+const postcssImport = require('postcss-import');
 
 module.exports = merge(common, {
     mode: "development",
@@ -24,7 +27,27 @@ module.exports = merge(common, {
                 test: /\.scss$/,
                 use: [
                     { loader: MiniCssExtractPlugin.loader },
-                    { loader: "css-loader", options: { url: false, sourceMap: true } },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1,
+                            sourceMap: true                        }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            ident: 'postcss',
+                            plugins: () => [
+                                postcssImport({
+                                    path: [
+                                        path.resolve(__dirname, "../src")
+                                    ]
+                                }),
+                                postcssPresetEnv({ stage: 0 }),
+                                flexBugFixes()
+                            ]
+                        }
+                    },
                     {
                         loader: "sass-loader",
                         options: {

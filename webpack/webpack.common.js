@@ -65,14 +65,6 @@ module.exports = {
                     },
                     {
                         loader: "css-loader"
-                    },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            config: {
-                                path: path.resolve(__dirname, '../')
-                            }
-                        }
                     }
                 ]
             },
