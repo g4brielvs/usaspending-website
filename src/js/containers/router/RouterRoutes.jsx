@@ -129,15 +129,6 @@ const routes = {
             }
         },
         {
-            path: '/style',
-            parent: '/style',
-            component: (cb) => {
-                require.ensure([], (require) => {
-                    cb(require('components/testStyles/TestStylePage').default);
-                });
-            }
-        },
-        {
             path: '/agency',
             parent: '/agency',
             component: (cb) => {
