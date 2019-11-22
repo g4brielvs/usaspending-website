@@ -30,8 +30,10 @@ module.exports = merge(common, {
                     {
                         loader: 'css-loader',
                         options: {
+                            url: false,
                             importLoaders: 1,
-                            sourceMap: true                        }
+                            sourceMap: true
+                        }
                     },
                     {
                         loader: 'postcss-loader',
@@ -40,10 +42,10 @@ module.exports = merge(common, {
                             plugins: () => [
                                 postcssImport({
                                     path: [
-                                        path.resolve(__dirname, "../src")
+                                        path.resolve(__dirname, "../src/_scss")
                                     ]
                                 }),
-                                postcssPresetEnv({ stage: 0 }),
+                                postcssPresetEnv({ stage: 2 }),
                                 flexBugFixes()
                             ]
                         }
