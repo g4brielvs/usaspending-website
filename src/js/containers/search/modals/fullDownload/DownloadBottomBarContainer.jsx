@@ -65,7 +65,7 @@ export class DownloadBottomBarContainer extends React.Component {
         if (this.props.download.pendingDownload && this.props.download.showCollapsedProgress &&
             !this.state.visible) {
             this.requestDownload(this.props.filters,
-                this.props.download.columns, this.props.download.type);
+                this.props.download.columns, this.props.download.type, this.props.download.elasticsearch);
             this.displayBar();
         }
     }
@@ -88,7 +88,7 @@ export class DownloadBottomBarContainer extends React.Component {
         }, this.checkStatus);
     }
 
-    requestDownload(filters, columns, type) {
+    requestDownload(filters, columns, type, elasticsearch) {
         if (this.request) {
             this.request.cancel();
         }
@@ -107,7 +107,7 @@ export class DownloadBottomBarContainer extends React.Component {
             filters: filterSet,
             columns
         };
-        this.request = DownloadHelper.requestFullDownload(params, type);
+        this.request = DownloadHelper.requestFullDownload(params, type, elasticsearch);
 
         this.request.promise
             .then((res) => {

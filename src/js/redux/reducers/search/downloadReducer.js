@@ -49,6 +49,11 @@ const downloadReducer = (state = initialState, action) => {
         case 'RESET_DOWNLOAD': {
             return Object.assign({}, initialState);
         }
+        case 'SET_SEARCH_VIEW_ELASTICSEARCH': {
+            return Object.assign({}, state, {
+                elasticsearch: action.value
+            });
+        }
         default:
             return state;
     }

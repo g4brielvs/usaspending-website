@@ -7,14 +7,20 @@ import Axios, { CancelToken } from 'axios';
 
 import kGlobalConstants from 'GlobalConstants';
 
-export const requestFullDownload = (params, type) => {
+export const requestFullDownload = (params, type, elasticsearch) => {
     const source = CancelToken.source();
+    let filters = params.filters
+    filters.elasticsearch = elasticsearch
+    const updatedParams = {
+        'filters': filters,
+        'columns': params.columns,
+    };
     return {
         promise: Axios.request({
             url: `v2/download/${type}/`,
             baseURL: kGlobalConstants.API,
             method: 'post',
-            data: params,
+            data: updatedParams,
             cancelToken: source.token
         }),
         cancel() {

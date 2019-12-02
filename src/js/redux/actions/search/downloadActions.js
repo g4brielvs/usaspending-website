@@ -36,3 +36,8 @@ export const setDownloadCollapsed = (state) => ({
 export const resetDownload = () => ({
     type: 'RESET_DOWNLOAD'
 });
+
+export const setSearchViewElasticsearch = (state) => ({
+    type: 'SET_SEARCH_VIEW_ELASTICSEARCH',
+    value: state
+});
