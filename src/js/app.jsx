@@ -83,4 +83,5 @@ const App = render(
     appDiv
 );
 
-export default hot(module)(App);
+// export default hot(module)(App);
+export default App;
