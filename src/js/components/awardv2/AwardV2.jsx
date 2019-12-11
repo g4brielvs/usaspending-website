@@ -65,6 +65,18 @@ export default class Award extends React.Component {
         this.jumpToSection = this.jumpToSection.bind(this);
     }
 
+    componentDidMount() {
+        console.log("didMount");
+    }
+
+    componentDidUpdate() {
+        console.log("didUpdate");
+    }
+
+    componentWillUnmount() {
+        console.log("willUnmount");
+    }
+
     jumpToSection(section = '') {
         // we've been provided a section to jump to
         // check if it's a valid section
