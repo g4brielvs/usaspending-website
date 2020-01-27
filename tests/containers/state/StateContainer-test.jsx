@@ -28,6 +28,7 @@ describe('StateContainer', () => {
         await container.instance().request.promise;
 
         expect(loadStateOverview).toHaveBeenCalledTimes(1);
+        expect(mockActions.setStateFiscalYear).toHaveBeenCalledWith('latest');
         expect(loadStateOverview).toHaveBeenCalledWith('01', 'latest');
     });
     it('should update the center coordinates for the selected state on mount', async () => {
