@@ -3,7 +3,7 @@
   * Created by Jonathan Hill 10/01/2019
   **/
 
-import { isEmpty, flattenDeep, compact, clone } from 'lodash';
+import { isEmpty, flattenDeep, compact, clone, cloneDeep, flatten } from 'lodash';
 
 /**
  * updateValueAndLabel
@@ -207,15 +207,13 @@ export const handleSearch = (
     const addPlaceholderChildren = (node) => {
         const difference = node.count - node.children.length;
         if (difference > 0) {
-            for (let i = 0; i < difference; i++) {
-                // placeholder children for search
-                const placeholderChild = {
-                    value: `${node.value}placeholderForSearch${i}`,
-                    label: 'placeholderForSearch',
-                    className: 'react-checkbox-tree__search-placeholder-child'
-                };
-                node.children.push(placeholderChild);
-            }
+            // placeholder children for search
+            const placeholderChild = {
+                value: `${node.value}placeholderForSearch${i}`,
+                label: 'placeholderForSearch',
+                className: 'react-checkbox-tree__search-placeholder-child'
+            };
+            node.children.push(placeholderChild);
         }
         return node;
     };
@@ -255,6 +253,38 @@ export const handleSearch = (
     // flattens and removes any null values
     const expandedArray = compact(flattenDeep(expanded));
     return { updatedNodes: nodes, expanded: expandedArray };
+};
+/**
+ * Update Paths From Search
+ * @param {*} nodes 
+ */
+export const updatePathsFromSearch = (node, currentPath) => {
+    const nodeData = cloneDeep(node);
+    // updates child paths
+    const updateChildPath = (children, parentPath) => {
+        return children.map((child) => {
+            const newChild = cloneDeep(child);
+            if (!newChild.path) newChild.path = [];
+            const newPathForChild = flattenDeep([parentPath, newChild.path.slice(parentPath.length)]);
+            newChild.path = newPathForChild;
+            if (newChild.children) newChild.children = updateChildPath(newChild.children, newPathForChild);
+            return newChild;
+        });
+    };
+    // updates node path to the current parent path
+    nodeData.path = currentPath;
+    if (nodeData.children) {
+        nodeData.children = nodeData.children.map((data) => {
+            const newData = cloneDeep(data);
+            if (!newData.path) newData.path = [];
+            // remove current parent path from child and places new parent path in place
+            const newPathForChild = flatten([currentPath, newData.path.slice(currentPath.length)]);
+            newData.path = newPathForChild;
+            if (newData.children) newData.children = updateChildPath(newData.children, newPathForChild);
+            return newData;
+        });
+    }
+    return nodeData;
 };
 /**
  * deepest child values
