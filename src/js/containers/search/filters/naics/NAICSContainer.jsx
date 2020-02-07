@@ -26,7 +26,13 @@ import { updateNaics } from 'redux/actions/search/searchFilterActions';
 import { setNaics, setExpanded, setChecked } from 'redux/actions/search/naicsActions';
 import { EntityDropdownAutocomplete } from 'components/search/filters/location/EntityDropdownAutocomplete';
 import SelectedNaic from 'components/search/filters/naics/SelectNaic';
-import { pathToNode, buildNodePath, createCheckboxTreeDataStrucure, updatePathsFromSearch } from 'helpers/checkboxTreeHelper';
+import {
+    pathToNode,
+    buildNodePath,
+    createCheckboxTreeDataStrucure,
+    updatePathsFromSearch,
+    countFromSearch
+} from 'helpers/checkboxTreeHelper';
 
 const propTypes = {
     updateNaics: PropTypes.func,
@@ -378,7 +384,8 @@ export class NAICSContainer extends React.Component {
         const selectedNaicsData = checkedData.reduce((acc, value) => {
             console.log(' Reduce Value : ', value);
             console.log(' Nodes : ', cloneDeep(this.props.nodes.toJS()));
-            const cleanValue = this.cleanCheckedValues([value]);
+            const cleanValue = this.cleanCheckedValues([value])[0];
+            console.log(' Clean Value : ', cleanValue);
             // const cleanValue = this.cleanCheckedValues([value]);
             const { path: nodePath } = pathToNode(nodes, cleanValue);
             console.log(' Node Path : ', nodePath);
@@ -392,14 +399,24 @@ export class NAICSContainer extends React.Component {
             const node = get({ data: nodes }, nodePathString);
 
             /**
-             * Add isSearch property to every node in handle search, then
-             * if node has isSearch Property, and check this nodes children
-             * have placeholder for search, and if this dirty value is not in it
-             * dont count it.
+             * if node has isSearch Property, then check this nodes children
+             * have placeholder for search by checking if this node's placeholder for search
+             * exists, if not, traverse it's parents back up the tree to see if any parents
+             * have children with place holder for search. If any have placeholder for search
              * 
-             * 
-             * Also move that path function data to handle search data.
              */
+            console.log(' Node : ', node);
+            let countFromSearchHelper = 0;
+            if (node.isSearch) {
+                /**
+                 * traverse node's parents to see if any of their placeholder for search values
+                 * exist in the checked array. If a parent's placeholder for search value exists in
+                 * in the checked array, do not count this child and return the acc. If none of them
+                 * exist, count this child.
+                 */
+                console.log('--------------------- Node Is A Search Node ---------------------');
+                countFromSearchHelper = countFromSearch(node, nodes, checkedData);
+            }
             
 
             // const valueIsAChildPlaceholder = value.includes('childPlaceholder');
@@ -449,6 +466,10 @@ export class NAICSContainer extends React.Component {
                 console.log(' Found : ', node.count);
                 // adds the count of the child object to the parent node
                 // when we are at the last level the count will be 0, so add 1
+                if (node.isSearch) {
+                    acc[foundParentNodeIndex].count += countFromSearchHelper;
+                    return acc;
+                }
                 if (node.count === 0) {
                     acc[foundParentNodeIndex].count++;
                 }
@@ -459,6 +480,11 @@ export class NAICSContainer extends React.Component {
             else { // no parent node exists in accumulator, add parent to accumulator
                 // this is the last possible child for this parent, add 1
                 console.log(' Unfound : ', node.count);
+                if (node.isSearch) {
+                    parentNode.count = countFromSearchHelper;
+                    acc.push(parentNode);
+                    return acc;
+                }
                 if (node.count === 0) {
                     parentNode.count = 1;
                 }

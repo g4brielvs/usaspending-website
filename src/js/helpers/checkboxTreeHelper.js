@@ -3,7 +3,15 @@
   * Created by Jonathan Hill 10/01/2019
   **/
 
-import { isEmpty, flattenDeep, compact, clone, cloneDeep, flatten } from 'lodash';
+import {
+    isEmpty,
+    flattenDeep,
+    compact,
+    clone,
+    cloneDeep,
+    flatten,
+    get
+} from 'lodash';
 
 /**
  * updateValueAndLabel
@@ -267,12 +275,14 @@ export const updatePathsFromSearch = (node, currentPath) => {
             if (!newChild.path) newChild.path = [];
             const newPathForChild = flattenDeep([parentPath, newChild.path.slice(parentPath.length)]);
             newChild.path = newPathForChild;
+            newChild.isSearch = true;
             if (newChild.children) newChild.children = updateChildPath(newChild.children, newPathForChild);
             return newChild;
         });
     };
     // updates node path to the current parent path
     nodeData.path = currentPath;
+    nodeData.isSearch = true;
     if (nodeData.children) {
         nodeData.children = nodeData.children.map((data) => {
             const newData = cloneDeep(data);
@@ -280,6 +290,7 @@ export const updatePathsFromSearch = (node, currentPath) => {
             // remove current parent path from child and places new parent path in place
             const newPathForChild = flatten([currentPath, newData.path.slice(currentPath.length)]);
             newData.path = newPathForChild;
+            newData.isSearch = true;
             if (newData.children) newData.children = updateChildPath(newData.children, newPathForChild);
             return newData;
         });
@@ -420,3 +431,31 @@ export const buildNodePath = (path, startingProperty = 'data') => path
         }
         return stringPath;
     }, '');
+/**
+ * traverse node's parents to see if any of their placeholder for search values
+ * exist in the checked array. If a parent's placeholder for search value exists in
+ * in the checked array, do not count this child and return the acc. If none of them
+ * exist, count this child.
+ */
+export const countFromSearch = (node, nodes, checked) => {
+    const nodeData = cloneDeep(node);
+    let parentExists = false;
+    if (nodeData.path.length > 1) nodeData.path.pop();
+    nodeData.path.forEach((path, index, array) => {
+        if (parentExists) return null;
+        // get parent node
+        console.log(' Path : ', path);
+        const parentPath = nodeData.path.slice(0, array.length - index);
+        console.log(' Parent Path : ', parentPath);
+        const parentPathString = buildNodePath(parentPath);
+        const parentNode = get({ data: nodes }, parentPathString);
+        console.log(' Parent Node : ', parentNode);
+        parentExists = checked.some(
+            (checkedValue) => checkedValue.includes(`${parentNode?.value}placeholderForSearch`)
+        );
+        console.log(' Parent Exists : ', parentExists);
+        return null;
+    });
+    if (parentExists && nodeData.path.length > 1) return 0;
+    return nodeData.count === 0 ? 1 : nodeData.count;
+};
