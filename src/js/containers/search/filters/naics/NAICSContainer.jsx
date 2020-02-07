@@ -378,8 +378,9 @@ export class NAICSContainer extends React.Component {
         const selectedNaicsData = checkedData.reduce((acc, value) => {
             console.log(' Reduce Value : ', value);
             console.log(' Nodes : ', cloneDeep(this.props.nodes.toJS()));
+            const cleanValue = this.cleanCheckedValues([value]);
             // const cleanValue = this.cleanCheckedValues([value]);
-            const { path: nodePath } = pathToNode(nodes, value);
+            const { path: nodePath } = pathToNode(nodes, cleanValue);
             console.log(' Node Path : ', nodePath);
             if (!nodePath) return acc;
             const parentNodePath = [nodePath[0]];
@@ -390,10 +391,16 @@ export class NAICSContainer extends React.Component {
             const nodePathString = buildNodePath(nodePath);
             const node = get({ data: nodes }, nodePathString);
 
-            // Decide if we count Search objects
-
-
-
+            /**
+             * Add isSearch property to every node in handle search, then
+             * if node has isSearch Property, and check this nodes children
+             * have placeholder for search, and if this dirty value is not in it
+             * dont count it.
+             * 
+             * 
+             * Also move that path function data to handle search data.
+             */
+            
 
             // const valueIsAChildPlaceholder = value.includes('childPlaceholder');
             // const valueIsASearchPlaceholder = value.includes('placeholderForSearch');
