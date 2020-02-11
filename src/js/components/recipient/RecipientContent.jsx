@@ -71,9 +71,9 @@ const RecipientContent = ({ recipient, pickedFy, showModal }) => {
                     jumpToSection={jumpToSection}
                     fixedStickyBreakpoint={StickyHeader.stickyHeaderHeight}
                     detectActiveSection={setActiveSection}
-                    selectedFy={recipient.fy}
-                    fyPicker
-                    pickedYear={pickedFy} />
+                    selectedFilter={recipient.fy}
+                    useFilter
+                    onChangeFilter={pickedFy} />
             </div>
             <div className="recipient-content">
                 <RecipientOverview

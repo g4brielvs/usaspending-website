@@ -74,9 +74,9 @@ const StateContent = ({
                     jumpToSection={jumpToSection}
                     detectActiveSection={setActiveSection}
                     fixedStickyBreakpoint={StickyHeader.stickyHeaderHeight}
-                    fyPicker
-                    selectedFy={stateProfile.fy}
-                    pickedYear={pickedFy} />
+                    useFilter
+                    selectedFilter={stateProfile.fy}
+                    onChangeFilter={pickedFy} />
             </div>
             <div className="state-content">
                 <StateOverview

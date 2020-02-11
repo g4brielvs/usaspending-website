@@ -7,7 +7,7 @@ import React, { useEffect, useState, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { throttle } from 'lodash';
 
-import FYPicker from 'components/state/RecipientFYPicker';
+import FYPicker from 'components/sharedComponents/pickers/FYPicker';
 import SidebarLink from './SidebarLink';
 import { useDynamicStickyClass } from '../stickyHeader/StickyHeader';
 
@@ -16,9 +16,9 @@ const propTypes = {
     pageName: PropTypes.string,
     sections: PropTypes.array,
     jumpToSection: PropTypes.func,
-    fyPicker: PropTypes.bool,
-    selectedFy: PropTypes.string,
-    pickedYear: PropTypes.func,
+    useFilter: PropTypes.bool,
+    selectedFilter: PropTypes.string,
+    onChangeFilter: PropTypes.func,
     detectActiveSection: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     fixedStickyBreakpoint: PropTypes.number
 };
@@ -32,9 +32,9 @@ const Sidebar = ({
     pageName,
     sections,
     jumpToSection,
-    fyPicker,
-    selectedFy,
-    pickedYear,
+    useFilter,
+    selectedFilter,
+    onChangeFilter,
     detectActiveSection = false,
     fixedStickyBreakpoint = null
 }) => {
@@ -221,10 +221,10 @@ const Sidebar = ({
                 &nbsp;
             </div>
             <div ref={div} className={`${pageName}-sidebar-content ${floatSidebar}`} style={{ width: sidebarWidth }}>
-                {fyPicker && (
+                {useFilter && (
                     <FYPicker
-                        selectedFy={selectedFy}
-                        pickedYear={pickedYear} />
+                        selectedFilter={selectedFilter}
+                        onChangeFilter={onChangeFilter} />
                 )}
                 <ul>
                     {sections.map(buildItems)}
