@@ -10,7 +10,8 @@ import {
     clone,
     cloneDeep,
     flatten,
-    get
+    get,
+    uniq
 } from 'lodash';
 
 /**
@@ -217,7 +218,7 @@ export const handleSearch = (
         if (difference > 0) {
             // placeholder children for search
             const placeholderChild = {
-                value: `${node.value}placeholderForSearch${i}`,
+                value: `${node.value}placeholderForSearch`,
                 label: 'placeholderForSearch',
                 className: 'react-checkbox-tree__search-placeholder-child'
             };
@@ -440,22 +441,43 @@ export const buildNodePath = (path, startingProperty = 'data') => path
 export const countFromSearch = (node, nodes, checked) => {
     const nodeData = cloneDeep(node);
     let parentExists = false;
+    const originalPath = [...nodeData.path];
     if (nodeData.path.length > 1) nodeData.path.pop();
     nodeData.path.forEach((path, index, array) => {
         if (parentExists) return null;
         // get parent node
-        console.log(' Path : ', path);
+        // console.log(' Path : ', path);
         const parentPath = nodeData.path.slice(0, array.length - index);
-        console.log(' Parent Path : ', parentPath);
+        // console.log(' Parent Path : ', parentPath);
         const parentPathString = buildNodePath(parentPath);
         const parentNode = get({ data: nodes }, parentPathString);
-        console.log(' Parent Node : ', parentNode);
+        // console.log(' Parent Node : ', parentNode);
         parentExists = checked.some(
             (checkedValue) => checkedValue.includes(`${parentNode?.value}placeholderForSearch`)
         );
-        console.log(' Parent Exists : ', parentExists);
+        // console.log(' Parent Exists : ', parentExists);
         return null;
     });
-    if (parentExists && nodeData.path.length > 1) return 0;
+    if (parentExists && originalPath.length > 1) return 0;
     return nodeData.count === 0 ? 1 : nodeData.count;
+};
+/**
+ * cleanCheckedValues
+ * - removes and values that have childPlaceholder
+ * @param {string[]} checked - array of strings
+ * @returns {string[]} - an array of strings
+ */
+export const cleanCheckedValues = (checked) => {
+    const placeholder = 'childPlaceholder';
+    const searchPlaceholder = 'placeholderForSearch';
+    return uniq(checked.map((value) => {
+        if (value.includes(placeholder)) {
+            return value.replace(placeholder, '');
+        }
+        else if (value.includes(searchPlaceholder)) {
+            const indexOf = value.indexOf('p');
+            return value.slice(0, indexOf);
+        }
+        return value;
+    }));
 };

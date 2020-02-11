@@ -6,6 +6,7 @@
 import { rootKeys, timePeriodKeys, agencyKeys, awardAmountKeys }
     from 'dataMapping/search/awardsOperationKeys';
 import * as FiscalYearHelper from 'helpers/fiscalYearHelper';
+import { cleanCheckedValues } from 'helpers/checkboxTreeHelper';
 import { pickBy } from 'lodash';
 
 class SearchAwardsOperation {
@@ -270,8 +271,7 @@ class SearchAwardsOperation {
 
         // Add NAICS
         if (this.naics.length > 0) {
-            console.log(' NAICS : ', this.naics);
-            filters[rootKeys.naics] = this.naics;
+            filters[rootKeys.naics] = cleanCheckedValues(this.naics);
         }
         if (this.selectedNAICS.length > 0) {
             filters[rootKeys.naics] = this.selectedNAICS.map((naics) => naics.naics);
