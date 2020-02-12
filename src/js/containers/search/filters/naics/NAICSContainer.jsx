@@ -6,7 +6,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import PropTypes, { string } from 'prop-types';
 import {
     debounce,
     get,
@@ -34,6 +34,7 @@ import {
     countFromSearch,
     cleanCheckedValues
 } from 'helpers/checkboxTreeHelper';
+import { deepestChildValues, allChildValues } from '../../../../helpers/checkboxTreeHelper';
 
 const propTypes = {
     updateNaics: PropTypes.func,
@@ -132,31 +133,45 @@ export class NAICSContainer extends React.Component {
         if (newCheckedValues.length && this.state.isSearch) {
             const nodes = this.addNodeFromSearch(newCheckedValues);
             console.log(' Nodes : ', nodes);
+            const updatedCheckedValues = clone(currentlyChecked);
+            currentlyChecked.forEach((checkedValue) => {
+                /**
+                 * Sometimes we will encounter when a user will have expanded nodes in the default tree
+                 * and we will not add the search node to the default tree since we already have that node's
+                 * data. If a user selects that node in the search view and it is not checked in the default view
+                 * we must still keep that checked node.
+                 */
+                if (checkedValue.includes('placeholderForSearch')) {
+                    console.log(' Should be including this ');
+                    const cleanValue = cleanCheckedValues([checkedValue])[0];
+                    // get this node
+                    const { path: nodePath } = pathToNode(nodes, cleanValue);
+                    console.log(' Node Path : ', nodePath);
+                    const stringPath = buildNodePath(nodePath);
+                    const node = get({ data: nodes }, stringPath);
+                    const allChildren = deepestChildValues(node.children);
+                    const nodeValueIndex = updatedCheckedValues.findIndex((val) => val === checkedValue);
+                    updatedCheckedValues.splice(nodeValueIndex, 1, ...allChildren);
+
+                    console.log(' Clean Value : ', cleanValue);
+                    // if (!currentlyChecked.includes(cleanValue)) {
+                    //     currentlyChecked.push(cleanValue);
+                    // }
+                }
+            });
+            console.log(' Updated Checked Values : ', updatedCheckedValues);
+            currentlyChecked = uniq(updatedCheckedValues);
             /**
              * When a user has checked a node in the default view and we do not have all
              * the data for that node and a user checked the same node in search we must
              * account for have that node's child placeholder and search placeholder.
              * Since we do not have all the data for the node, we will add the search node
              * to the data array so we will keep the search checked value.
-             */
-            currentlyChecked = currentlyChecked.filter((checkedValue) => {
+             */            
+            currentlyChecked = updatedCheckedValues.filter((checkedValue) => {
                 if (checkedValue.includes('childPlaceholder') || checkedValue.includes('placeholderForSearch')) {
                     const { path: nodeExists } = pathToNode(nodes, checkedValue);
                     if (nodeExists) return true;
-                    /**
-                     * Sometimes we will encounter when a user will have expanded nodes in the default tree
-                     * and we will not add the search node to the default tree since we already have that node's
-                     * data. If a user selects that node in the search view and it is not checked in the default view
-                     * we must still keep that checked node.
-                     */
-                    if (checkedValue.includes('placeholderForSearch')) {
-                        console.log(' Should be including this ');
-                        const cleanValue = cleanCheckedValues([checkedValue])[0];
-                        console.log(' Clean Value : ', cleanValue);
-                        if (!currentlyChecked.includes(cleanValue)) {
-                            currentlyChecked.push(cleanValue);
-                        }
-                    }
                     return false;
                 }
                 return true;
@@ -164,9 +179,9 @@ export class NAICSContainer extends React.Component {
         }
         console.log(' Final Checked Values : ', currentlyChecked);
         // sets checked in naics redux
-        await this.props.setChecked(currentlyChecked);
+        await this.props.setChecked(uniq(currentlyChecked));
         // sets staged filters in search redux
-        await this.props.updateNaics(currentlyChecked);
+        await this.props.updateNaics(uniq(currentlyChecked));
     }
 
     setRedux = (naics) => this.props.setNaics(naics);
@@ -235,7 +250,6 @@ export class NAICSContainer extends React.Component {
                         theOldPathToRedux = newPathToNodeRedux;
                     }
                 });
-                console.log(' Updated Nodes : ', nodes);
                 this.props.setNaics(nodes);
             }
         });

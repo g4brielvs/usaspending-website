@@ -411,6 +411,26 @@ export const pathToNode = (nodes, value, key = 'value') => {
     return { path: theNodePath };
 };
 /**
+ * cleanCheckedValues
+ * - removes and values that have childPlaceholder
+ * @param {string[]} checked - array of strings
+ * @returns {string[]} - an array of strings
+ */
+export const cleanCheckedValues = (checked) => {
+    const placeholder = 'childPlaceholder';
+    const searchPlaceholder = 'placeholderForSearch';
+    return uniq(checked.map((value) => {
+        if (value.includes(placeholder)) {
+            return value.replace(placeholder, '');
+        }
+        else if (value.includes(searchPlaceholder)) {
+            const indexOf = value.indexOf('p');
+            return value.slice(0, indexOf);
+        }
+        return value;
+    }));
+};
+/**
  * buildNodePath
  * Creates an object path string
  * @param {array} path - an object path
@@ -439,6 +459,7 @@ export const buildNodePath = (path, startingProperty = 'data') => path
  * exist, count this child.
  */
 export const countFromSearch = (node, nodes, checked) => {
+    console.log(' Count From Search Node : ', node);
     const nodeData = cloneDeep(node);
     let parentExists = false;
     const originalPath = [...nodeData.path];
@@ -459,25 +480,48 @@ export const countFromSearch = (node, nodes, checked) => {
         return null;
     });
     if (parentExists && originalPath.length > 1) return 0;
+    // let count = nodeData.count === 0 ? 1 : nodeData.count;
+    // // this allows a user to select a parent and remove children in search view
+    // if (nodeData.count && nodeData.children) {
+    //     console.log(' Search Jon Checked : ', checked);
+    //     const allChildrenValues = deepestChildValues(nodeData.children);
+    //     allChildrenValues.forEach((childValue) => {
+    //         console.log(' Child Value : ', childValue);
+    //         const foundChild = checked.findIndex((val) => val === childValue);
+    //         console.log(' Found Child : ', foundChild);
+    //         if (foundChild === -1) {
+    //             const { path: nodePath } = pathToNode(nodes, cleanCheckedValues([childValue])[0]);
+    //             const pathString = buildNodePath(nodePath);
+    //             const child = get({ data: nodes }, pathString);
+    //             let childParentIsNotInTheArray = false;
+    //             child.path.forEach((path, index, array) => {
+    //                 if (childParentIsNotInTheArray) return null;
+    //                 // get parent node
+    //                 // console.log(' Path : ', path);
+    //                 const parentPath = nodeData.path.slice(0, array.length - index);
+    //                 // console.log(' Parent Path : ', parentPath);
+    //                 const parentPathString = buildNodePath(parentPath);
+    //                 const parentNode = get({ data: nodes }, parentPathString);
+    //                 // console.log(' Parent Node : ', parentNode);
+    //                 childParentIsNotInTheArray = !checked.includes(`${parentNode?.value}placeholderForSearch`);
+
+    //                 // console.log(' Parent Exists : ', parentExists);
+    //                 return null;
+    //             });
+    //             // const child = nodeData.children.find((data) => data.value === cleanCheckedValues([childValue])[0]);
+    //             console.log(' Decrementing Child : ', child);
+    //             console.log(' Child Parent Is Not In the Array : ', childParentIsNotInTheArray);
+    //             if (child && childParentIsNotInTheArray) {
+    //                 if (child.count === 0) {
+    //                     count--;
+    //                 }
+    //                 else {
+    //                     count -= child.count;
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
+    // return count;
     return nodeData.count === 0 ? 1 : nodeData.count;
-};
-/**
- * cleanCheckedValues
- * - removes and values that have childPlaceholder
- * @param {string[]} checked - array of strings
- * @returns {string[]} - an array of strings
- */
-export const cleanCheckedValues = (checked) => {
-    const placeholder = 'childPlaceholder';
-    const searchPlaceholder = 'placeholderForSearch';
-    return uniq(checked.map((value) => {
-        if (value.includes(placeholder)) {
-            return value.replace(placeholder, '');
-        }
-        else if (value.includes(searchPlaceholder)) {
-            const indexOf = value.indexOf('p');
-            return value.slice(0, indexOf);
-        }
-        return value;
-    }));
 };

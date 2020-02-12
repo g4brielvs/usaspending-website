@@ -272,19 +272,15 @@ export default class CheckboxTree extends Component {
 
     keepChildrenFromSearch = (originalNode, newNode) => {
         const updatedNode = [...newNode];
-        console.log(' Original Node : ', originalNode);
-        console.log(' New Node : ', newNode[0]);
         const currentNodeChildValues = compact(originalNode?.children.map((child) => {
             return child?.value;
         }));
-        console.log(' Current Child Values : ', currentNodeChildValues);
 
         const updateChildrenPaths = (parentNode) => parentNode.children.map((child) => {
             const parentPath = [...parentNode.path];
-            console.log(' Parent Path : ', parentPath);
             const clonedChild = cloneDeep(child);
-            clonedChild.path.splice(0, parentPath.length, ...parentPath);
-            console.log(' Cloned Child Path : ', clonedChild.path);
+            console.log(' Cloned Child : ', clonedChild);
+            if (clonedChild.path) clonedChild.path.splice(0, parentPath.length, ...parentPath);
             if (clonedChild.children) return updateChildrenPaths(clonedChild);
             return clonedChild;
         });
@@ -297,21 +293,18 @@ export default class CheckboxTree extends Component {
             if (!childValue) return;
             // Find the child in the old state object
             const oldChild = originalNode.children.find((child) => child.value === childValue);
-            console.log(' Old Child : ', oldChild);
             // find the index in the new node object
             const newIndex = newNode[0].children.findIndex((child) => child?.value === childValue);
             // update the new node object with the current object child
             if (oldChild) {
                 // update the path position of the old child to reflect current order in state
                 if (newIndex !== -1) oldChild.path = newNode[0].children[newIndex].path;
-                console.log(' Old Child New Path : ', oldChild.path);
                 if (oldChild.children) {
                     oldChild.children = updateChildrenPaths(oldChild);
                 }
                 updatedNode[0].children[newIndex] = oldChild;
             }
         });
-        console.log(' Updated Node ------ : ', updatedNode);
 
         return updatedNode;
     }
@@ -325,9 +318,7 @@ export default class CheckboxTree extends Component {
          */
         const currentlyChecked = clone(this.state.checked);
         const childPlaceholder = `${newNode[0].value}childPlaceholder`;
-        console.log('0000000000000000 Currently Checked 0000000000000000: ', currentlyChecked);
         if (currentlyChecked.includes(childPlaceholder)) {
-            console.log('1111111111111111 Currently Checked 1111111111111111: ', currentlyChecked);
             const index = currentlyChecked.findIndex((info) => info === childPlaceholder);
             // get all child values
             // const allTheChildValues = allChildValues(newNode[0].children);
@@ -342,7 +333,6 @@ export default class CheckboxTree extends Component {
 
             // add child values to array
             currentlyChecked.splice(index, 1, ...childValues);
-            console.log('222222222222222 Currently Checked 222222222222222: ', currentlyChecked);
             /**
              * Since React Checkbox Tree decides if a node is checked based on its child properties
              * and we are update all the new children to checked. We must remove the parent that is checked.
@@ -353,7 +343,6 @@ export default class CheckboxTree extends Component {
         /**
          * When we have data in the default view but do not ha
          */
-        console.log(' Currently Checked Jimmy T : ', currentlyChecked);
         return currentlyChecked;
     }
 
@@ -370,7 +359,6 @@ export default class CheckboxTree extends Component {
             checkedArray = currentlyChecked.filter((checked) => !checked.includes(searchChildPlaceholder));
             // add new children to checked array
             const childValues = deepestChildValues(newNode);
-            console.log(' Child Values : ', childValues);
             childValues.forEach((child) => checkedArray.push(child));
         }
         return checkedArray;
