@@ -1,6 +1,6 @@
 @include font-face(
     'Source Sans Pro',
-    '#{$font-path}/sourcesanspro-light-webfont',
+    '#{$fonts-path}/sourcesanspro-light-webfont',
     300,
     normal,
     $asset-pipeline: false,
@@ -9,7 +9,7 @@
 
 @include font-face(
     'Source Sans Pro',
-    '#{$font-path}/sourcesanspro-regular-webfont',
+    '#{$fonts-path}/sourcesanspro-regular-webfont',
     400,
     normal,
     $asset-pipeline: false,
@@ -18,7 +18,7 @@
 
 @include font-face(
     'Source Sans Pro',
-    '#{$font-path}/sourcesanspro-italic-webfont',
+    '#{$fonts-path}/sourcesanspro-italic-webfont',
     400,
     italic,
     $asset-pipeline: false,
@@ -27,7 +27,7 @@
 
 @include font-face(
     'Source Sans Pro',
-    '#{$font-path}/sourcesanspro-semibold-webfont',
+    '#{$fonts-path}/sourcesanspro-semibold-webfont',
     600,
     normal,
     $asset-pipeline: false,
@@ -36,7 +36,7 @@
 
 @include font-face(
     'Source Sans Pro',
-    '#{$font-path}/sourcesanspro-bold-webfont',
+    '#{$fonts-path}/sourcesanspro-bold-webfont',
     700,
     normal,
     $asset-pipeline: false,
@@ -45,7 +45,7 @@
 
 @include font-face(
     'Merriweather',
-    '#{$font-path}/merriweather-light-webfont',
+    '#{$fonts-path}/merriweather-light-webfont',
     300,
     normal,
     $asset-pipeline: false,
@@ -54,7 +54,7 @@
 
 @include font-face(
     'Merriweather',
-    '#{$font-path}/merriweather-regular-webfont',
+    '#{$fonts-path}/merriweather-regular-webfont',
     400,
     normal,
     $asset-pipeline: false,
@@ -63,7 +63,7 @@
 
 @include font-face(
     'Merriweather',
-    '#{$font-path}/merriweather-italic-webfont',
+    '#{$fonts-path}/merriweather-italic-webfont',
     400,
     italic,
     $asset-pipeline: false,
@@ -72,7 +72,7 @@
 
 @include font-face(
     'Merriweather',
-    '#{$font-path}/merriweather-bold-webfont',
+    '#{$fonts-path}/merriweather-bold-webfont',
     700,
     normal,
     $asset-pipeline: false,

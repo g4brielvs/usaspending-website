@@ -70,10 +70,17 @@ module.exports = {
                 ]
             },
             {
-                include: /\.(eot|ttf|woff|woff2|png|svg|ico|gif|jpg)$/,
+                include: /\.(png|svg|ico|gif|jpg)$/,
                 loader: 'file-loader',
                 query: {
                     name: '[path][name].[ext]'
+                }
+            },
+            {
+                include: /\.(eot|ttf|woff|woff2)$/,
+                loader: 'file-loader',
+                query: {
+                    name: 'fonts/[name].[ext]'
                 }
             },
             {
