@@ -13,8 +13,7 @@ import {
     get,
     set,
     cloneDeep,
-    compact,
-    flatten
+    compact
 } from 'lodash';
 import reactStringReplace from 'react-string-replace';
 import CheckboxTreeLabel from 'components/sharedComponents/CheckboxTreeLabel';
@@ -23,7 +22,6 @@ import {
     pathToNode,
     buildNodePath,
     handleSearch,
-    allChildValues,
     deepestChildValues
 } from 'helpers/checkboxTreeHelper';
 import { treeIcons } from 'dataMapping/shared/checkboxTree/checkboxTree';
@@ -69,7 +67,9 @@ export default class CheckboxTree extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (!isEqual(prevProps.data, this.props.data)) {
+        if (
+            !isEqual(prevProps.data, this.props.data)
+        ) {
             this.updateNode();
         }
     }
@@ -108,7 +108,7 @@ export default class CheckboxTree extends Component {
      * @returns {Array.<object>} - new array of nodes
      */
     setChildrenToLoading = async (path, node) => {
-        let nodePath = path;
+        const nodePath = path;
         /**
          * The path specifies the path to that distinct node. We are adding the
          * children property to that because we want to set the children property.
@@ -124,22 +124,13 @@ export default class CheckboxTree extends Component {
             value: `${node.value}loading`,
             showCheckbox: false
         });
-        // nodePath += '.children';
         const newNodes = this.createNodesObject();
-
-        // set(newNodes, nodePath, [{
-        //     label: (
-        //         <div className="children-are-loading">
-        //             <FontAwesomeIcon icon="spinner" spin />
-        //             <div className="children-are-loading__text">Loading your data...</div>
-        //         </div>
-        //     ),
-        //     value: `${node.value}loading`,
-        //     showCheckbox: false
-        // }]);
         set(newNodes, nodePath, node);
         return newNodes.data;
     }
+    updateChecked = (checked) => {
+        this.setState({ checked });
+    };
     /**
      * checkedNode
      * - updates state and calls prop onCheck
@@ -159,7 +150,7 @@ export default class CheckboxTree extends Component {
      * @param {object} node - the checked node
      * @returns {null}
      */
-    unCheckedNode = (checked, node) => {
+    unCheckedNode = (checked) => {
         const { onCheck } = this.props;
         this.setState({ checked });
         if (onCheck) onCheck(checked);
@@ -205,7 +196,6 @@ export default class CheckboxTree extends Component {
         const expandedValue = difference(newExpandedArray, expanded)[0];
         const { path } = pathToNode(this.state.nodes, expandedValue);
         const nodePathString = buildNodePath(path);
-        // const nodePathString = this.pathToNodeString(expandedValue);
         // get the node
         const node = get(this.createNodesObject(), nodePathString);
         /**
@@ -253,8 +243,7 @@ export default class CheckboxTree extends Component {
             data,
             limit,
             setRedux,
-            isSearch,
-            checked
+            isSearch
         } = this.props;
         if (isSearch) return this.handleSearch(data);
         const newNodes = createCheckboxTreeDataStrucure(limit, nodeKeys, data);
@@ -321,15 +310,7 @@ export default class CheckboxTree extends Component {
         if (currentlyChecked.includes(childPlaceholder)) {
             const index = currentlyChecked.findIndex((info) => info === childPlaceholder);
             // get all child values
-            // const allTheChildValues = allChildValues(newNode[0].children);
-
             const childValues = deepestChildValues(newNode);
-
-            // filters out any node values that have a child with childPlaceholder value
-            // const childValues = allTheChildValues.filter((child) => {
-            //     if (allTheChildValues.includes(`${child}childPlaceholder`)) return false;
-            //     return true;
-            // });
 
             // add child values to array
             currentlyChecked.splice(index, 1, ...childValues);

@@ -4,10 +4,8 @@
   **/
 
 import {
-    isEmpty,
     flattenDeep,
     compact,
-    clone,
     cloneDeep,
     flatten,
     get,
@@ -204,14 +202,6 @@ export const handleSearch = (
     nodeKeys,
     nodes
 ) => {
-    // const newNodes = createCheckboxTreeDataStrucure(
-    //     limit,
-    //     nodeKeys,
-    //     nodes,
-    //     null,
-    //     null,
-    //     true
-    // );
     // add placeholder children for search
     const addPlaceholderChildren = (node) => {
         const difference = node.count - node.children.length;
@@ -265,22 +255,20 @@ export const handleSearch = (
 };
 /**
  * Update Paths From Search
- * @param {*} nodes 
+ * @param {*} nodes
  */
 export const updatePathsFromSearch = (node, currentPath) => {
     const nodeData = cloneDeep(node);
     // updates child paths
-    const updateChildPath = (children, parentPath) => {
-        return children.map((child) => {
-            const newChild = cloneDeep(child);
-            if (!newChild.path) newChild.path = [];
-            const newPathForChild = flattenDeep([parentPath, newChild.path.slice(parentPath.length)]);
-            newChild.path = newPathForChild;
-            newChild.isSearch = true;
-            if (newChild.children) newChild.children = updateChildPath(newChild.children, newPathForChild);
-            return newChild;
-        });
-    };
+    const updateChildPath = (children, parentPath) => children.map((child) => {
+        const newChild = cloneDeep(child);
+        if (!newChild.path) newChild.path = [];
+        const newPathForChild = flattenDeep([parentPath, newChild.path.slice(parentPath.length)]);
+        newChild.path = newPathForChild;
+        newChild.isSearch = true;
+        if (newChild.children) newChild.children = updateChildPath(newChild.children, newPathForChild);
+        return newChild;
+    });
     // updates node path to the current parent path
     nodeData.path = currentPath;
     nodeData.isSearch = true;
@@ -459,28 +447,18 @@ export const buildNodePath = (path, startingProperty = 'data') => path
  * exist, count this child.
  */
 export const countFromSearch = (node, nodes, checked) => {
-    // console.log(' Count From Search Node : ', node);
-    // console.log(' Selected Count : ', selectedCount);
     const nodeData = cloneDeep(node);
     let parentExists = false;
-    // let parentHasBeenCounted = false;
-    // const originalPath = [...nodeData.path];
     if (nodeData.path.length > 1) nodeData.path.pop();
     nodeData.path.forEach((path, index, array) => {
         if (parentExists) return null;
         // get parent node
-        // console.log(' Path : ', path);
         const parentPath = nodeData.path.slice(0, array.length - index);
-        // console.log(' Parent Path : ', parentPath);
         const parentPathString = buildNodePath(parentPath);
         const parentNode = get({ data: nodes }, parentPathString);
-        // console.log(' Parent Node : ', parentNode);
         parentExists = checked.some(
             (checkedValue) => checkedValue.includes(`${parentNode?.value}placeholderForSearch`)
         );
-        // parentHasBeenCounted = parentHasBeenCountedArray.includes((val) => val === parentNode.value);
-        // console.log(' Parent Node : ', parentNode);
-        // console.log(' Parent Exists : ', parentExists);
         return null;
     });
     if (parentExists) return 0;
