@@ -279,7 +279,7 @@ export default class CheckboxTree extends Component {
         const updateChildrenPaths = (parentNode) => parentNode.children.map((child) => {
             const parentPath = [...parentNode.path];
             const clonedChild = cloneDeep(child);
-            console.log(' Cloned Child : ', clonedChild);
+            // console.log(' Cloned Child : ', clonedChild);
             if (clonedChild.path) clonedChild.path.splice(0, parentPath.length, ...parentPath);
             if (clonedChild.children) return updateChildrenPaths(clonedChild);
             return clonedChild;

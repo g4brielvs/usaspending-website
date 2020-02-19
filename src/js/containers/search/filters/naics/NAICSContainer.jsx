@@ -17,7 +17,7 @@ import {
     difference,
     set
 } from 'lodash';
-import { isCancel } from 'axios';
+import Axios, { isCancel } from 'axios';
 import CheckboxTree from 'containers/shared/checkboxTree/CheckboxTree';
 import { naicsRequest } from 'helpers/naicsHelper';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -74,7 +74,7 @@ export class NAICSContainer extends React.Component {
             return this.setStateFromRedux(nodes, expanded, checked);
         }
         // show staged filters
-        this.selectNaicsData();
+        // this.selectNaicsData();
         return this.fetchNAICS();
     }
 
@@ -84,7 +84,7 @@ export class NAICSContainer extends React.Component {
             || !isEqual(this.props.nodes.toJS(), prevProps.nodes.toJS())
         ) {
             // show stage filters
-            this.selectNaicsData();
+            // this.selectNaicsData();
         }
     }
 
@@ -124,15 +124,24 @@ export class NAICSContainer extends React.Component {
     onCheck = async (checked) => {
         // let checkedArray = uniq(checked);
         const newCheckedValues = difference(checked, this.props.checked.toJS());
+        console.log(' New checked values : ', newCheckedValues);
+        // we will now update the counts
+        if (newCheckedValues.length) {
+            this.addToCounts(newCheckedValues);
+        }
+        else {
+            this.subtractFromCounts(difference(this.props.checked.toJS(), checked));
+        }
+
         let currentlyChecked = clone(this.props.checked.toJS());
-        console.log(' Currently Checked : ', currentlyChecked);
-        console.log(' New Checked Values : ', newCheckedValues);
+        // console.log(' Currently Checked : ', currentlyChecked);
+        // console.log(' New Checked Values : ', newCheckedValues);
         currentlyChecked = uniq(checked);
         if (this.state.isSearch) currentlyChecked = uniq(currentlyChecked.concat(newCheckedValues));
         // const currentlyCheck = uniq(this.props.checked.toJS());
         if (newCheckedValues.length && this.state.isSearch) {
             const nodes = this.addNodeFromSearch(newCheckedValues);
-            console.log(' Nodes : ', nodes);
+            // console.log(' Nodes : ', nodes);
             const updatedCheckedValues = clone(currentlyChecked);
             currentlyChecked.forEach((checkedValue) => {
                 /**
@@ -142,24 +151,24 @@ export class NAICSContainer extends React.Component {
                  * we must still keep that checked node.
                  */
                 if (checkedValue.includes('placeholderForSearch')) {
-                    console.log(' Should be including this ');
+                    // console.log(' Should be including this ');
                     const cleanValue = cleanCheckedValues([checkedValue])[0];
                     // get this node
                     const { path: nodePath } = pathToNode(nodes, cleanValue);
-                    console.log(' Node Path : ', nodePath);
+                    // console.log(' Node Path : ', nodePath);
                     const stringPath = buildNodePath(nodePath);
                     const node = get({ data: nodes }, stringPath);
                     const allChildren = deepestChildValues(node.children);
                     const nodeValueIndex = updatedCheckedValues.findIndex((val) => val === checkedValue);
                     updatedCheckedValues.splice(nodeValueIndex, 1, ...allChildren);
 
-                    console.log(' Clean Value : ', cleanValue);
+                    // console.log(' Clean Value : ', cleanValue);
                     // if (!currentlyChecked.includes(cleanValue)) {
                     //     currentlyChecked.push(cleanValue);
                     // }
                 }
             });
-            console.log(' Updated Checked Values : ', updatedCheckedValues);
+            // console.log(' Updated Checked Values : ', updatedCheckedValues);
             currentlyChecked = uniq(updatedCheckedValues);
             /**
              * When a user has checked a node in the default view and we do not have all
@@ -177,7 +186,7 @@ export class NAICSContainer extends React.Component {
                 return true;
             });
         }
-        console.log(' Final Checked Values : ', currentlyChecked);
+        // console.log(' Final Checked Values : ', currentlyChecked);
         // sets checked in naics redux
         await this.props.setChecked(uniq(currentlyChecked));
         // sets staged filters in search redux
@@ -193,6 +202,114 @@ export class NAICSContainer extends React.Component {
             checked: checked.toJS(),
             requestType: ''
         });
+    }
+    addToCounts = (newSelectedValues) => {
+        const { selectedNaicsData, naics } = this.state;
+        const nodes = this.state.isSearch
+            ? cloneDeep(naics)
+            : cloneDeep(this.props.nodes.toJS());
+        if (this.state.isSearch) {
+            newSelectedValues.sort((a, b) => {
+                if (a.includes('placeholderForSearch') && b.includes('placeholderForSearch')) {
+                    return a.length - b.length;
+                }
+                return b.length - a.length;
+            });
+        }
+        console.log( ' Adding to Counts : ', newSelectedValues);
+        const updatedCounts = newSelectedValues.reduce((acc, selectedValue) => {
+            console.log(' ACC : ', acc);
+            // 1. Get Node & Parent Data
+            const cleanValue = cleanCheckedValues([selectedValue])[0];
+            const { path: nodePath } = pathToNode(nodes, cleanValue);
+            console.log(' Node Path : ', nodePath);
+            if (!nodePath) return acc;
+            const parentNodePath = [nodePath[0]];
+            // accessing the tier 0 parent node
+            const parentNodePathString = buildNodePath(parentNodePath);
+            const parentNode = get({ data: nodes }, parentNodePathString);
+            // accessing the selected node
+            const nodePathString = buildNodePath(nodePath);
+            const node = get({ data: nodes }, nodePathString);
+            console.log(' Node : ', node);
+            console.log(' Parent Node : ', parentNode);
+            // 2. Find if the Parent Data is in selected data already
+            const selectedDataIndex = acc.findIndex((data) => data.value === parentNode.value);
+            // 3. If it exists increment count
+            if (selectedDataIndex !== -1) {
+                if (this.state.isSearch) {
+                    acc[selectedDataIndex].count += countFromSearch(node, nodes, newSelectedValues);
+                    return acc;
+                }
+                if (node.count === 0) { // node has no count, add one
+                    acc[selectedDataIndex].count++;
+                }
+                else {
+                    acc[selectedDataIndex].count += node.count;
+                }
+                return acc;
+            }
+            // 4. If not create it
+            if (node.count === 0) {
+                parentNode.count = 1;
+                acc.push(parentNode);
+            }
+            else {
+                parentNode.count = node.count;
+                acc.push(parentNode);
+            }
+            return acc;
+        }, selectedNaicsData);
+        console.log(' Updated Counts Final : ', updatedCounts);
+        this.setState({ selectedNaicsData: updatedCounts });
+    }
+    subtractFromCounts = (unselectedValues) => {
+        const { selectedNaicsData, naics } = this.state;
+        const nodes = this.state.isSearch
+            ? cloneDeep(naics)
+            : cloneDeep(this.props.nodes.toJS());
+        if (this.state.isSearch) {
+            unselectedValues.sort((a, b) => {
+                if (a.includes('placeholderForSearch') && b.includes('placeholderForSearch')) {
+                    return a.length - b.length;
+                }
+                return b.length - a.length;
+            });
+        }
+        console.log(' Subtracting From Counts : ', unselectedValues);
+        const updatedCounts = unselectedValues.reduce((acc, selectedValue) => {
+            // 1. Get Node & Parent Data
+            const cleanValue = cleanCheckedValues([selectedValue])[0];
+            const { path: nodePath } = pathToNode(nodes, cleanValue);
+            if (!nodePath) return acc;
+            const parentNodePath = [nodePath[0]];
+            // accessing the tier 0 parent node
+            const parentNodePathString = buildNodePath(parentNodePath);
+            const parentNode = get({ data: nodes }, parentNodePathString);
+            // accessing the selected node
+            const nodePathString = buildNodePath(nodePath);
+            const node = get({ data: nodes }, nodePathString);
+            // 2. Find if the Parent Data is in selected data already
+            const selectedDataIndex = acc.findIndex((data) => data.value === parentNode.value);
+            // 3. If it exists increment count
+            if (selectedDataIndex !== -1) {
+                if (this.state.isSearch) {
+                    acc[selectedDataIndex].count -= countFromSearch(node, nodes, unselectedValues);
+                    return acc;
+                }
+                if (node.count === 0) { // node has no count, add one
+                    acc[selectedDataIndex].count--;
+                }
+                else {
+                    acc[selectedDataIndex].count -= node.count;
+                }
+                // if we go to zero, remove it from selected data
+                if (acc[selectedDataIndex].count === 0) acc.splice(selectedDataIndex, 1);
+                return acc;
+            }
+            return acc;
+        }, selectedNaicsData);
+        this.setState({ selectedNaicsData: updatedCounts });
     }
 
     addNodeFromSearch = (values) => {
@@ -380,6 +497,14 @@ export class NAICSContainer extends React.Component {
     selectNaicsData = () => {
         const nodes = cloneDeep(this.props.nodes.toJS());
         const checkedData = clone(this.props.checked.toJS());
+        checkedData.sort((a, b) => {
+            if (a.includes('placeholderForSearch') && b.includes('placeholderForSearch')) {
+                return a.length - b.length;
+            }
+            return b.length - a.length;
+        });
+        // console.log(' Sorted Checked Values : ', checkedData);
+        const parentHasBeenCountedArray = [];
         // console.log(' Checked Data : ', checkedData);
         // console.log(' Nodes : ', nodes);
         const selectedNaicsData = checkedData.reduce((acc, value) => {
@@ -402,6 +527,8 @@ export class NAICSContainer extends React.Component {
              * have children with place holder for search. If any have placeholder for search
              * 
              */
+            // find parent node in accumulator
+            const foundParentNodeIndex = acc.findIndex((data) => data.value === parentNode.value);
             // console.log(' Node : ', node);
             let countFromSearchHelper = 0;
             if (node.isSearch) {
@@ -411,11 +538,14 @@ export class NAICSContainer extends React.Component {
                  * in the checked array, do not count this child and return the acc. If none of them
                  * exist, count this child.
                  */
-                countFromSearchHelper = countFromSearch(node, nodes, checkedData);
+                // countFromSearchHelper = countFromSearch(node, nodes, onlyCheckedSearchValues);
+                // console.log(' Parent Has Been Counted Array : ', parentHasBeenCountedArray);
+                const { count, counted } = countFromSearch(node, nodes, checkedData, parentHasBeenCountedArray, acc[foundParentNodeIndex]?.selectedCount);
+                countFromSearchHelper = count;
+                parentHasBeenCountedArray.push(counted);
                 // console.log(' Node Is Search And This is the Count : ', countFromSearchHelper);
             }
-            // find parent node in accumulator
-            const foundParentNodeIndex = acc.findIndex((data) => data.value === parentNode.value);
+
             if (isNaN(node.count)) return acc;
             // when a parent node already exists update count
             if (foundParentNodeIndex !== -1) {
@@ -424,6 +554,7 @@ export class NAICSContainer extends React.Component {
                 // when we are at the last level the count will be 0, so add 1
                 if (node.isSearch) {
                     acc[foundParentNodeIndex].selectedCount += countFromSearchHelper;
+                    acc[foundParentNodeIndex].selectedCount = countFromSearchHelper;
                     return acc;
                 }
                 if (node.count === 0) {
@@ -461,7 +592,9 @@ export class NAICSContainer extends React.Component {
 
     selectedNaics = () => {
         if (!this.props.checked.size === 0) return null;
-        const { selectedNaicsData } = this.selectNaicsData();
+        // const { selectedNaicsData } = this.selectNaicsData();
+        const { selectedNaicsData } = this.state;
+        console.log(' Rendering Data : ', selectedNaicsData);
         return (<SelectedNaic
             selectedNAICS={selectedNaicsData}
             removeNAICS={this.props.removeNAICS} />);

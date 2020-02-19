@@ -459,10 +459,12 @@ export const buildNodePath = (path, startingProperty = 'data') => path
  * exist, count this child.
  */
 export const countFromSearch = (node, nodes, checked) => {
-    console.log(' Count From Search Node : ', node);
+    // console.log(' Count From Search Node : ', node);
+    // console.log(' Selected Count : ', selectedCount);
     const nodeData = cloneDeep(node);
     let parentExists = false;
-    const originalPath = [...nodeData.path];
+    // let parentHasBeenCounted = false;
+    // const originalPath = [...nodeData.path];
     if (nodeData.path.length > 1) nodeData.path.pop();
     nodeData.path.forEach((path, index, array) => {
         if (parentExists) return null;
@@ -476,52 +478,11 @@ export const countFromSearch = (node, nodes, checked) => {
         parentExists = checked.some(
             (checkedValue) => checkedValue.includes(`${parentNode?.value}placeholderForSearch`)
         );
+        // parentHasBeenCounted = parentHasBeenCountedArray.includes((val) => val === parentNode.value);
+        // console.log(' Parent Node : ', parentNode);
         // console.log(' Parent Exists : ', parentExists);
         return null;
     });
-    if (parentExists && originalPath.length > 1) return 0;
-    // let count = nodeData.count === 0 ? 1 : nodeData.count;
-    // // this allows a user to select a parent and remove children in search view
-    // if (nodeData.count && nodeData.children) {
-    //     console.log(' Search Jon Checked : ', checked);
-    //     const allChildrenValues = deepestChildValues(nodeData.children);
-    //     allChildrenValues.forEach((childValue) => {
-    //         console.log(' Child Value : ', childValue);
-    //         const foundChild = checked.findIndex((val) => val === childValue);
-    //         console.log(' Found Child : ', foundChild);
-    //         if (foundChild === -1) {
-    //             const { path: nodePath } = pathToNode(nodes, cleanCheckedValues([childValue])[0]);
-    //             const pathString = buildNodePath(nodePath);
-    //             const child = get({ data: nodes }, pathString);
-    //             let childParentIsNotInTheArray = false;
-    //             child.path.forEach((path, index, array) => {
-    //                 if (childParentIsNotInTheArray) return null;
-    //                 // get parent node
-    //                 // console.log(' Path : ', path);
-    //                 const parentPath = nodeData.path.slice(0, array.length - index);
-    //                 // console.log(' Parent Path : ', parentPath);
-    //                 const parentPathString = buildNodePath(parentPath);
-    //                 const parentNode = get({ data: nodes }, parentPathString);
-    //                 // console.log(' Parent Node : ', parentNode);
-    //                 childParentIsNotInTheArray = !checked.includes(`${parentNode?.value}placeholderForSearch`);
-
-    //                 // console.log(' Parent Exists : ', parentExists);
-    //                 return null;
-    //             });
-    //             // const child = nodeData.children.find((data) => data.value === cleanCheckedValues([childValue])[0]);
-    //             console.log(' Decrementing Child : ', child);
-    //             console.log(' Child Parent Is Not In the Array : ', childParentIsNotInTheArray);
-    //             if (child && childParentIsNotInTheArray) {
-    //                 if (child.count === 0) {
-    //                     count--;
-    //                 }
-    //                 else {
-    //                     count -= child.count;
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-    // return count;
-    return nodeData.count === 0 ? 1 : nodeData.count;
+    if (parentExists) return 0;
+    return node.count === 0 ? 1 : node.count;
 };
