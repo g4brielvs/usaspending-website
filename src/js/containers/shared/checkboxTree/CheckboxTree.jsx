@@ -9,11 +9,8 @@ import PropTypes from 'prop-types';
 import {
     isEqual,
     difference,
-    clone,
     get,
-    set,
-    cloneDeep,
-    compact
+    set
 } from 'lodash';
 import reactStringReplace from 'react-string-replace';
 import CheckboxTreeLabel from 'components/sharedComponents/CheckboxTreeLabel';
@@ -21,8 +18,8 @@ import {
     createCheckboxTreeDataStrucure,
     pathToNode,
     buildNodePath,
-    handleSearch,
-    deepestChildValues
+    isCleanData,
+    createNodesObject
 } from 'helpers/checkboxTreeHelper';
 import { treeIcons } from 'dataMapping/shared/checkboxTree/checkboxTree';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -124,7 +121,7 @@ export default class CheckboxTree extends Component {
             value: `${node.value}loading`,
             showCheckbox: false
         });
-        const newNodes = this.createNodesObject();
+        const newNodes = createNodesObject(this.state.nodes);
         set(newNodes, nodePath, node);
         return newNodes.data;
     }
@@ -169,21 +166,13 @@ export default class CheckboxTree extends Component {
         return buildNodePath(path);
     }
     /**
-     * createNodesObject
-     * Creates an object with a data property set to the value of nodes in state in
-     * order to get and update the nodes property easily with a path string.
-     * @returns {object} - An object with property data set to the
-     * value of the state property ndoes.
-     */
-    createNodesObject = () => ({ data: [...this.state.nodes] });
-    /**
      * expandNode
      * updates state with the new expanded array and updates the newly expanded children
      * with a loading object if we have no child data for that node.
      * @param {array} newExpandedArray - array with the newly expanded value
      */
     expandNode = async (newExpandedArray) => {
-        const { expanded } = this.state;
+        const { expanded, nodes } = this.state;
         const { isSearch } = this.props;
         if (isSearch) return this.setState({ expanded: newExpandedArray });
         /**
@@ -197,7 +186,7 @@ export default class CheckboxTree extends Component {
         const { path } = pathToNode(this.state.nodes, expandedValue);
         const nodePathString = buildNodePath(path);
         // get the node
-        const node = get(this.createNodesObject(), nodePathString);
+        const node = get(createNodesObject(nodes), nodePathString);
         /**
          * When there are no children or there is an empty object in the children property (since we
          * do this to get the caret to show when there is a count)
@@ -243,175 +232,27 @@ export default class CheckboxTree extends Component {
             data,
             limit,
             setRedux,
-            isSearch
-        } = this.props;
-        if (isSearch) return this.handleSearch(data);
-        const newNodes = createCheckboxTreeDataStrucure(limit, nodeKeys, data);
-        this.setState({ nodes: newNodes });
-        return (setRedux && newNodes.length) ? setRedux(newNodes) : null;
-    }
-
-    isCleanData = (data) => data.every((node) => {
-        const keys = Object.keys(node);
-        if (!keys.includes('value')) return false;
-        if (!keys.includes('label')) return false;
-        if (!keys.includes('path')) return false;
-        return true;
-    });
-
-    keepChildrenFromSearch = (originalNode, newNode) => {
-        const updatedNode = [...newNode];
-        const currentNodeChildValues = compact(originalNode?.children.map((child) => {
-            return child?.value;
-        }));
-
-        const updateChildrenPaths = (parentNode) => parentNode.children.map((child) => {
-            const parentPath = [...parentNode.path];
-            const clonedChild = cloneDeep(child);
-            // console.log(' Cloned Child : ', clonedChild);
-            if (clonedChild.path) clonedChild.path.splice(0, parentPath.length, ...parentPath);
-            if (clonedChild.children) return updateChildrenPaths(clonedChild);
-            return clonedChild;
-        });
-        /**
-         * Compares current node's children to new data coming in.
-         * If we currently have that child in the current node's children. We replace the new
-         * data with that child.
-         */
-        currentNodeChildValues.forEach((childValue) => {
-            if (!childValue) return;
-            // Find the child in the old state object
-            const oldChild = originalNode.children.find((child) => child.value === childValue);
-            // find the index in the new node object
-            const newIndex = newNode[0].children.findIndex((child) => child?.value === childValue);
-            // update the new node object with the current object child
-            if (oldChild) {
-                // update the path position of the old child to reflect current order in state
-                if (newIndex !== -1) oldChild.path = newNode[0].children[newIndex].path;
-                if (oldChild.children) {
-                    oldChild.children = updateChildrenPaths(oldChild);
-                }
-                updatedNode[0].children[newIndex] = oldChild;
-            }
-        });
-
-        return updatedNode;
-    }
-
-    updateCheckedWithChildrenIfNoChildren = (newNode) => {
-        /**
-         * When the parent has been checked. We must check all children.
-         * since we place fake children to get the caret to show, if a parent is checked
-         * their childplaceholder value it added to the array so we must remove that placeholder
-         * in the checked array and we must add all new child values to the checked array.
-         */
-        const currentlyChecked = clone(this.state.checked);
-        const childPlaceholder = `${newNode[0].value}childPlaceholder`;
-        if (currentlyChecked.includes(childPlaceholder)) {
-            const index = currentlyChecked.findIndex((info) => info === childPlaceholder);
-            // get all child values
-            const childValues = deepestChildValues(newNode);
-
-            // add child values to array
-            currentlyChecked.splice(index, 1, ...childValues);
-            /**
-             * Since React Checkbox Tree decides if a node is checked based on its child properties
-             * and we are update all the new children to checked. We must remove the parent that is checked.
-             */
-            const parentIndex = currentlyChecked.findIndex((info) => info === newNode[0].value);
-            if (parentIndex !== -1) currentlyChecked.splice(parentIndex, 1);
-        }
-        /**
-         * When we have data in the default view but do not ha
-         */
-        return currentlyChecked;
-    }
-
-    updateCheckedBasedOnSearchPlaceholder = (currentlyChecked, newNode) => {
-        let checkedArray = clone(currentlyChecked);
-        /**
-         * If we have search placholders then a user slected something from search
-         * and we must remove all those search placeholders and add the new children to the array
-         */
-        const searchChildPlaceholder = `${newNode[0].value}placeholderForSearch`;
-        const checkedValuesHaveSearchPlaceholders = currentlyChecked.some((val) => val.includes(searchChildPlaceholder));
-        if (checkedValuesHaveSearchPlaceholders) {
-            // remove current placeholder children from search
-            checkedArray = currentlyChecked.filter((checked) => !checked.includes(searchChildPlaceholder));
-            // add new children to checked array
-            const childValues = deepestChildValues(newNode);
-            childValues.forEach((child) => checkedArray.push(child));
-        }
-        return checkedArray;
-    }
-    /**
-     * updateNode
-     * This will add new data to the nodes array and set the nodes
-     * property in state with the new nodes. This will also call updateRedux
-     * if passed in props.
-     */
-    updateNode = () => {
-        const {
-            nodeKeys,
-            data,
+            isSearch,
             expanded,
-            checked,
-            limit,
-            updateRedux,
-            onCheck
+            checked
         } = this.props;
-        if (this.isCleanData(data)) {
+        if (isCleanData(data)) {
             return this.setState({
                 nodes: data,
                 expanded,
                 checked
             });
         }
-        // path to node
-        const { path } = pathToNode(this.state.nodes, data[0][nodeKeys.value]);
-        const nodePathString = buildNodePath(path);
-        const nodesObject = this.createNodesObject();
-        /**
-         * We pass the node from state since that already has been updated with a path property
-         * and the new nodes coming in from props will not.
-         */
-        const originalNode = get(nodesObject, nodePathString);
-        // create the new node
-        let newNode = createCheckboxTreeDataStrucure(
-            limit,
-            nodeKeys,
-            data,
-            false,
-            originalNode
-        );
-        // keep nodes we already have from search
-        newNode = this.keepChildrenFromSearch(originalNode, newNode);
-        // If a parent is checked we update the checked array with children
-        let currentlyChecked = this.updateCheckedWithChildrenIfNoChildren(newNode);
-        // If search placeholders exist in the checked array. We must update the
-        // checked array with new children from props
-        currentlyChecked = this.updateCheckedBasedOnSearchPlaceholder(currentlyChecked, newNode);
-        // set the new node in the respective position
-        set(nodesObject, nodePathString, newNode[0]);
-        this.setState({ nodes: nodesObject.data, checked: currentlyChecked });
-        if (updateRedux) updateRedux(nodesObject.data);
-        return (onCheck) ? onCheck(currentlyChecked) : null;
+        if (isSearch) return this.setState({ nodes: data });
+        const newNodes = createCheckboxTreeDataStrucure(limit, nodeKeys, data);
+        this.setState({ nodes: newNodes, expanded });
+        return (setRedux && newNodes.length) ? setRedux(newNodes) : null;
     }
-    /**
-     * handleSearch
-     * updates nodes with expanded properties
-     */
-    handleSearch = (nodes) => {
-        const { limit, nodeKeys, checked } = this.props;
-        // create the new node
-        const { updatedNodes, expanded } = handleSearch(
-            limit,
-            nodeKeys,
-            nodes
-        );
-        this.setState({ nodes: updatedNodes });
-        this.setState({ expanded, checked });
-    }
+    updateNode = () => {
+        const { isSearch, data, expanded } = this.props;
+        if (isSearch) return this.setState({ nodes: data });
+        return this.setState({ nodes: data, expanded });
+    };
     // TODO - implement this
     // sets specific icons to custom icons passed in props
     updateIcons = () => {

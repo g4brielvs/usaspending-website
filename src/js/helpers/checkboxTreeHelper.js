@@ -464,3 +464,20 @@ export const countFromSearch = (node, nodes, checked) => {
     if (parentExists) return 0;
     return node.count === 0 ? 1 : node.count;
 };
+
+export const isCleanData = (data) => data.every((node) => {
+    const keys = Object.keys(node);
+    if (!keys.includes('value')) return false;
+    if (!keys.includes('label')) return false;
+    if (!keys.includes('path')) return false;
+    return true;
+});
+
+/**
+ * createNodesObject
+ * Creates an object with a data property set to the value of nodes in state in
+ * order to get and update the nodes property easily with a path string.
+ * @returns {object} - An object with property data set to the
+ * value of the state property ndoes.
+ */
+export const createNodesObject = (nodes) => ({ data: [...nodes] });
