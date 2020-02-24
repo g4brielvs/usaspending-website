@@ -35,7 +35,8 @@ import {
     cleanCheckedValues,
     deepestChildValues,
     handleSearch,
-    createNodesObject
+    createNodesObject,
+    getNode
 } from 'helpers/checkboxTreeHelper';
 
 const propTypes = {
@@ -379,6 +380,35 @@ export class NAICSContainer extends React.Component {
             nodeKeys,
             mappedNodes
         );
+        /**
+         * When going from default view to search view if we have checked values we must update
+         * those to correspond with the search view data since the search view has differing data
+         * such as search placeholders. Since we have the checked values and the search nodes we can
+         * manipulate those checked values to correspond to the search nodes.
+         * 
+         * If there are checked values we will loop through those values, get their respective node,
+         * then get all possible child values and add those to the checked array.
+         * 
+         * We do not care about the lowest tier nodes since those values will correlate with current
+         * checked values. We only care about childPlaceholder values.
+         */
+
+        // const checkedData = cloneDeep(this.props.checked.toJS());
+        // const updatedCheckedData = cloneDeep(this.props.checked.toJS());
+        // if (checkedData.length) {
+        //     checkedData.forEach((value, index) => {
+        //         if (value.includes('childPlaceholder')) {
+        //             const cleanValue = cleanCheckedValues([value])[0];
+        //             // get the node
+        //             const node = getNode(updatedNodes, cleanValue);
+        //             if (!node) return;
+        //             const allChildValues = deepestChildValues([node]);
+        //             // add the search nodes children to the checked array
+        //             updatedCheckedData.splice(index, 1, ...allChildValues);
+        //         }
+        //     });
+        // }
+        // this.props.setChecked(updatedCheckedData);
         this.props.updateNaics(updatedNodes);
         this.setState({
             naics: updatedNodes,

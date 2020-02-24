@@ -480,4 +480,13 @@ export const isCleanData = (data) => data.every((node) => {
  * @returns {object} - An object with property data set to the
  * value of the state property ndoes.
  */
-export const createNodesObject = (nodes) => ({ data: [...nodes] });
+// export const createNodesObject = (nodes) => ({ data: [...nodes] });
+export const createNodesObject = (nodes) => ({ data: cloneDeep(nodes) });
+
+export const getNode = (nodes, value) => {
+    const { path } = pathToNode(nodes, value);
+    if (!path) return path;
+    const pathString = buildNodePath(path);
+    if (!pathString) return null;
+    return get(createNodesObject(nodes), pathString);
+};
