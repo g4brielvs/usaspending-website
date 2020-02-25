@@ -18,9 +18,9 @@ export default class SelectNaic extends React.Component {
     render() {
         if (!this.props.selectedNAICS.length) return null;
         const shownNAICS = this.props.selectedNAICS.map((entry) => {
-            const { value, label } = entry;
+            const { value, label, count } = entry;
             return (<ShownValue
-                label={formatSelectedNaics(value, label, '')}
+                label={`${value} | ${label} | ${count}`}
                 key={value}
                 removeValue={this.props.removeNAICS && this.props.removeNAICS.bind(null, entry)} />);
         });

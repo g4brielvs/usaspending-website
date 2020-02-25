@@ -36,7 +36,8 @@ import {
     deepestChildValues,
     handleSearch,
     createNodesObject,
-    getNode
+    getNode,
+    testingNewSearchData
 } from 'helpers/checkboxTreeHelper';
 
 const propTypes = {
@@ -306,8 +307,8 @@ export class NAICSContainer extends React.Component {
          * they will not have any search children, and if a user selects a parent in search view it will at least
          * include that parents value and a placeholder so we can traverse using that parent nodes path.
          */
-        const filteredValues = values.filter((value) => !value.includes('placeholderForSearch'));
-        filteredValues.forEach((value) => {
+        // const filteredValues = values.filter((value) => !value.includes('placeholderForSearch'));
+        values.forEach((value) => {
             // we are checking if the node exists in Redux
             const { path: pathToNodeRedux } = pathToNode(nodes, value);
             // this is the current path from the the search state
@@ -366,50 +367,32 @@ export class NAICSContainer extends React.Component {
      * updates nodes with expanded properties
      */
     handleSearch = (nodes) => {
+
+        // const mappedNodes = createCheckboxTreeDataStrucure(
+        //     3,
+        //     nodeKeys,
+        //     testingNewSearchData,
+        //     null,
+        //     null,
+        //     true
+        // );
         const mappedNodes = createCheckboxTreeDataStrucure(
             3,
             nodeKeys,
-            nodes,
+            testingNewSearchData,
             null,
             null,
-            true
+            false
         );
-        // create the new node
+        // add classnames to search nodes and get expanded values
         const { updatedNodes, expanded } = handleSearch(
             3,
             nodeKeys,
             mappedNodes
         );
-        /**
-         * When going from default view to search view if we have checked values we must update
-         * those to correspond with the search view data since the search view has differing data
-         * such as search placeholders. Since we have the checked values and the search nodes we can
-         * manipulate those checked values to correspond to the search nodes.
-         * 
-         * If there are checked values we will loop through those values, get their respective node,
-         * then get all possible child values and add those to the checked array.
-         * 
-         * We do not care about the lowest tier nodes since those values will correlate with current
-         * checked values. We only care about childPlaceholder values.
-         */
+        // const fullDataSet = this.updateNodesFromSearch(updatedNodes);
 
-        // const checkedData = cloneDeep(this.props.checked.toJS());
-        // const updatedCheckedData = cloneDeep(this.props.checked.toJS());
-        // if (checkedData.length) {
-        //     checkedData.forEach((value, index) => {
-        //         if (value.includes('childPlaceholder')) {
-        //             const cleanValue = cleanCheckedValues([value])[0];
-        //             // get the node
-        //             const node = getNode(updatedNodes, cleanValue);
-        //             if (!node) return;
-        //             const allChildValues = deepestChildValues([node]);
-        //             // add the search nodes children to the checked array
-        //             updatedCheckedData.splice(index, 1, ...allChildValues);
-        //         }
-        //     });
-        // }
-        // this.props.setChecked(updatedCheckedData);
-        this.props.updateNaics(updatedNodes);
+        // this.props.updateNaics(updatedNodes);
         this.setState({
             naics: updatedNodes,
             isLoading: false,
@@ -508,7 +491,7 @@ export class NAICSContainer extends React.Component {
                 updatedNode[0].children[newIndex] = oldChild;
             }
         });
-
+        console.log(' keep children : ', cloneDeep(updatedNode));
         return updatedNode;
     }
 
@@ -519,7 +502,9 @@ export class NAICSContainer extends React.Component {
          * their childplaceholder value it added to the array so we must remove that placeholder
          * in the checked array and we must add all new child values to the checked array.
          */
+        console.log(' New Node : ', cloneDeep(newNode));
         const currentlyChecked = clone(this.state.checked);
+        console.log(' Currently Checked : ', currentlyChecked);
         const childPlaceholder = `${newNode[0].value}childPlaceholder`;
         if (currentlyChecked.includes(childPlaceholder)) {
             const index = currentlyChecked.findIndex((info) => info === childPlaceholder);
@@ -596,15 +581,17 @@ export class NAICSContainer extends React.Component {
             nodeKeys,
             data,
             false,
-            originalNode
+            originalNode,
+            false
         );
+        console.log(' The 1st node : ', newNode);
         // keep nodes we already have from search
         newNode = this.keepChildrenFromSearch(originalNode, newNode);
         // If a parent is checked we update the checked array with children
-        let currentlyChecked = this.updateCheckedWithChildrenIfNoChildren(newNode);
+        const currentlyChecked = this.updateCheckedWithChildrenIfNoChildren(newNode);
         // If search placeholders exist in the checked array. We must update the
         // checked array with new children from props
-        currentlyChecked = this.updateCheckedBasedOnSearchPlaceholder(currentlyChecked, newNode);
+        // currentlyChecked = this.updateCheckedBasedOnSearchPlaceholder(currentlyChecked, newNode);
         // set the new node in the respective position
         set(nodesObject, nodePathString, newNode[0]);
         this.setState({
@@ -707,6 +694,7 @@ export class NAICSContainer extends React.Component {
     selectedNaics = () => {
         if (!this.props.checked.size === 0) return null;
         const { selectedNaicsData } = this.state;
+        console.log(' Selected Naics Data : ', selectedNaicsData);
         return (<SelectedNaic
             selectedNAICS={selectedNaicsData}
             removeNAICS={this.removeCheckedValues} />);

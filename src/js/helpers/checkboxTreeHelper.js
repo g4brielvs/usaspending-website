@@ -70,10 +70,9 @@ export const updateChildren = (params) => {
     const {
         isChildren,
         node,
-        limit,
-        isSearch
+        limit
     } = params;
-    const newNode = { ...node };
+    const newNode = cloneDeep(node);
     /**
      * Case I - This node will have no children based on it's path and limit
      * TODO - once backend changes this add check for count === 0
@@ -88,7 +87,21 @@ export const updateChildren = (params) => {
      * (means this node has child data) we must set the child property to an
      * array with one empty object to get the expand caret to show.
      */
-    if ((newNode.count > 0 && !newNode.children) && !isSearch) {
+    console.log(' Starting with this node : ', newNode);
+    console.log(' New Node Value : ', newNode.value);
+    console.log(' New Node Children : ', newNode?.children);
+    console.log(' TRUTHY I : ', !newNode.children);
+    console.log(' Truthy II : ', newNode.count > 0 && !newNode.children);
+    // if ((newNode.count > 0 && !newNode.children) && !isSearch) {
+    //     newNode.children = [{
+    //         value: `${newNode.value}childPlaceholder`,
+    //         label: 'Placeholder Child',
+    //         isPlaceholder: true
+    //     }];
+    //     return newNode;
+    // }
+    if (newNode.count > 0 && !newNode.children) {
+        console.log(' Adding placeholder ');
         newNode.children = [{
             value: `${newNode.value}childPlaceholder`,
             label: 'Placeholder Child',
@@ -96,6 +109,7 @@ export const updateChildren = (params) => {
         }];
         return newNode;
     }
+    console.log(' Returning this Node From Update Children : ', newNode);
     return newNode;
 };
 /**
@@ -126,7 +140,8 @@ export const createCheckboxTreeDataStrucure = (
     parentNode,
     isSearch
 ) => nodes.map((node, index) => {
-    let newNode = { ...node };
+    let newNode = cloneDeep(node);
+    console.log(' Jon : ', newNode);
     /**
      * Five Steps to this Function
      *
@@ -150,7 +165,7 @@ export const createCheckboxTreeDataStrucure = (
 
     // Step 1 - Map Value and Label Properties
     newNode = updateValueAndLabel(newNode, keysToBeMapped);
-
+    console.log(' Jon II : ', newNode);
     // Step 2 - Update Path
     const params = {
         node: newNode,
@@ -159,16 +174,15 @@ export const createCheckboxTreeDataStrucure = (
         isChildren
     };
     newNode = updatePath(params);
-
+    console.log(' Jon III : ', newNode);
     // Step 3 - Children
     const childParams = {
         isChildren,
-        node: newNode,
-        limit,
-        keysToBeMapped,
-        isSearch
+        node: cloneDeep(newNode),
+        limit
     };
     newNode = updateChildren(childParams);
+    console.log(' Jon IV : ', newNode);
     // Step 4 - Map Child Data
     // if ((newNode.count > 0) && newNode.children && !isEmpty(newNode.children[0])) {
     if ((newNode.count > 0) && newNode.children && !newNode?.children?.[0]?.isPlaceholder) {
@@ -183,6 +197,7 @@ export const createCheckboxTreeDataStrucure = (
     }
     // Step 5 - Search
     if (isSearch) newNode.className = 'react-checkbox-tree_search';
+    console.log(' Returning this node : ', newNode);
     return newNode;
 });
 /**
@@ -202,20 +217,6 @@ export const handleSearch = (
     nodeKeys,
     nodes
 ) => {
-    // add placeholder children for search
-    const addPlaceholderChildren = (node) => {
-        const difference = node.count - node.children.length;
-        if (difference > 0) {
-            // placeholder children for search
-            const placeholderChild = {
-                value: `${node.value}placeholderForSearch`,
-                label: 'placeholderForSearch',
-                className: 'react-checkbox-tree__search-placeholder-child'
-            };
-            node.children.push(placeholderChild);
-        }
-        return node;
-    };
     /**
      * expandedFunc
      * - recursively loops through nodes updating an array with the value of children
@@ -232,9 +233,8 @@ export const handleSearch = (
                 newNode.className = 'react-checkbox-tree__search';
             }
             if (newNode.children) {
-                const updatedNode = addPlaceholderChildren(newNode);
-                expandedValues.push(updatedNode.value);
-                expandedFunc(updatedNode.children, expandedValues);
+                expandedValues.push(newNode.value);
+                expandedFunc(newNode.children, expandedValues);
             }
         });
         return expandedValues;
@@ -244,8 +244,7 @@ export const handleSearch = (
         const newNode = node;
         newNode.className = 'react-checkbox-tree__tier-zero';
         if (newNode.children) {
-            const updatedNode = addPlaceholderChildren(newNode);
-            return [newNode.value, ...expandedFunc(updatedNode.children, [])];
+            return [newNode.value, ...expandedFunc(newNode.children, [])];
         }
         return [null];
     });
@@ -490,3 +489,264 @@ export const getNode = (nodes, value) => {
     if (!pathString) return null;
     return get(createNodesObject(nodes), pathString);
 };
+
+
+export const testingNewSearchData = [
+    {
+        naics: "48",
+        naics_description: "Transportation and Warehousing",
+        count: 50,
+        children: [
+            {
+                naics: "4811",
+                naics_description: "Scheduled Air Transportation",
+                count: 2
+            },
+            {
+                naics: "4812",
+                naics_description: "Nonscheduled Air Transportation",
+                count: 3
+            },
+            {
+                naics: "4821",
+                naics_description: "Rail Transportation",
+                count: 2
+            },
+            {
+                naics: "4831",
+                naics_description: "Deep Sea, Coastal, and Great Lakes Water Transportation",
+                count: 4
+            },
+            {
+                naics: "4832",
+                naics_description: "Inland Water Transportation",
+                count: 2
+            },
+            {
+                naics: "4841",
+                naics_description: "General Freight Trucking",
+                count: 3
+            },
+            {
+                naics: "4842",
+                naics_description: "Specialized Freight Trucking",
+                count: 3
+            },
+            {
+                naics: "4851",
+                naics_description: "Urban Transit Systems",
+                count: 4
+            },
+            {
+                naics: "4852",
+                naics_description: "Interurban and Rural Bus Transportation",
+                count: 1
+            },
+            {
+                naics: "4853",
+                naics_description: "Taxi and Limousine Service",
+                count: 2
+            },
+            {
+                naics: "4854",
+                naics_description: "School and Employee Bus Transportation",
+                count: 1,
+                children: [
+                    {
+                        naics: "485410",
+                        naics_description: "School and Employee Bus Transportation",
+                        count: 0
+                    }
+                ]
+            },
+            {
+                naics: "4855",
+                naics_description: "Charter Bus Industry",
+                count: 1
+            },
+            {
+                naics: "4859",
+                naics_description: "Other Transit and Ground Passenger Transportation",
+                count: 2
+            },
+            {
+                naics: "4861",
+                naics_description: "Pipeline Transportation of Crude Oil",
+                count: 1
+            },
+            {
+                naics: "4862",
+                naics_description: "Pipeline Transportation of Natural Gas",
+                count: 1
+            },
+            {
+                naics: "4869",
+                naics_description: "Other Pipeline Transportation",
+                count: 2
+            },
+            {
+                naics: "4871",
+                naics_description: "Scenic and Sightseeing Transportation, Land",
+                count: 1
+            },
+            {
+                naics: "4872",
+                naics_description: "Scenic and Sightseeing Transportation, Water",
+                count: 1
+            },
+            {
+                naics: "4879",
+                naics_description: "Scenic and Sightseeing Transportation, Other",
+                count: 1
+            },
+            {
+                naics: "4881",
+                naics_description: "Support Activities for Air Transportation",
+                count: 3
+            },
+            {
+                naics: "4882",
+                naics_description: "Support Activities for Rail Transportation",
+                count: 1
+            },
+            {
+                naics: "4883",
+                naics_description: "Support Activities for Water Transportation",
+                count: 4
+            },
+            {
+                naics: "4884",
+                naics_description: "Support Activities for Road Transportation",
+                count: 2
+            },
+            {
+                naics: "4885",
+                naics_description: "Freight Transportation Arrangement",
+                count: 1
+            },
+            {
+                naics: "4889",
+                naics_description: "Other Support Activities for Transportation",
+                count: 2
+            }
+        ]
+    },
+    {
+        naics: "61",
+        naics_description: "Educational Services",
+        count: 17,
+        children: [
+            {
+                naics: "6111",
+                naics_description: "Elementary and Secondary Schools",
+                count: 1,
+                children: [
+                    {
+                        naics: "611110",
+                        naics_description: "Elementary and Secondary Schools",
+                        count: 0
+                    }
+                ]
+            },
+            {
+                naics: "6112",
+                naics_description: "Junior Colleges",
+                count: 1
+            },
+            {
+                naics: "6113",
+                naics_description: "Colleges, Universities, and Professional Schools",
+                count: 1,
+                children: [
+                    {
+                        naics: "611310",
+                        naics_description: "Colleges, Universities, and Professional Schools",
+                        count: 0
+                    }
+                ]
+            },
+            {
+                naics: "6114",
+                naics_description: "Business Schools and Computer and Management Training",
+                count: 3,
+                children: [
+                    {
+                        naics: '611410',
+                        naics_description: 'Business and Secretarial Schools',
+                        count: 0
+                    }
+                ]
+            },
+            {
+                naics: "6115",
+                naics_description: "Technical and Trade Schools",
+                count: 4,
+                children: [
+                    {
+                        naics: "611511",
+                        naics_description: "Cosmetology and Barber Schools",
+                        count: 0
+                    },
+                    {
+                        naics: "611512",
+                        naics_description: "Flight Training",
+                        count: 0
+                    },
+                    {
+                        naics: "611513",
+                        naics_description: "Apprenticeship Training",
+                        count: 0
+                    },
+                    {
+                        naics: "611519",
+                        naics_description: "Other Technical and Trade Schools",
+                        count: 0
+                    }
+                ]
+            },
+            {
+                naics: "6116",
+                naics_description: "Other Schools and Instruction",
+                count: 6,
+                children: [
+                    {
+                        naics: "611610",
+                        naics_description: "Fine Arts Schools",
+                        count: 0
+                    },
+                    {
+                        naics: "611620",
+                        naics_description: "Sports and Recreation Instruction",
+                        count: 0
+                    },
+                    {
+                        naics: "611630",
+                        naics_description: "Language Schools",
+                        count: 0
+                    },
+                    {
+                        naics: "611691",
+                        naics_description: "Exam Preparation and Tutoring",
+                        count: 0
+                    },
+                    {
+                        naics: "611692",
+                        naics_description: "Automobile Driving Schools",
+                        count: 0
+                    },
+                    {
+                        naics: "611699",
+                        naics_description: "All Other Miscellaneous Schools and Instruction",
+                        count: 0
+                    }
+                ]
+            },
+            {
+                naics: "6117",
+                naics_description: "Educational Support Services",
+                count: 1,
+
+            }
+        ]
+    }
+];

@@ -10,5 +10,3 @@ import { apiRequest } from './apiRequest';
 export const naicsRequest = (param) => apiRequest({
     url: `v2/references/naics/${param || ''}`
 });
-
-export const formatSelectedNaics = (value, description, count) => `${value} | ${description} | ${count}`;

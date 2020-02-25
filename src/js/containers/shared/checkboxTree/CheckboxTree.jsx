@@ -192,13 +192,12 @@ export default class CheckboxTree extends Component {
          * do this to get the caret to show when there is a count)
          * we will set the child to a loading div
          */
-        const nodeHasSearchChildren = node?.children.some((child) => child.value.includes('placeholderForSearch'));
+        // const nodeHasSearchChildren = node?.children.some((child) => child.value.includes('placeholderForSearch'));
         const nodeChildrenLengthIsIncorrect = node?.children.length !== node.count;
         if (
             (
                 !node?.children
                 || node?.children?.[0]?.isPlaceholder
-                || nodeHasSearchChildren
                 || nodeChildrenLengthIsIncorrect
             )
             && !isSearch
@@ -295,6 +294,12 @@ export default class CheckboxTree extends Component {
         if (this.props.isSearch) {
             label = this.highlightText(label);
             value = this.highlightText(value);
+            // hides unmatched values on search
+            if (label.every((data) => typeof data === 'string')) {
+                if (newNode.className !== 'react-checkbox-tree__tier-zero') {
+                    newNode.className = `${newNode.className} hide`;
+                }
+            }
         }
         // creates a new component with props value and label
         if (labelComponent) {
