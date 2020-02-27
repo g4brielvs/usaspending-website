@@ -185,7 +185,7 @@ export default class CheckboxTree extends Component {
     expandNode = async (newExpandedArray) => {
         const { expanded } = this.state;
         const { isSearch } = this.props;
-        if (isSearch) return this.setState({ expanded: newExpandedArray });
+        if (isSearch) this.setState({ expanded: newExpandedArray });
         /**
          * react-checkbox-tree calls onExpand with the new expanded array containing
          * all expanded values. We must find the difference between the current expanded values
