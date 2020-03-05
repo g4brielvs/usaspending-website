@@ -117,7 +117,6 @@ export class NAICSContainer extends React.Component {
     }
 
     onExpand = (value, expanded, fetch) => {
-        console.log('onExpand', value, expanded, fetch);
         if (fetch) this.fetchNAICS(value);
         if (this.state.isSearch) {
             this.props.setExpanded(expanded, 'SET_SEARCHED_EXPANDED');

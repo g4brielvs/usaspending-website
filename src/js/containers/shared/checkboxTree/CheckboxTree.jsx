@@ -105,8 +105,7 @@ export default class CheckboxTree extends Component {
      * @param {array} newExpandedArray - array with the newly expanded value
      */
     expandNode = async (newExpandedArray, node) => {
-        const { expanded, data, isSearch } = this.props;
-        console.log('node', node);
+        const { isSearch } = this.props;
         const expandedValue = node.value;
         if (node?.children?.some((child) => child?.isPlaceHolder === true) && !isSearch) {
             return this.props.onExpand(expandedValue, newExpandedArray, true);
@@ -153,6 +152,7 @@ export default class CheckboxTree extends Component {
       * @returns {Array.<object>} An array of objects
     **/
     createLabels = (nodes) => {
+        console.log("nodes", nodes)
         return nodes.map((node) => {
             // if label is a string, do nothing
             if (typeof node.label !== 'string') return node;
@@ -163,7 +163,7 @@ export default class CheckboxTree extends Component {
                 };
             }
             const nodeHasAllChildren = doesNodeHaveAllChildren(node);
-            if (nodeHasAllChildren) {
+            if (nodeHasAllChildren && node.value.length <= 4) {
                 return {
                     ...node,
                     label: this.props.labelComponent
@@ -178,6 +178,22 @@ export default class CheckboxTree extends Component {
                                 count={node.count} />
                         ),
                     children: this.createLabels(node.children)
+                };
+            }
+            else if (node.value.length === 6) {
+                return {
+                    ...node,
+                    label: this.props.labelComponent
+                        ? cloneElement(
+                            this.props.labelComponent,
+                            { value: node.value, label: node.label }
+                        )
+                        : (
+                            <CheckboxTreeLabel
+                                value={this.highlightText(node.value)}
+                                label={this.highlightText(node.label)}
+                                count={node.count} />
+                        )
                 };
             }
             return {

@@ -2,11 +2,23 @@
   * checkboxTreeHelper.js
   * Created by Jonathan Hill 10/01/2019
   **/
-export const cleanNaicsData = (nodes) => nodes.map((node) => ({
-    ...node,
-    label: node.naics_description,
-    value: node.naics
-}));
+export const cleanNaicsData = (nodes) => nodes.map((node) => {
+    if (node.naics.length === 6) {
+        return {
+            ...node,
+            label: node.naics_description,
+            value: node.naics
+        };
+    }
+    return {
+        ...node,
+        label: node.naics_description,
+        value: node.naics,
+        children: node.children
+            ? cleanNaicsData(node.children)
+            : []
+    };
+});
 
 export const sortNodes = (a, b) => {
     const nodeA = parseInt(a.value, 10);
@@ -165,7 +177,7 @@ export const showAllTreeItems = (tree, key = '', payload = []) => tree
             const [data] = payload;
             return {
                 ...data,
-                children: cleanNaicsData(data.children).map((newChild) => {
+                children: data.children.map((newChild) => {
                     const existingChild = existingNode.children
                         ? existingNode.children.find((olderChild) => olderChild.value === newChild.value)
                         : null;
@@ -187,13 +199,13 @@ export const showAllTreeItems = (tree, key = '', payload = []) => tree
                     if (weHaveAtLeastOneGrandChild) {
                         return {
                             ...newChild,
-                            children: [...cleanNaicsData(newChild.children), ...existingChild.children].sort(sortNodes)
+                            children: [...newChild.children, ...existingChild.children].sort(sortNodes)
                         };
                     }
                     return {
                         ...newChild,
                         children: newChild.children
-                            ? cleanNaicsData(newChild.children)
+                            ? newChild.children
                             : []
                     };
                 }).sort(sortNodes)
@@ -212,7 +224,7 @@ export const showAllTreeItems = (tree, key = '', payload = []) => tree
                             };
                         }
                         return {
-                            ...cleanNaicsData(payload[0])
+                            ...payload[0]
                         };
                     }
                     if (existingChild.children && existingChild.children.some((existingGrandChild) => existingGrandChild.className === 'hide')) {
