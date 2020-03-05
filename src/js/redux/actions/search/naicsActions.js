@@ -25,9 +25,24 @@ export const addChecked = (nodeValue) => ({
     payload: nodeValue
 });
 
+export const removeChecked = (excludedNodes) => ({
+    type: 'REMOVE_CHECKED',
+    payload: excludedNodes
+});
+
 export const setChecked = (nodes) => ({
     type: 'SET_CHECKED',
     payload: nodes
+});
+
+export const setUnchecked = (nodes) => ({
+    type: 'SET_UNCHECKED',
+    payload: nodes
+});
+
+export const addUnchecked = (node) => ({
+    type: 'ADD_UNCHECKED',
+    payload: node
 });
 
 export const setSearchedNaics = (nodes) => ({

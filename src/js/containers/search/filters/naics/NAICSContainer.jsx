@@ -7,22 +7,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-    debounce,
-    cloneDeep
+    debounce
 } from 'lodash';
 import { isCancel } from 'axios';
 import CheckboxTree from 'containers/shared/checkboxTree/CheckboxTree';
 import { naicsRequest } from 'helpers/naicsHelper';
-import { expandAllNodes, getNodeFromTree, getImmediateAncestorNaicsCode, getHighestAncestorNaicsCode } from 'helpers/checkboxTreeHelper';
+import { expandAllNodes, getImmediateAncestorNaicsCode, getHighestAncestorNaicsCode } from 'helpers/checkboxTreeHelper';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { updateNaics } from 'redux/actions/search/searchFilterActions';
-import { setNaics, setExpanded, setChecked, setSearchedNaics, addChecked, showNaicsTree } from 'redux/actions/search/naicsActions';
+import { setNaics, setExpanded, setChecked, setSearchedNaics, addChecked, showNaicsTree, addUnchecked, setUnchecked, removeChecked } from 'redux/actions/search/naicsActions';
 import { EntityDropdownAutocomplete } from 'components/search/filters/location/EntityDropdownAutocomplete';
 import SelectedNaic from 'components/search/filters/naics/SelectNaic';
 
 const propTypes = {
-    updateNaics: PropTypes.func,
     setNaics: PropTypes.func,
     setExpanded: PropTypes.func,
     setChecked: PropTypes.func,
@@ -30,8 +28,12 @@ const propTypes = {
     setSearchedNaics: PropTypes.func,
     addChecked: PropTypes.func,
     showNaicsTree: PropTypes.func,
+    addUnchecked: PropTypes.func,
+    setUnchecked: PropTypes.func,
+    removeChecked: PropTypes.func,
     expanded: PropTypes.arrayOf(PropTypes.string),
     checked: PropTypes.arrayOf(PropTypes.string),
+    unchecked: PropTypes.arrayOf(PropTypes.string),
     nodes: PropTypes.arrayOf(PropTypes.object),
     searchExpanded: PropTypes.arrayOf(PropTypes.string)
 };
@@ -72,20 +74,97 @@ export class NAICSContainer extends React.Component {
         });
     }
 
-    onCheck = async (arrayOfCheckedValues, node) => {
-        const { checked } = this.props;
+    onCheck = async (arrayOfCheckedValues, node, isHalfCheck = false) => {
+        const { checked, unchecked } = this.props;
         const { value } = node;
         const parentKey = getHighestAncestorNaicsCode(value);
         const ancestorKey = getImmediateAncestorNaicsCode(value);
+
+        if (isHalfCheck) {
+            console.log("HALF CHECK");
+            const newUnchecked = unchecked
+                // clear all unchecked values of every level with prefix of value ie 11/1111 etc...
+                .filter((uncheck) => !uncheck.includes(value));
+            this.props.setUnchecked(newUnchecked);
+        }
+        else if (unchecked.includes(parentKey)) {
+            const newUnchecked = unchecked
+                .filter((item) => item !== parentKey);
+            this.props.setUnchecked(newUnchecked);
+        }
+        else if (unchecked.includes(ancestorKey) && value.length === 6) {
+            console.log("mess");
+            // EDGE CASE #1:
+            // Adding grand child w/o removing the ancestor from unchecked b/c doing so will add all grandchildren.
+            // Cleaning this up below.
+            this.props.addChecked(value);
+        }
+        else if (unchecked.includes(ancestorKey)) {
+            const newUnchecked = unchecked
+                .filter((item) => item !== ancestorKey);
+            this.props.setUnchecked(newUnchecked);
+        }
+        else if (unchecked.includes(value)) {
+            const newUnchecked = unchecked
+                .filter((item) => item !== value);
+            this.props.setUnchecked(newUnchecked);
+        }
+        // cleaning up edge case #1: pt 1 - User re-adds child-level ancestor
+        else if (value.length === 4 && checked.some((check) => check.split(value).length > 1)) {
+            console.log("clean up");
+            // const newChecked = checked
+            //     .filter((check) => {
+            //         if (check.length === 6 && check.includes(value)) {
+            //             return false;
+            //         }
+            //         return true;
+            //     });
+            // this.props.setChecked(newChecked);
+        }
         if (checked.includes(parentKey) || checked.includes(ancestorKey)) {
             return;
         }
         this.props.addChecked(value);
     }
 
-    onUncheck = (checked, node) => {
-        console.log("unchecked array", checked);
-        console.log("the unchecked node", node);
+    onUncheck = (newCheckedArray, node) => {
+        const { checked } = this.props;
+        const parentKey = getHighestAncestorNaicsCode(node.value);
+        const ancestorKey = getImmediateAncestorNaicsCode(node.value);
+        if (node.value.length === 2) {
+            const newChecked = checked
+                .filter((item) => item !== node.value);
+            this.props.setChecked(newChecked);
+        }
+        else if (node.value.length === 4) {
+            if (checked.includes(parentKey)) {
+                this.props.addUnchecked(node.value);
+            }
+            else if (checked.includes(node.value)) {
+                const newChecked = checked
+                    .filter((item) => item !== node.value);
+                this.props.setChecked(newChecked);
+            }
+        }
+        else if (node.value.length === 6) {
+            if (checked.includes(parentKey)) {
+                this.props.addUnchecked(node.value);
+            }
+            else if (checked.includes(ancestorKey)) {
+                this.props.addUnchecked(node.value);
+            }
+            else if (checked.includes(node.value)) {
+                const newChecked = checked
+                    .filter((item) => item !== node.value);
+                this.props.setChecked(newChecked);
+            }
+        }
+        // A grandchild element is stuck in the checked state due to edge case #1; clear it.
+        if (checked.some((check) => check.split(node.value).length > 1)) {
+            const newChecked = checked
+                .filter((item) => !item.includes(node.value));
+            this.props.setChecked(newChecked);
+        }
     }
 
     onExpand = (value, expanded, fetch) => {
@@ -206,13 +285,15 @@ export class NAICSContainer extends React.Component {
             checked,
             nodes,
             expanded,
-            searchExpanded
+            searchExpanded,
+            unchecked
         } = this.props;
         if (isLoading || isError) return null;
         return (
             <CheckboxTree
                 limit={3}
                 data={nodes}
+                unchecked={unchecked}
                 expanded={isSearch ? searchExpanded : expanded}
                 checked={checked}
                 searchText={searchString}
@@ -265,8 +346,8 @@ export default connect(
         nodes: state.naics.naics.toJS(),
         expanded: state.naics.expanded.toJS(),
         searchExpanded: state.naics.searchExpanded.toJS(),
-        checked: state.naics.checked.toJS()
-        // searchedNodes: state.naics.searchedNaics.toJS()
+        checked: state.naics.checked.toJS(),
+        unchecked: state.naics.unchecked.toJS()
     }),
     (dispatch) => ({
         updateNaics: (checked) => dispatch(updateNaics(checked)),
@@ -275,5 +356,8 @@ export default connect(
         setChecked: (checkedNodes) => dispatch(setChecked(checkedNodes)),
         addChecked: (newCheckedNode) => dispatch(addChecked(newCheckedNode)),
         setSearchedNaics: (nodes) => dispatch(setSearchedNaics(nodes)),
-        showNaicsTree: () => dispatch(showNaicsTree())
+        showNaicsTree: () => dispatch(showNaicsTree()),
+        addUnchecked: (naicsCode) => dispatch(addUnchecked(naicsCode)),
+        setUnchecked: (unchecked) => dispatch(setUnchecked(unchecked)),
+        removeChecked: (excludedNodes) => dispatch(removeChecked(excludedNodes))
     }))(NAICSContainer);

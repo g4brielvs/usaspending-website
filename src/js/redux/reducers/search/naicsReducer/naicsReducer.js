@@ -69,11 +69,25 @@ const naicsReducer = (state = initialState, action) => {
                 unchecked: new List([...new Set([...action.payload])])
             };
         }
+        case 'ADD_UNCHECKED': {
+            return {
+                ...state,
+                // new Set to eliminate any duplicate values
+                unchecked: new List([...new Set([...state.unchecked, action.payload])])
+            };
+        }
         case 'ADD_CHECKED': {
             return {
                 ...state,
                 // new Set to eliminate any duplicate values
                 checked: new List([...new Set([...state.checked, action.payload])])
+            };
+        }
+        case 'REMOVE_CHECKED': {
+            return {
+                ...state,
+                // new Set to eliminate any duplicate values
+                checked: new List([...new Set([...state.checked.filter((checked) => !action.payload.includes(checked))])])
             };
         }
         default:

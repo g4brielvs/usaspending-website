@@ -11,10 +11,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import CheckboxTreeLabel from 'components/sharedComponents/CheckboxTreeLabel';
 import { treeIcons } from 'dataMapping/shared/checkboxTree/checkboxTree';
-import { doesNodeHaveAllChildren, addPlaceholderToExistingChildren } from 'helpers/checkboxTreeHelper';
+import {
+    doesNodeHaveAllChildren,
+    addPlaceholderToExistingChildren,
+    getNodeFromTree,
+    getHighestAncestorNaicsCode,
+    getImmediateAncestorNaicsCode
+} from 'helpers/checkboxTreeHelper';
 
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import { getNodeFromTree, getHighestAncestorNaicsCode, getImmediateAncestorNaicsCode } from '../../../helpers/checkboxTreeHelper';
 
 const propTypes = {
     data: PropTypes.array,
@@ -29,7 +34,8 @@ const propTypes = {
     onUncheck: PropTypes.func,
     onCollapse: PropTypes.func,
     expanded: PropTypes.array,
-    checked: PropTypes.array
+    checked: PropTypes.array,
+    unchecked: PropTypes.array
 };
 
 export default class CheckboxTree extends Component {
@@ -42,14 +48,33 @@ export default class CheckboxTree extends Component {
         return this.expandNode(newExpandedArray, node);
     };
 
-    onCheck = (checked, node) => {
-        if (!this.props.isLoading) {
-            if (this.props.checked.length < checked.length) {
-                this.checkedNode(checked, node);
-            }
-            else {
-                this.unCheckedNode(checked, node);
-            }
+    onCheck = (newCheckedArray, node) => {
+        const { value } = node;
+        const { checked, unchecked } = this.props;
+        const parentKey = getHighestAncestorNaicsCode(value);
+        const ancestorKey = getImmediateAncestorNaicsCode(value);
+        const isAlreadyChecked = (
+            checked.includes(parentKey) ||
+            checked.includes(ancestorKey) ||
+            checked.includes(value)
+        );
+
+        const isUnchecked = (
+            unchecked.includes(parentKey) ||
+            unchecked.includes(ancestorKey) ||
+            unchecked.includes(value)
+        );
+
+        const isHalfCheck = (
+            unchecked.some((key) => key.split(value).length > 1)
+        );
+
+        if (isAlreadyChecked && !isUnchecked && !isHalfCheck) {
+            console.log("UNCHECK");
+            this.unCheckedNode(checked, node);
+        }
+        else {
+            this.props.onCheck(newCheckedArray, node, isHalfCheck);
         }
     }
     setChildrenToLoading = () => (
@@ -174,40 +199,51 @@ export default class CheckboxTree extends Component {
         });
     }
 
+    isNotExcluded = (code) => {
+        const index = this.props.unchecked
+            .findIndex((item) => `_${item}` === code || item === code);
+        return index === -1;
+    }
+
     addDescendantsOfChecked = (checked, labeledNodes) => checked
         .reduce((acc, key) => {
+            const { unchecked } = this.props;
             const node = getNodeFromTree(labeledNodes, key);
             if (node.children) {
                 const parentKey = getHighestAncestorNaicsCode(key);
                 node.children
                     .forEach((child) => {
-                        const ancestorKey = getImmediateAncestorNaicsCode(child.value);
-                        if (child.isPlaceHolder) {
+                        const childIsNotExcluded = this.isNotExcluded(child.value);
+                        if (childIsNotExcluded && child.isPlaceHolder) {
                             acc.push(child.value);
                         }
-                        if (checked.includes(parentKey)) {
-                            acc.push(child.value);
-                        }
-                        else if (checked.includes(ancestorKey)) {
+                        if (childIsNotExcluded && checked.includes(parentKey)) {
                             acc.push(child.value);
                         }
                         if (child.children) {
                             child.children
                                 .forEach((grandChild) => {
-                                    if (child.isPlaceHolder) {
+                                    const ancestorKey = getImmediateAncestorNaicsCode(grandChild.value);
+                                    const noAncestorIsExcluded = (
+                                        this.isNotExcluded(ancestorKey) &&
+                                        this.isNotExcluded(grandChild.value)
+                                    );
+                                    if (noAncestorIsExcluded && child.isPlaceHolder) {
                                         acc.push(grandChild.value);
                                     }
-                                    else if (checked.includes(parentKey)) {
+                                    else if (noAncestorIsExcluded && checked.includes(parentKey)) {
                                         acc.push(grandChild.value);
                                     }
-                                    else if (checked.includes(ancestorKey)) {
+                                    else if (noAncestorIsExcluded && checked.includes(ancestorKey)) {
                                         acc.push(grandChild.value);
                                     }
                                 });
                         }
                     });
             }
-            acc.push(key);
+            if (!unchecked.includes(key)) {
+                acc.push(key);
+            }
             return acc;
         }, []);
 
