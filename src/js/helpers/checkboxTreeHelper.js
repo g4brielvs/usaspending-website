@@ -164,12 +164,12 @@ export const addSearchResultsToTree = (tree, searchResults) => {
         .sort(sortNodes);
 };
 
-export const placeholderNode = {
+export const getPlaceholderNode = (value) => ({
     isPlaceHolder: true,
-    value: 'n',
+    value: `_${value}`,
     showCheckbox: false,
     count: null
-};
+});
 
 export const showAllTreeItems = (tree, key = '', payload = []) => tree
     .map((existingNode) => {
@@ -260,7 +260,7 @@ export const doesNodeHaveAllChildren = (node) => {
     return false;
 };
 
-export const addPlaceholderToExistingChildren = (nodeChildren = []) => [
+export const addPlaceholderToExistingChildren = (nodeChildren = [], parentKey) => [
     ...nodeChildren,
-    placeholderNode
+    getPlaceholderNode(parentKey)
 ];
