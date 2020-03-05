@@ -2,6 +2,11 @@
   * checkboxTreeHelper.js
   * Created by Jonathan Hill 10/01/2019
   **/
+export const cleanNaicsData = (nodes) => nodes.map((node) => ({
+    ...node,
+    label: node.naics_description,
+    value: node.naics
+}));
 
 export const sortNodes = (a, b) => {
     const nodeA = parseInt(a.value, 10);
@@ -101,16 +106,16 @@ const mergeChildren = (parentFromSearch, existingParent) => {
                 }
                 else {
                     acc.push({
-                        ...searchChild,
-                        children: [
-                            ...searchChild.children,
-                            {
-                                isPlaceHolder: true,
-                                label: "Child Placeholder",
-                                value: `children_of_${searchChild.value}`,
-                                className: 'hide'
-                            }
-                        ]
+                        ...searchChild
+                        // children: [
+                        //     ...searchChild.children,
+                        //     {
+                        //         isPlaceHolder: true,
+                        //         label: "Child Placeholder",
+                        //         value: `children_of_${searchChild.value}`,
+                        //         className: 'hide'
+                        //     }
+                        // ]
                     });
                 }
 
@@ -124,15 +129,7 @@ const mergeChildren = (parentFromSearch, existingParent) => {
         return existingParent.children.map((child) => ({ ...child, className: 'hide' }));
     }
     else if (!existingParent.children && parentFromSearch.children && parentFromSearch.children.length !== parentFromSearch.count) {
-        return [
-            ...parentFromSearch.children,
-            {
-                className: 'hide',
-                isPlaceHolder: true,
-                label: 'Placeholder Child',
-                value: `children_of_${parentFromSearch.value}`
-            }
-        ];
+        return parentFromSearch.children;
     }
     return [];
 };
@@ -155,17 +152,26 @@ export const addSearchResultsToTree = (tree, searchResults) => {
         .sort(sortNodes);
 };
 
+export const placeholderNode = {
+    isPlaceHolder: true,
+    value: 'n',
+    showCheckbox: false,
+    count: null
+};
+
 export const showAllTreeItems = (tree, key = '', payload = []) => tree
-    .map((node) => {
-        if (node.value === key) {
+    .map((existingNode) => {
+        if (existingNode.value === key) {
             const [data] = payload;
             return {
                 ...data,
-                children: data.children.map((child) => {
-                    const existingChild = node.children.find((olderChild) => olderChild.value === child.value);
+                children: cleanNaicsData(data.children).map((newChild) => {
+                    const existingChild = existingNode.children
+                        ? existingNode.children.find((olderChild) => olderChild.value === newChild.value)
+                        : null;
                     const weHaveTheGrandChildren = (
                         existingChild &&
-                        existingChild?.children.length === child.count &&
+                        existingChild?.children.length === newChild.count &&
                         !existingChild?.children.some((existingGrand) => existingGrand?.isPlaceHolder)
                     );
                     const weHaveAtLeastOneGrandChild = (
@@ -174,51 +180,75 @@ export const showAllTreeItems = (tree, key = '', payload = []) => tree
                     );
                     if (weHaveTheGrandChildren) {
                         return {
-                            ...child,
+                            ...newChild,
                             children: existingChild.children.sort(sortNodes)
                         };
                     }
                     if (weHaveAtLeastOneGrandChild) {
                         return {
-                            ...child,
-                            children: [...child.children, ...existingChild.children].sort(sortNodes)
+                            ...newChild,
+                            children: [...cleanNaicsData(newChild.children), ...existingChild.children].sort(sortNodes)
                         };
                     }
                     return {
-                        ...child,
-                        children: child.children
+                        ...newChild,
+                        children: newChild.children
+                            ? cleanNaicsData(newChild.children)
+                            : []
                     };
                 }).sort(sortNodes)
             };
         }
         return {
-            ...node,
+            ...existingNode,
             className: '',
-            children: node.children
-                .map((child) => {
-                    if (child.value === key) {
-                        if (child.children.length === child.count && !child.children.some((grandChild) => grandChild.isPlaceHolder)) {
+            children: existingNode.children
+                ? existingNode.children.map((existingChild) => {
+                    if (existingChild.value === key) {
+                        if (existingChild.children.length === existingChild.count && !existingChild.children.some((existingGrandChild) => existingGrandChild.isPlaceHolder)) {
                             // we already have the child data for this particular child, don't overwrite it w/ a placeholder.
                             return {
-                                ...child
+                                ...existingChild
                             };
                         }
                         return {
-                            ...payload[0]
+                            ...cleanNaicsData(payload[0])
                         };
                     }
-                    if (child.children && child.children.some((grand) => grand.className === 'hide')) {
+                    if (existingChild.children && existingChild.children.some((existingGrandChild) => existingGrandChild.className === 'hide')) {
                         return {
-                            ...child,
+                            ...existingChild,
                             className: '',
-                            children: child.children.map((grand) => ({ ...grand, className: '' }))
+                            children: existingChild.children.map((existingGrandChild) => ({ ...existingGrandChild, className: '' }))
                         };
                     }
                     return {
-                        ...child,
+                        ...existingChild,
                         className: ''
                     };
-                })
-                .sort(sortNodes)
+                }).sort(sortNodes)
+                : []
         };
     });
+
+export const doesNodeHaveAllChildren = (node) => {
+    if (node.value.length === 6) return true;
+    const { count } = node;
+    if (node.children) {
+        const countForNode = node.children
+            .filter((child) => !child.isPlaceHolder)
+            .reduce((currentCount, child) => {
+                const childCount = child.count === 0
+                    ? 1
+                    : child.count;
+                return currentCount + childCount;
+            }, 0);
+        return (countForNode === count);
+    }
+    return false;
+};
+
+export const addPlaceholderToExistingChildren = (nodeChildren = []) => [
+    ...nodeChildren,
+    placeholderNode
+];

@@ -9,10 +9,13 @@ import PropTypes from 'prop-types';
 import { difference } from 'lodash';
 import reactStringReplace from 'react-string-replace';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import CheckboxTreeLabel from 'components/sharedComponents/CheckboxTreeLabel';
 import { treeIcons } from 'dataMapping/shared/checkboxTree/checkboxTree';
+import { doesNodeHaveAllChildren, addPlaceholderToExistingChildren, placeholderNode } from 'helpers/checkboxTreeHelper';
 
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import { getNodeFromTree } from '../../../helpers/checkboxTreeHelper';
 
 const propTypes = {
     data: PropTypes.array,
@@ -36,13 +39,13 @@ export default class CheckboxTree extends Component {
      * (react-checkbox-tree calls this function when a user expands a node)
      * Decides whether we are expanding or collapsing the node.
      */
-    onExpand = (newExpandedArray) => {
+    onExpand = (newExpandedArray, node) => {
         // collapsing node
         if (newExpandedArray.length < this.props.expanded.length) {
-            return this.collapseNode(newExpandedArray);
+            return this.collapseNode(newExpandedArray, node);
         }
         // expanding node
-        return this.expandNode(newExpandedArray);
+        return this.expandNode(newExpandedArray, node);
     };
     /**
      * onCheck
@@ -101,41 +104,11 @@ export default class CheckboxTree extends Component {
      * with a loading object if we have no child data for that node.
      * @param {array} newExpandedArray - array with the newly expanded value
      */
-    expandNode = async (newExpandedArray) => {
-        // newly expanded node.code
+    expandNode = async (newExpandedArray, node) => {
         const { expanded, data, isSearch } = this.props;
-        const expandedValue = difference(newExpandedArray, expanded)[0];
-        let selectedNode = null;
-        if (expandedValue.length === 2) {
-            selectedNode = data.find((node) => node.value === expandedValue);
-        }
-        else if (expandedValue.length === 4) {
-            selectedNode = data
-                .find((node) => node.value === `${expandedValue[1]}${expandedValue[1]}`)
-                .children
-                .find((child) => child.value === expandedValue);
-        }
-        else if (expandedValue.length === 6) {
-            selectedNode = data
-                .find((node) => node.value === `${expandedValue[0]}${expandedValue[1]}`)
-                .children
-                .find((child) => (
-                    child.value === `${expandedValue[0]}${expandedValue[1]`${expandedValue[2]}${expandedValue[3]}`}`
-                ));
-        }
-        /**
-         * When there are no children or there is an empty object in the children property (since we
-         * do this to get the caret to show when there is a count)
-         * we will set the child to a loading div
-         */
-        if (
-            (
-                !selectedNode?.children
-                || selectedNode?.children?.some((child) => child?.isPlaceHolder === true)
-                || selectedNode?.children.length !== selectedNode?.count
-            )
-            && !isSearch
-        ) {
+        console.log('node', node);
+        const expandedValue = node.value;
+        if (node?.children?.some((child) => child?.isPlaceHolder === true) && !isSearch) {
             return this.props.onExpand(expandedValue, newExpandedArray, true);
         }
         return this.props.onExpand(expandedValue, newExpandedArray, false);
@@ -179,34 +152,53 @@ export default class CheckboxTree extends Component {
       * @param {Array.<object>} nodes - an array of objects
       * @returns {Array.<object>} An array of objects
     **/
-    createLabels = (nodes) => nodes.map((node) => {
-        // if label is a string, do nothing
-        if (typeof node.label !== 'string') return node;
-        if (node.isPlaceHolder && node.className !== 'hide') {
+    createLabels = (nodes) => {
+        return nodes.map((node) => {
+            // if label is a string, do nothing
+            if (typeof node.label !== 'string') return node;
+            if (node.isPlaceHolder) {
+                return {
+                    ...node,
+                    label: this.setChildrenToLoading(node)
+                };
+            }
+            const nodeHasAllChildren = doesNodeHaveAllChildren(node);
+            if (nodeHasAllChildren) {
+                return {
+                    ...node,
+                    label: this.props.labelComponent
+                        ? cloneElement(
+                            this.props.labelComponent,
+                            { value: node.value, label: node.label }
+                        )
+                        : (
+                            <CheckboxTreeLabel
+                                value={this.highlightText(node.value)}
+                                label={this.highlightText(node.label)}
+                                count={node.count} />
+                        ),
+                    children: this.createLabels(node.children)
+                };
+            }
             return {
-                value: node.value,
-                showCheckbox: false,
-                label: this.setChildrenToLoading(node)
+                ...node,
+                label: this.props.labelComponent
+                    ? cloneElement(
+                        this.props.labelComponent,
+                        { value: node.value, label: node.label }
+                    )
+                    : (
+                        <CheckboxTreeLabel
+                            value={this.highlightText(node.value)}
+                            label={this.highlightText(node.label)}
+                            count={node.count} />
+                    ),
+                children: node.children
+                    ? this.createLabels(addPlaceholderToExistingChildren(node.children))
+                    : this.createLabels(addPlaceholderToExistingChildren())
             };
-        }
-        return {
-            ...node,
-            label: this.props.labelComponent
-                ? cloneElement(
-                    this.props.labelComponent,
-                    { value: node.value, label: node.label }
-                )
-                : (
-                    <CheckboxTreeLabel
-                        value={this.highlightText(node.value)}
-                        label={this.highlightText(node.label)}
-                        count={node.count} />
-                ),
-            children: node.children
-                ? this.createLabels(node.children)
-                : null
-        };
-    });
+        });
+    }
 
     render() {
         const { data, checked, expanded } = this.props;

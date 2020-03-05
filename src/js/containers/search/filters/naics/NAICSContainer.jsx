@@ -117,7 +117,8 @@ export class NAICSContainer extends React.Component {
     }
 
     onExpand = (value, expanded, fetch) => {
-        if (fetch && !this.state.isSearch) this.fetchNAICS(value);
+        console.log('onExpand', value, expanded, fetch);
+        if (fetch) this.fetchNAICS(value);
         if (this.state.isSearch) {
             this.props.setExpanded(expanded, 'SET_SEARCHED_EXPANDED');
         }
@@ -136,42 +137,56 @@ export class NAICSContainer extends React.Component {
     };
 
     getCount = (key, isPlaceholder, codesUnderPlaceholder, aggregate = false) => {
+        // example: checkedArray: ['children_of_11'] // 1122
+        //          counts: { childrenOf11: 64, 112233: 0 }
+        //          existingSelectedState: { 11: 59 }
+
         const node = getNodeFromTree(this.props.nodes, key);
-        const keyForNodeUnderPlaceholder = codesUnderPlaceholder.find((obj) => (
-            obj.placeholder === key ||
-            getHighestAncestorNaicsCode(obj.placeholder) === key
+        // 1. is this node a placeholder, also with real children in the checked array? (ie, placeholder for 11 (64 codes) w/ 1123, 112333 also in checked array)
+        const placeholderWithRealChildren = codesUnderPlaceholder.find((obj) => (
+            // { code: xyz, placeholder: children_of_x }
+            obj.placeholder === key
         ));
-        const currentCountObj = this.state.selectedNaicsData.find((selectedNaics) => (
+
+        // 2. Is placeholder already in selected naics state, w/ a partial count?
+        const placeHolderAlreadySelectedWithPartialCount = this.state.selectedNaicsData.find((selectedNaics) => (
             selectedNaics.value === key &&
             selectedNaics.count !== node.count
         ));
+
         const isPartialPlaceholder = (
+            // children_of_${naicsCode}
             isPlaceholder &&
-            keyForNodeUnderPlaceholder &&
-            currentCountObj
+            placeholderWithRealChildren &&
+            placeHolderAlreadySelectedWithPartialCount
         );
 
         if (isPartialPlaceholder) {
-            const nodeUnderPlaceholder = getNodeFromTree(this.props.nodes, keyForNodeUnderPlaceholder.code);
-            const countFromNode = nodeUnderPlaceholder.count === 0
+            const childUnderPlaceholder = getNodeFromTree(this.props.nodes, placeholderWithRealChildren.code);
+            const countFromNode = childUnderPlaceholder.count === 0
                 ? 1
-                : nodeUnderPlaceholder.count;
+                : childUnderPlaceholder.count;
+
             return aggregate
-                ? currentCountObj.count + countFromNode
+                // 59
+                ? placeHolderAlreadySelectedWithPartialCount.count + countFromNode
                 : countFromNode;
         }
         return node.count || 1;
     };
 
     updateCountOfSelectedTopTierNaicsCodes = (checked = []) => {
+        // newly checked items only!
+        const newChecked = checked.filter((code) => !this.props.checked.includes(code));
+
         // child place holders reflect the count of their immediate ancestor
-        const placeHoldersToBeCounted = checked
+        const placeHoldersToBeCounted = newChecked
             .filter((naicsCode) => naicsCode.includes('children_of_'));
-        
+
         const codesUnderPlaceholder = [];
         const codesWithoutPlaceholder = [];
 
-        checked
+        newChecked
             .filter((naicsCode) => !naicsCode.includes('children_of_'))
             .forEach((naicsCode) => {
                 const immediateAncestorCode = getImmediateAncestorNaicsCode(naicsCode); // 1111
@@ -190,8 +205,6 @@ export class NAICSContainer extends React.Component {
                     codesWithoutPlaceholder.push(naicsCode);
                 }
             });
-        
-        console.log("codes with a placeholder", codesUnderPlaceholder);
 
         const checkedWithoutNodesUnderPlaceholder = [...new Set([
             ...codesWithoutPlaceholder,
@@ -231,7 +244,7 @@ export class NAICSContainer extends React.Component {
                 const isParentSelected = indexOfParent >= 0;
 
                 if (!isParentSelected && key.length === 2) {
-                    console.log(1, key);
+                    console.log(1, countAggregatedFromCurrentCount);
                     acc.push({
                         ...parentNode,
                         count: countAggregatedFromCurrentCount
@@ -260,7 +273,7 @@ export class NAICSContainer extends React.Component {
                     return acc;
                 }
                 else if (isParentSelected && key.length === 4) {
-                    console.log(5, key)
+                    console.log(5, key, countFromNodeToBeAdded);
                     acc[indexOfParent].count += countFromNodeToBeAdded;
                     if (parentNode.count < acc[indexOfParent].count) {
                         console.log("oh no");
@@ -280,7 +293,7 @@ export class NAICSContainer extends React.Component {
                     return acc;
                 }
                 return acc;
-            }, [...this.state.selectedNaicsData]);
+            }, cloneDeep(this.state.selectedNaicsData));
 
         this.setState({ selectedNaicsData: checkedWithoutNodesUnderPlaceholder });
         this.props.setChecked(checked);
@@ -369,6 +382,7 @@ export class NAICSContainer extends React.Component {
                 this.props.setExpanded(visibleNaicsValues, 'SET_SEARCHED_EXPANDED');
             }
             else {
+                console.log("data", data);
                 this.props.setNaics(param, data.results);
             }
             // we've searched for a specific naics reference; ie '11' or '1111'
