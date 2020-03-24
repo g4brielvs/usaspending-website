@@ -19,7 +19,10 @@ export const requestDownloadStatus = (params) => apiRequest({
 export const requestDownloadCount = (params) => apiRequest({
     url: 'v2/download/count/',
     method: 'post',
-    data: params
+    data: params,
+    headers: {
+        'X-EXPERIMENTAL-API': 'elasticsearch'
+    }
 });
 
 export const fetchAssistanceDownloadFile = (awardId) => apiRequest({

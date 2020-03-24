@@ -30,7 +30,10 @@ export const fetchCFDA = (req) => apiRequest({
 export const fetchNAICS = (req) => apiRequest({
     url: 'v2/autocomplete/naics/',
     method: 'post',
-    data: req
+    data: req,
+    headers: {
+        'X-EXPERIMENTAL-API': 'elasticsearch'
+    }
 });
 
 // PSC search for autocomplete
@@ -79,14 +82,20 @@ export const performSpendingByGeographySearch = (params) => apiRequest({
 export const performSpendingByAwardTabCountSearch = (params) => apiRequest({
     url: 'v2/search/spending_by_award_count/',
     method: 'post',
-    data: params
+    data: params,
+    headers: {
+        'X-EXPERIMENTAL-API': 'elasticsearch'
+    }
 });
 
 // Spending By Award Table Endpoint
 export const performSpendingByAwardSearch = (params) => apiRequest({
     url: 'v2/search/spending_by_award/',
     method: 'post',
-    data: params
+    data: params,
+    headers: {
+        'X-EXPERIMENTAL-API': 'elasticsearch'
+    }
 });
 
 export const performSubawardSearch = (data) => apiRequest({
@@ -98,7 +107,10 @@ export const performSubawardSearch = (data) => apiRequest({
 export const generateUrlHash = (data) => apiRequest({
     url: 'v1/references/filter/',
     method: 'post',
-    data
+    data,
+    headers: {
+        'X-EXPERIMENTAL-API': 'elasticsearch'
+    }
 });
 
 export const restoreUrlHash = (data) => apiRequest({
