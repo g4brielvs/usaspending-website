@@ -27,6 +27,7 @@ import {
     setSearchedPsc,
     setPscCounts
 } from 'redux/actions/search/pscActions';
+import { updateSelectedPSCV2 } from 'redux/actions/search/searchFilterActions';
 
 import CheckboxTree from 'components/sharedComponents/CheckboxTree';
 import SubmitHint from 'components/sharedComponents/filterSidebar/SubmitHint';
@@ -351,7 +352,8 @@ const mapDispatchToProps = (dispatch) => ({
     setCheckedPsc: (nodes) => dispatch(setCheckedPsc(nodes)),
     setUncheckedPsc: (nodes) => dispatch(setUncheckedPsc(nodes)),
     setSearchedPsc: (nodes) => dispatch(setSearchedPsc(nodes)),
-    setPscCounts: (newCounts) => dispatch(setPscCounts(newCounts))
+    setPscCounts: (newCounts) => dispatch(setPscCounts(newCounts)),
+    stagePsc: (require, exclude, counts) => dispatch(updateSelectedPSCV2(require, exclude, counts))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PSCCheckboxTreeContainer);

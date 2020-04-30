@@ -150,6 +150,15 @@ export const updateSelectedNAICS = (state) => ({
 });
 
 // PSC Filter
+export const updateSelectedPSCV2 = (require, exclude, counts) => ({
+    type: 'UPDATE_SELECTED_PSC_V2',
+    payload: {
+        exclude,
+        require: require.map((code) => removePlaceholderString(code)),
+        counts
+    }
+});
+
 export const updateSelectedPSC = (state) => ({
     type: 'UPDATE_SELECTED_PSC',
     psc: state.psc

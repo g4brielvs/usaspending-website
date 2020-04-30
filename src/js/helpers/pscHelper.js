@@ -4,7 +4,8 @@ import {
     cleanTreeData,
     removeStagedFilter,
     autoCheckImmediateChildrenAfterDynamicExpand,
-    expandNodeAndAllDescendantParents
+    expandNodeAndAllDescendantParents,
+    removePlaceholderString
 } from "./checkboxTreeHelper";
 
 export const emptyHierarchy = {
@@ -73,6 +74,11 @@ export const shouldPscNodeHaveChildren = (node) => {
 
 // key map for traversing the tas-tree
 const pscKeyMap = { label: 'description', value: 'id', isParent: shouldPscNodeHaveChildren };
+
+export const getAncestryPathOfNodes = (checked, nodes) => checked
+    .map((code) => removePlaceholderString(code))
+    .map((code) => getPscNodeFromTree(nodes, code))
+    .map((node) => ([...node.ancestors, node.value]));
 
 export const cleanPscData = (nodes) => cleanTreeData(nodes, pscKeyMap);
 
