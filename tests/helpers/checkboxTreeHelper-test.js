@@ -70,7 +70,7 @@ describe('checkboxTree Helpers (using NAICS data)', () => {
                 .children
                 .find((node) => node.value === '111120')
                 .children
-                .find((node) => node.value === 'dont-overwrite-me');
+                .find((node) => node.value === '11111-dont-overwrite-me');
             const newGrandChild = newChildren
                 .children
                 .find((node) => node.value === '1111')
@@ -149,7 +149,7 @@ describe('checkboxTree Helpers (using NAICS data)', () => {
                 .children
                 .find((grand) => grand.value === '111120')
                 .children
-                .some((greatGrand) => greatGrand.value === 'dont-overwrite-me');
+                .some((greatGrand) => greatGrand.value === '11111-dont-overwrite-me');
 
             const greatGrandPlaceholderNotOverwritten = childFromSearch
                 .children
@@ -247,7 +247,7 @@ describe('checkboxTree Helpers (using NAICS data)', () => {
                 .children
                 .find((grand) => grand.value === '111120')
                 .children
-                .find((greatGrand) => greatGrand.value === 'dont-overwrite-me');
+                .find((greatGrand) => greatGrand.value === '11111-dont-overwrite-me');
             expect(greatGrandChildWasNotOverwritten.naics_description).toEqual('real');
         });
     });
@@ -394,6 +394,20 @@ describe('checkboxTree Helpers (using NAICS data)', () => {
             );
 
             expect(counts[0].count).toEqual(8);
+        });
+        it('PSC Depth: checked place holders increment with an offset count when a descendent is also checked', async () => {
+            const [counts] = incrementCountAndUpdateUnchecked(
+                ['children_of_1111', 'children_of_11', '11111-dont-overwrite-me'],
+                [],
+                [],
+                mockData.treeWithPlaceholdersAndRealDataPSCDepth,
+                [],
+                getNaicsNodeFromTree,
+                getImmediateAncestorNaicsCode,
+                getHighestAncestorNaicsCode
+            );
+
+            expect(counts[0].count).toEqual(64);
         });
         it('removes items from unchecked array when all immediate children are checked', async () => {
             // ie, 1111 is unchecked, then all grand children underneath are checked.

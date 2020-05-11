@@ -37,28 +37,16 @@ export const getImmediateAncestorNaicsCode = (naicsCode) => {
     return getImmediateAncestorFromString(naicsCode.value);
 };
 
-export const getNaicsNodeFromTree = (tree, nodeKey, treePropForKey = 'value') => {
-    const parentKey = getHighestAncestorNaicsCode(nodeKey);
-    const ancestorKey = getImmediateAncestorNaicsCode(nodeKey);
-    if (nodeKey.length === 2) {
-        return tree
-            .find((node) => node[treePropForKey] === nodeKey);
-    }
-    if (nodeKey.length === 4) {
-        return tree
-            .find((node) => node[treePropForKey] === parentKey)
-            ?.children
-            .find((node) => node[treePropForKey] === nodeKey);
-    }
-    if (nodeKey.length === 6) {
-        return tree
-            .find((node) => node[treePropForKey] === parentKey)
-            ?.children
-            .find((node) => node[treePropForKey] === ancestorKey)
-            ?.children
-            .find((node) => node[treePropForKey] === nodeKey);
-    }
-    return { count: null };
+export const getNaicsNodeFromTree = (tree, code, treePropForKey = 'value') => {
+    if (!tree) return tree;
+    const topLevelNode = tree.find((node) => node[treePropForKey] === code);
+    if (topLevelNode) return topLevelNode;
+    return tree
+        .reduce((acc, node) => {
+            if (acc) return acc;
+            if (node.value === code) return node;
+            return getNaicsNodeFromTree(node.children, code);
+        }, undefined);
 };
 
 export const decrementNaicsCountAndUpdateUnchecked = (

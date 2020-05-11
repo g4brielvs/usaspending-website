@@ -141,9 +141,10 @@ export const treeWithPlaceholdersAndRealDataPSCDepth = [
                         count: 20,
                         children: [
                             {
-                                naics: 'dont-overwrite-me',
-                                value: 'dont-overwrite-me',
-                                naics_description: 'real'
+                                naics: '11111-dont-overwrite-me',
+                                value: '11111-dont-overwrite-me',
+                                naics_description: 'real',
+                                count: 0
                             },
                             {
                                 naics: 'children_of_111120',
