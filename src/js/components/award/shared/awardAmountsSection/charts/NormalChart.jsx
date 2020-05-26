@@ -23,6 +23,10 @@ const propTypes = {
 };
 
 const isCovid = true;
+// 5px margin and padding on both sides ( = 10px) + 4px border on both sides (=8px)
+const obligatedLineOffset = 18;
+// 5px margin and padding on both sides ( = 10px) + 0px border on both sides (=0px)
+const currentLineOffset = 10;
 
 const NormalChart = ({ awardType, awardAmounts }) => {
     // Rename properties to improve readability of the calculations
@@ -97,7 +101,7 @@ const NormalChart = ({ awardType, awardAmounts }) => {
                 onClick={showObligatedTooltip}>
                 <strong>{awardAmounts.totalObligationAbbreviated}</strong><br />{isIdv ? "Combined Obligated Amounts" : "Obligated Amount"}
             </div>
-            <div className="award-amounts-viz__label obligated" style={obligatedWidth}>
+            <div className="award-amounts-viz__label obligated" style={{ marginLeft: `${obligatedLineOffset / 2}px`, width: `calc(${obligatedWidth.width} - ${obligatedLineOffset}px)` }}>
                 <div className={`award-amounts-viz__line-up${classNameForCovid}`} />
             </div>
             <div className="award-amounts-viz__bar-wrapper">
@@ -112,7 +116,7 @@ const NormalChart = ({ awardType, awardAmounts }) => {
                     </div>
                 </TooltipWrapper>
             </div>
-            <div className="award-amounts-viz__label" style={currentLabelWidth}>
+            <div className="award-amounts-viz__label" style={{ marginLeft: `${currentLineOffset / 2}px`, width: `calc(${currentLabelWidth.width} - ${currentLineOffset}px)` }}>
                 <div className={`award-amounts-viz__line current${classNameForCovid}`} style={{ backgroundColor: currentBarStyle.backgroundColor }} />
                 <div className="award-amounts-viz__desc">
                     <div
