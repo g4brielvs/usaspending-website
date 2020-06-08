@@ -160,7 +160,7 @@ const NormalChart = ({ awardType, awardAmounts }) => {
                 }}
                 {...activeTooltipProps} />}
             <div
-                style={{ marginLeft: `${offsets.obligated / 2}px` }}
+                // style={{ marginLeft: `${offsets.obligated / 2}px` }}
                 className="award-amounts-viz__desc-top"
                 role="button"
                 tabIndex="0"
@@ -173,6 +173,7 @@ const NormalChart = ({ awardType, awardAmounts }) => {
                 <strong>{awardAmounts.totalObligationAbbreviated}</strong><br />{isIdv ? "Combined Obligated Amounts" : "Obligated Amount"}
             </div>
             <div className="award-amounts-viz__label obligated" style={{ marginLeft: `${offsets.obligated / 2}px`, width: `calc(${absoluteWidths.obligated.width} - ${offsets.obligated}px)` }}>
+                {/* <div className="award-amounts-viz__label obligated" style={{ width: `calc(${absoluteWidths.obligated.width} - ${offsets.obligated}px)` }}> */}
                 <div className={`award-amounts-viz__line-up${classNameForCovid}`} />
             </div>
             {isCaresReleased &&
@@ -180,7 +181,7 @@ const NormalChart = ({ awardType, awardAmounts }) => {
                     <div
                         role="button"
                         className="award-amounts-viz__desc-top file-c-obligated"
-                        style={{ marginLeft: `${offsets.fileCObligated / 2}px` }}
+                        // style={{ marginLeft: `${offsets.fileCObligated / 2}px` }}
                         tabIndex="0"
                         onBlur={closeTooltip}
                         onFocus={showFileCObligatedTooltip}
@@ -279,8 +280,9 @@ const NormalChart = ({ awardType, awardAmounts }) => {
             </div>
             {/* Even if outlay is 0, we want to show this so long as the obligated is > 0 */}
             {isCaresReleased &&
-                <div className="award-amounts-viz__label file-c-outlay" style={{ marginLeft: `${offsets.fileCOutlay / 2}px` }}>
-                    <div className="award-amounts-viz__line file-c-outlay" style={{ width: `calc(${absoluteWidths.fileCOutlay.width} - ${offsets.fileCOutlay / 2}px)` }} />
+                // <div className="award-amounts-viz__label file-c-outlay" style={{ marginLeft: `${offsets.fileCOutlay / 2}px` }}>
+                <div className="award-amounts-viz__label file-c-outlay">
+                    <div className="award-amounts-viz__line file-c-outlay" style={{ marginLeft: `${offsets.fileCOutlay / 2}px`, width: `calc(${absoluteWidths.fileCOutlay.width} - ${offsets.fileCOutlay / 2}px)` }} />
                     <div className="award-amounts-viz__desc">
                         <div
                             className="award-amounts-viz__desc-text"
