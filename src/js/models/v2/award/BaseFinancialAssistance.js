@@ -4,6 +4,8 @@
  */
 
 import CoreLocation from 'models/v2/CoreLocation';
+import { mockAwardIdsForCaresAct } from 'dataMapping/award/awardAmountsSection';
+
 import BaseAwardRecipient from './BaseAwardRecipient';
 import CoreAwardAgency from './CoreAwardAgency';
 import CoreAward from './CoreAward';
