@@ -590,7 +590,14 @@ const AwardAmountsChart = ({ awardType, awardOverview, spendingScenario }) => {
                     className: awardAmounts._nonFederalFunding > 0 ? `asst-non-federal-funding` : `asst-nff-zero`,
                     labelSortOrder: 1,
                     labelPosition: 'bottom',
-                    rawValue: awardAmounts._nonFederalFunding,
+                    // fudging this for to get the correct tooltip position.
+                    rawValue: awardAmounts._nonFederalFunding + awardAmounts._totalObligation,
+                    denominatorValue: awardAmounts._totalFunding,
+                    barWidthOverrides: {
+                        applyToLine: true,
+                        rawValue: awardAmounts._nonFederalFunding,
+                        denominatorValue: awardAmounts._totalFunding
+                    },
                     value: awardAmounts.nonFederalFundingAbbreviated,
                     color: `#47AAA7`,
                     text: "Non Federal Funding",
