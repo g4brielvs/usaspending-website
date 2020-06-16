@@ -5,6 +5,8 @@ $new-potential: #AAC6E2;
 $file-c-outlay: #6E338E;
 $file-c-obligation: #B699C6;
 
+$old-obligated: $color-cool-blue-light;
+
 $new-obligated: #0A2F5A;
 $new-current: #558EC6;
 $new-potential: #AAC6E2;
@@ -49,6 +51,58 @@ $new-potential: #AAC6E2;
                 width: 100%;
                 @include display(flex);
             }
+            &.idv-overspending,
+            &.contract-overspending {
+                border-top: .4rem solid $color-gray-lightest;
+                border-bottom: .4rem solid $color-gray-lightest;
+                background: repeating-linear-gradient(45deg,#4773aa,#4773aa .8rem,#fdb81e 0,#fdb81e 1rem);
+                &.covid {
+                    border-top: .4rem solid $new-potential;
+                    border-bottom: .4rem solid $new-potential;
+                }
+            }
+            .award-amounts-viz__bar-wrapper {
+                &.idv-extreme-overspending-potential-wrapper,
+                &.contract-extreme-overspending-potential-wrapper {
+                    border: 0.2rem solid #5b616b;
+                    background-color: #fff;
+                    .award-amounts-viz__bar .nested-obligations .award-amounts-viz__bar,
+                    .award-amounts-viz__bar .nested-obligations .award-amounts-viz__bar {
+                        &.contract-extreme-overspending-current,
+                        &.idv-extreme-overspending-current {
+                            border: solid 0.4rem $color-gray-lighter;
+                        }
+                        &.covid.contract-extreme-overspending-current,
+                        &.covid.idv-extreme-overspending-current {
+                            border: solid 0.4rem $new-current;
+                        }
+                        &.contract-extreme-overspending-potential,
+                        &.idv-extreme-overspending-potential {
+                            border-top: 4px solid white;
+                            border-bottom: 4px solid white;
+                        }
+                    }
+                }
+                &.contract-extreme-overspending,
+                &.idv-extreme-overspending {
+                    @include display(flex);
+                    @include align-items(center);
+                }
+            }
+
+            &.idv-overspending-current,
+            &.contract-overspending-current {
+                border: rem(4) solid $color-gray-lighter;
+            }
+
+            &.idv-extreme-overspending,
+            &.contract-extreme-overspending {
+                height: rem(40);
+                background: repeating-linear-gradient(45deg, #4773aa, #4773aa 0.8rem, #e31c3d 0.2rem, #e31c3d 1rem);
+                border-top: solid 0.4rem #fff;
+                border-bottom: solid 0.4rem #fff;
+            }
+            
             &.asst-non-federal-funding {
                 position: relative;
                 padding: rem(3.5);
