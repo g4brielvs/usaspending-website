@@ -5,6 +5,8 @@
 import * as MoneyFormatter from 'helpers/moneyFormatter';
 import * as pscHelper from 'helpers/pscHelper';
 import CoreLocation from 'models/v2/CoreLocation';
+import { mockAwardIdsForCaresAct } from 'dataMapping/award/awardAmountsSection';
+
 import BaseAwardRecipient from './BaseAwardRecipient';
 import BaseParentAwardDetails from './BaseParentAwardDetails';
 import CoreAwardAgency from './CoreAwardAgency';
@@ -31,7 +33,10 @@ BaseContract.populate = function populate(data) {
         dateSigned: data.date_signed,
         baseAndAllOptions: data.base_and_all_options,
         naics: data.naics_hierarchy,
-        psc: Object.entries(data.psc_hierarchy).reduce(pscHelper.deducePscType, pscHelper.emptyHierarchy)
+        psc: Object.entries(data.psc_hierarchy).reduce(pscHelper.deducePscType, pscHelper.emptyHierarchy),
+        defCodes: mockAwardIdsForCaresAct.includes(data.generated_unique_award_id)
+            ? ["L", "M", "N"]
+            : data.disaster_emergency_fund_codes
     };
     this.populateCore(coreData);
 

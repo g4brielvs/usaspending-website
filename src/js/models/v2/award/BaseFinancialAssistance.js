@@ -41,7 +41,10 @@ BaseFinancialAssistance.populate = function populate(data) {
         subawardCount: data.subaward_count,
         totalObligation: data.total_obligation,
         baseExercisedOptions: data.base_exercised_options,
-        dateSigned: data.date_signed
+        dateSigned: data.date_signed,
+        defCodes: mockAwardIdsForCaresAct.includes(data.generated_unique_award_id)
+            ? ["L", "M", "N"]
+            : data.disaster_emergency_fund_codes
     };
     this.populateCore(coreData);
     if (data.cfda_info.length) {
