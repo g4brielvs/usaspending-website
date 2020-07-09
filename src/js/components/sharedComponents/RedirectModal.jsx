@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import Modal from 'react-aria-modal';
 
 import { Close, ExclamationTriangle } from 'components/sharedComponents/icons/Icons';
+import Analytics from 'helpers/analytics/Analytics';
 
 const propTypes = {
     mounted: PropTypes.bool,
@@ -16,6 +17,12 @@ const propTypes = {
 };
 
 export default class RedirectModal extends React.Component {
+    logExternalLinkClick = (e) => {
+        Analytics.event({
+            category: 'Redirect Link Click',
+            action: e.target.href
+        });
+    }
     render() {
         return (
             <Modal
@@ -55,6 +62,7 @@ export default class RedirectModal extends React.Component {
                         </div>
                         <div className="redirect-modal__link">
                             <a
+                                onClick={this.logExternalLinkClick}
                                 href={this.props.url}
                                 target="_blank"
                                 rel="noopener noreferrer">
