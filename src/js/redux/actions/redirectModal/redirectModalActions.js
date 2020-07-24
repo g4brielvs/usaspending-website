@@ -3,9 +3,10 @@
  * Created by Lizzie Salita 2/22/18
  */
 
-export const showModal = (state) => ({
+export const showModal = (url, modalType = 'redirect') => ({
     type: 'SHOW_MODAL',
-    value: state
+    value: url,
+    modalType
 });
 
 export const hideModal = () => ({

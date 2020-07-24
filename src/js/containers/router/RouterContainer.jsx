@@ -6,10 +6,10 @@
 import React from 'react';
 
 import Analytics from 'helpers/analytics/Analytics';
+import Header from 'components/sharedComponents/header/Header';
 
 import GlossaryListenerSingleton from './GlossaryListenerSingleton';
 import Router from './Router';
-
 
 export default class RouterContainer extends React.Component {
     static logPageView(path) {
@@ -95,10 +95,10 @@ export default class RouterContainer extends React.Component {
 
         const ContentComponent = this.state.content;
         return (
-            <div>
+            <Header>
                 <ContentComponent params={this.state.route.params} />
                 { loadingSpinner }
-            </div>
+            </Header>
         );
     }
 }

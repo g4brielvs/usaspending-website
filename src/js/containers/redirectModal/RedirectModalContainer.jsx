@@ -9,30 +9,41 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import * as redirectModalActions from 'redux/actions/redirectModal/redirectModalActions';
+import CovidModalContainer from 'containers/covid19/CovidModalContainer';
 
 import RedirectModal from 'components/sharedComponents/RedirectModal';
 
 const propTypes = {
-    redirectModal: PropTypes.object,
+    globalModal: PropTypes.object,
     hideModal: PropTypes.func
 };
 
-export class RedirectModalContainer extends React.Component {
+export class GlobalModalContainer extends React.Component {
     render() {
-        return (
-            <RedirectModal
-                mounted={this.props.redirectModal.display}
-                hideModal={this.props.hideModal}
-                url={this.props.redirectModal.url} />
-        );
+        if (this.props.globalModal.modalType === 'redirect') {
+            return (
+                <RedirectModal
+                    mounted={this.props.globalModal.display}
+                    hideModal={this.props.hideModal}
+                    url={this.props.globalModal.url} />
+            );
+        }
+        if (this.props.globalModal.modalType === 'covid19') {
+            return (
+                <CovidModalContainer
+                    showModal={this.props.globalModal.display}
+                    hideModal={this.props.hideModal} />
+            );
+        }
+        return null;
     }
 }
 
-RedirectModalContainer.propTypes = propTypes;
+GlobalModalContainer.propTypes = propTypes;
 
 export default connect(
     (state) => ({
-        redirectModal: state.redirectModal
+        globalModal: state.globalModal
     }),
     (dispatch) => bindActionCreators(redirectModalActions, dispatch)
-)(RedirectModalContainer);
+)(GlobalModalContainer);

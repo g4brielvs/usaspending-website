@@ -32,6 +32,8 @@ else {
 // hold a reference to the store from the store singleton
 storeSingleton.setStore(store);
 
+require('all.scss');
+
 export default class AppContainer extends React.Component {
     render() {
         return (
