@@ -200,6 +200,8 @@ const Covid19Container = () => {
                                     section={section}
                                     icon={componentByCovid19Section()[section].icon}
                                     headerText={componentByCovid19Section()[section].headerText}
+                                    tooltipDataRight={componentByCovid19Section()[section].tooltipDataRight}
+                                    tooltipDataLeft={componentByCovid19Section()[section].tooltipDataLeft}
                                     title={componentByCovid19Section()[section].title}>
                                     {componentByCovid19Section()[section].component}
                                 </Covid19Section>

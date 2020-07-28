@@ -15,16 +15,27 @@ const propTypes = {
     icon: PropTypes.string,
     children: PropTypes.element,
     headerText: PropTypes.element,
-    title: PropTypes.string
+    title: PropTypes.string,
+    tooltipDataRight: PropTypes.shape({
+        title: PropTypes.string,
+        TooltipContent: PropTypes.element
+    }),
+    tooltipDataLeft: PropTypes.shape({
+        title: PropTypes.string,
+        TooltipContent: PropTypes.element
+    })
 };
 
+// [DEV-5734]
 // eslint-disable-next-line react/prop-types
 const Covid19Section = ({
     section,
     icon = "chart-area",
     headerText,
     children,
-    title
+    title,
+    tooltipDataLeft,
+    tooltipDataRight
 }) => (
     <section id={`covid19-${snakeCase(section)}`} className={`body__section ${snakeCase(section)}`}>
         <div className="body__header">
@@ -36,7 +47,8 @@ const Covid19Section = ({
                 <TooltipWrapper
                     className="covid19-tt"
                     icon="info"
-                    tooltipComponent={<TooltipComponent />} />
+                    tooltipComponent={<TooltipComponent {...tooltipDataLeft} />} />
+
             </div>
             <div className="body__header-right">
                 {headerText}
@@ -44,7 +56,7 @@ const Covid19Section = ({
                     className="covid19-tt"
                     tooltipPosition="left"
                     icon="info"
-                    tooltipComponent={<TooltipComponent />} />
+                    tooltipComponent={<TooltipComponent {...tooltipDataRight} />} />
             </div>
         </div>
         {children}

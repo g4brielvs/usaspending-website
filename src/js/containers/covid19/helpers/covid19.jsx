@@ -3,21 +3,36 @@
  * Created by Jonathan Hill 06/10/20
  */
 
+import React from 'react';
+import PropTypes from "prop-types";
+
 import OverviewContainer from 'containers/covid19/OverviewContainer';
 import RecipientContainer from 'containers/covid19/recipient/RecipientContainer';
 
-import React from 'react';
 import AwardSpendingAgency from 'components/covid19/awardSpendingAgency/AwardSpendingAgency';
 import BudgetCategories from 'components/covid19/budgetCategories/BudgetCategories';
 import AwardQuestion from 'components/covid19/AwardQuestions';
 import SpendingByCFDA from 'components/covid19/assistanceListing/SpendingByCFDA';
 
-export const TooltipComponent = () => (
-    <div className="covid19-tt">
-        <h4 className="tooltip__title">Coming Soon</h4>
+// [DEV-5734]
+export const TooltipComponent = ({
+    title = 'Coming Soon',
+    TooltipContent = () => (
         <p className="tooltip__text">The tooltip content for this section is currently under review.</p>
+    )
+}) => (
+    <div className="covid19-tt">
+        <h4 className="tooltip__title">{title}</h4>
+        <div className="tooltip__body">
+            <TooltipContent />
+        </div>
     </div>
 );
+
+TooltipComponent.propTypes = {
+    title: PropTypes.string,
+    TooltipContent: PropTypes.node
+};
 
 const totalSpendingText = (
     <div className="body__header-text">
@@ -39,6 +54,24 @@ const awardSpedingTooltip = (
     <div>Content is Coming soon</div>
 );
 
+const OverviewTooltipContentLeft = () => (
+    <>
+        <p className="tooltip__text">Hi Marco</p>
+    </>
+);
+
+const OverviewTooltipContentRight = () => (
+    <>
+        <ul className="tooltip__list">
+            <li>Hi Marco</li>
+            <li>Hi Marco</li>
+            <li>Hi Marco</li>
+            <li>Hi Marco</li>
+        </ul>
+    </>
+);
+
+// [DEV-5734]
 export const componentByCovid19Section = () => ({
     overview: {
         icon: 'hand-holding-medical',
@@ -47,7 +80,15 @@ export const componentByCovid19Section = () => ({
         headerTextTooltip: totalSpendingTooltip,
         showInMenu: true,
         showInMainSection: true,
-        title: 'Overview'
+        title: 'Overview',
+        tooltipDataLeft: {
+            title: 'HI MARCO',
+            TooltipContent: OverviewTooltipContentLeft
+        },
+        tooltipDataRight: {
+            title: 'HI MARCO',
+            TooltipContent: OverviewTooltipContentRight
+        }
     },
     total_spending_by_budget_categories: {
         icon: 'cubes',
