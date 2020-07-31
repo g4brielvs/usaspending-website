@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 
+import GlobalConstants from 'GlobalConstants';
 import GlossaryContainer from 'containers/glossary/GlossaryContainer';
 import GlobalModalContainer from 'containers/globalModal/GlobalModalContainer';
 import Analytics from 'helpers/analytics/Analytics';
@@ -72,7 +73,7 @@ export default class Header extends React.Component {
                 closeBanner={this.closeBanner} />
         );
 
-        if (!this.state.showInfoBanner) {
+        if (!this.state.showInfoBanner || !GlobalConstants.CARES_ACT_RELEASED) {
             infoBanner = null;
         }
         return (
