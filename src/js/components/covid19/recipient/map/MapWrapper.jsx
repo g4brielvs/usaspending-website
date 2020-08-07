@@ -7,7 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { uniq, cloneDeep } from 'lodash';
 
-import * as MapHelper from 'helpers/mapHelper';
+import { calculateCovidMapRange } from 'helpers/covid19Helper';
 import MapBroadcaster from 'helpers/mapBroadcaster';
 import { mapboxSources, visualizationColors } from 'dataMapping/covid19/recipient/map/map';
 import MapBox from 'components/search/visualizations/geo/map/MapBox';
@@ -362,7 +362,7 @@ export default class MapWrapper extends React.Component {
 
         const source = mapboxSources[this.props.activeFilters.territory];
         // calculate the range of data
-        const scale = MapHelper.calculateRange(this.props.data.values);
+        const scale = calculateCovidMapRange(this.props.data.values);
         // prepare a set of blank (false) filters
         const filterValues = visualizationColors.map(() => (
             []
@@ -450,6 +450,9 @@ export default class MapWrapper extends React.Component {
                 {this.legend()}
                 {this.tooltip()}
                 {this.props.children}
+                <div>
+                    <p className="map-data-message"><span className="bold-map-data-message">NOTE:</span> Amounts reported for Utah contain data submitted by HHS. <a href="data/data-limitations.pdf" target="_blank" rel="noopener noreferrer">See more information about HHS&apos;s data submission.</a></p>
+                </div>
             </div>
         );
     }
