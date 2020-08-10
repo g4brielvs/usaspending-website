@@ -7,6 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { uniqueId } from 'lodash';
 import * as MoneyFormatter from 'helpers/moneyFormatter';
+import Accounting from 'accounting';
 import { visualizationColors } from 'dataMapping/covid19/recipient/map/map';
 import MapLegendItem from './MapLegendItem';
 
@@ -36,29 +37,27 @@ const MapLegend = ({ units, segments }) => {
             const color = visualizationColors[i];
 
             const currencyValue =
-                MoneyFormatter.formatMoneyWithPrecision(segment / units.unit,
-                    units.precision) + units.unitLabel;
+                (segment / units.unit);
 
             let previousValue = '';
 
             if (i > 0) {
                 const previous = array[i - 1];
                 previousValue =
-                    MoneyFormatter.formatMoneyWithPrecision(previous / units.unit,
-                        units.precision) + units.unitLabel;
+                    (previous / units.unit);
             }
 
             if (i === 0) {
                 // first item
-                label = `Less than ${currencyValue}`;
+                label = `Less than $${Accounting.toFixed(currencyValue, 2)}${units.unitLabel}`;
             }
             else if (i + 1 === array.length) {
                 // last item
-                label = `More than ${previousValue}`;
+                label = `More than $${Accounting.toFixed(previousValue, 2)}${units.unitLabel}`;
             }
             else {
                 // remaining items
-                label = `${previousValue} to ${currencyValue}`;
+                label = `$${Accounting.toFixed(previousValue, 2)}${units.unitLabel} to $${Accounting.toFixed(currencyValue, 2)}${units.unitLabel}`;
             }
 
             return (<MapLegendItem

@@ -4,7 +4,7 @@
  */
 
 import { min, max } from 'lodash';
-import { scaleLinear } from 'd3-scale';
+import { scaleQuantile, scaleSequential } from 'd3-scale';
 import kGlobalConstants from 'GlobalConstants';
 import { apiRequest } from './apiRequest';
 
@@ -397,25 +397,11 @@ export const calculateRange = (data) => {
         dataRange = [0, 10000];
     }
 
-    let minValue = min(dataRange);
-    let maxValue = max(dataRange);
-
     // determine the best units to use
     const units = MoneyFormatter.calculateUnits(dataRange);
 
-    // round the minimum down to the cleanest unit point
-    minValue = Math.floor(minValue / units.unit);
-    maxValue = Math.ceil(maxValue / units.unit);
-
-    // determine the current step values, round it to something divisible by
-    const step = Math.ceil((maxValue - minValue) / 6);
-    maxValue = minValue + (6 * step);
-
-    const segments = [];
-    const scale = scaleLinear().domain([minValue * units.unit, maxValue * units.unit]).range([0, 6]);
-    for (let i = 1; i <= 6; i++) {
-        segments.push(scale.invert(i));
-    }
+    const scale = scaleQuantile().domain(data).range([0, 1, 2, 3, 4, 5]);
+    const segments = scale.quantiles();
 
     return {
         scale,
