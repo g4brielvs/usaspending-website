@@ -366,30 +366,39 @@ export default class MapWrapper extends React.Component {
         //const scale = calculateCovidMapRange(this.props.data.values);
         const scale = calculateRange(this.props.data.values);
         // prepare a set of blank (false) filters
-        const filterValues = visualizationColors.map(() => (
-            []
-        ));
+        // const filterValues = visualizationColors.map(() => (
+        //     []
+        // ));
         this.props.data.locations.forEach((location, index) => {
+            const filterValues = {};
             let value = this.props.data.values[index];
             if (isNaN(value)) value = 0;
-            // determine the group index
-            let group = Math.floor(scale.scale(value));
-            if (group.toString().startsWith('-')) group = 0;
-            // add it to the filter list
-            filterValues[group].push(location);
-        });
 
-        // generate Mapbox filters from the values
-        filterValues.forEach((valueSet, index) => {
+            filterValues[location] = scale.scale(value);
+
             const layerName = `highlight_${this.props.activeFilters.territory}_group_${index}`;
-            // by default set up the filter to not include anything
             let filter = ['in', source.filterKey, ''];
             if (valueSet.length > 0) {
                 // if there are locations that are displayable, include those in the filter
                 filter = ['in', source.filterKey].concat(valueSet);
             }
+
             this.mapRef.map.setFilter(layerName, filter);
         });
+
+
+        // generate Mapbox filters from the values
+        // filterValues.forEach((valueSet, index) => {
+    
+        //     const layerName = `highlight_${this.props.activeFilters.territory}_group_${index}`;
+        //     // by default set up the filter to not include anything
+        //     let filter = ['in', source.filterKey, ''];
+        //     if (valueSet.length > 0) {
+        //         // if there are locations that are displayable, include those in the filter
+        //         filter = ['in', source.filterKey].concat(valueSet);
+        //     }
+        //     this.mapRef.map.setFilter(layerName, filter);
+        // });
 
         this.setState({
             spendingScale: scale
@@ -449,7 +458,7 @@ export default class MapWrapper extends React.Component {
                     }} />
                 <MapFiltersToggle onClick={this.toggleFilters} isOpen={this.state.isFiltersOpen} />
                 {this.filters()}
-                {this.legend()}
+                {/* {this.legend()} */}
                 {this.tooltip()}
                 {this.props.children}
             </div>

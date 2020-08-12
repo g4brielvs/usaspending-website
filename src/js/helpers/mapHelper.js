@@ -4,7 +4,7 @@
  */
 
 import { min, max } from 'lodash';
-import { scaleQuantile, scaleSequential } from 'd3-scale';
+import { scaleQuantile, scaleSequential, scaleLinear } from 'd3-scale';
 import kGlobalConstants from 'GlobalConstants';
 import { apiRequest } from './apiRequest';
 
@@ -400,9 +400,9 @@ export const calculateRange = (data) => {
     // determine the best units to use
     const units = MoneyFormatter.calculateUnits(dataRange);
 
-    const scale = scaleQuantile().domain(data).range([0, 1, 2, 3, 4, 5]);
-    const segments = scale.quantiles();
-
+    // const scale = scaleQuantile().domain(data).range([0, 1, 2, 3, 4, 5]);
+    const segments = [];
+    const scale = scaleLinear().domain(data).range(["white", "blue"]);
     return {
         scale,
         segments,
