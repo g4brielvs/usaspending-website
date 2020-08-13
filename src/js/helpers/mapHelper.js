@@ -3,9 +3,10 @@
  * Created by Kevin Li 2/15/17
  */
 
+
+import { scaleQuantile } from 'd3-scale';
 import kGlobalConstants from 'GlobalConstants';
 import { apiRequest } from './apiRequest';
-import { scaleQuantile } from 'd3-scale';
 
 import * as MoneyFormatter from './moneyFormatter';
 
