@@ -193,7 +193,17 @@ export default class MapWrapper extends React.Component {
 
         // generate the highlight layers that will be shaded in when populated with data filters
         // set up temporary empty filters that will show nothing
-        const colors = visualizationColors;
+        // const colors = visualizationColors;
+        const colors = [];
+        if (this.props.activeFilters.territory === 'state') {
+            for (let i = 0; i < 49; i++) {
+                colors.push(`rgba(1, 43, 58, ${i * 0.02})`);
+            }
+        } else {
+            for (let i = 0; i < 500; i++) {
+                colors.push(`rgba(1, 43, 58, ${i * 0.002})`);
+            }
+        }
         colors.forEach((color, index) => {
             const layerName = `highlight_${type}_group_${index}`;
             this.mapRef.map.addLayer({
