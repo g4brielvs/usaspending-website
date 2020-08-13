@@ -3,10 +3,9 @@
  * Created by Kevin Li 2/15/17
  */
 
-import { min, max } from 'lodash';
-import { scaleQuantile, scaleSequential } from 'd3-scale';
 import kGlobalConstants from 'GlobalConstants';
 import { apiRequest } from './apiRequest';
+import { scaleQuantile } from 'd3-scale';
 
 import * as MoneyFormatter from './moneyFormatter';
 
@@ -390,7 +389,7 @@ export const stateCenterFromFips = (fips) => {
     return [];
 };
 
-export const calculateRange = (data) => {
+export const calculateRange = (data, territory) => {
     let dataRange = data;
     // handle a condition where an empty array is provided
     if (data.length < 1) {
@@ -400,7 +399,18 @@ export const calculateRange = (data) => {
     // determine the best units to use
     const units = MoneyFormatter.calculateUnits(dataRange);
 
-    const scale = scaleQuantile().domain(data).range([0, 1, 2, 3, 4, 5]);
+    const rangeArray = [];
+    if (territory === 'state') {
+        for (let i = 0; i < 49; i++) {
+            rangeArray.push(i);
+        }
+    } else {
+        for (let i = 0; i < 500; i++) {
+            rangeArray.push(i);
+        }
+    }
+
+    const scale = scaleQuantile().domain(data).range(rangeArray);
     const segments = scale.quantiles();
 
     return {

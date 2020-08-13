@@ -7,7 +7,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { uniq, cloneDeep } from 'lodash';
 
-import { calculateCovidMapRange } from 'helpers/covid19Helper';
 import { calculateRange } from 'helpers/mapHelper';
 import MapBroadcaster from 'helpers/mapBroadcaster';
 import { mapboxSources, visualizationColors } from 'dataMapping/covid19/recipient/map/map';
@@ -363,12 +362,24 @@ export default class MapWrapper extends React.Component {
 
         const source = mapboxSources[this.props.activeFilters.territory];
         // calculate the range of data
-        //const scale = calculateCovidMapRange(this.props.data.values);
-        const scale = calculateRange(this.props.data.values);
+        const scale = calculateRange(this.props.data.values, this.props.activeFilters.territory);
         // prepare a set of blank (false) filters
-        const filterValues = visualizationColors.map(() => (
+
+        const colors = [];
+        if (this.props.activeFilters.territory === 'state') {
+            for (let i = 0; i < 49; i++) {
+                colors.push(`rgba(1, 43, 58, ${i * 0.02})`);
+            }
+        } else {
+            for (let i = 0; i < 500; i++) {
+                colors.push(`rgba(1, 43, 58, ${i * 0.002})`);
+            }
+        }
+
+        const filterValues = colors.map(() => (
             []
         ));
+
         this.props.data.locations.forEach((location, index) => {
             let value = this.props.data.values[index];
             if (isNaN(value)) value = 0;
@@ -449,7 +460,7 @@ export default class MapWrapper extends React.Component {
                     }} />
                 <MapFiltersToggle onClick={this.toggleFilters} isOpen={this.state.isFiltersOpen} />
                 {this.filters()}
-                {this.legend()}
+                {/* {this.legend()} */}
                 {this.tooltip()}
                 {this.props.children}
             </div>
