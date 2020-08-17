@@ -9,7 +9,7 @@ import { uniq, cloneDeep } from 'lodash';
 
 import { calculateRange } from 'helpers/mapHelper';
 import MapBroadcaster from 'helpers/mapBroadcaster';
-import { mapboxSources, visualizationColors } from 'dataMapping/covid19/recipient/map/map';
+import { mapboxSources } from 'dataMapping/covid19/recipient/map/map';
 import MapBox from 'components/search/visualizations/geo/map/MapBox';
 import MapFilters from 'components/covid19/recipient/map/MapFilters';
 import MapLegend from './MapLegend';
