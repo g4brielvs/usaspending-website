@@ -7,7 +7,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { uniq, cloneDeep } from 'lodash';
 
-import { calculateCovidMapRange } from 'helpers/covid19Helper';
 import { calculateRange } from 'helpers/mapHelper';
 import MapBroadcaster from 'helpers/mapBroadcaster';
 import { mapboxSources } from 'dataMapping/covid19/recipient/map/map';
@@ -473,7 +472,7 @@ export default class MapWrapper extends React.Component {
                 </div>
                 <MapFiltersToggle onClick={this.toggleFilters} isOpen={this.state.isFiltersOpen} />
                 {this.filters()}
-                {/* {this.legend()} */}
+                {this.legend()}
                 {this.tooltip()}
                 {this.props.children}
                 <div>
