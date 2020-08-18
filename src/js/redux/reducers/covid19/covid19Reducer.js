@@ -6,13 +6,17 @@
 const initialState = {
     defCodes: [],
     overview: {},
-    latestSubmissionDate: ''
+    latestSubmissionDate: '',
+    async: false
 };
 
 const covid19Reducer = (state = initialState, action) => {
     switch (action.type) {
         case 'SET_DEF_CODES': {
             return Object.assign({}, state, { defCodes: action.defCodes });
+        }
+        case 'SET_ASYNC': {
+            return Object.assign({}, state, { async: action.payload });
         }
         case 'SET_COVID_OVERVIEW': {
             return Object.assign({}, state, { overview: action.overview });

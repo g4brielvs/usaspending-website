@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchDEFCodes } from 'helpers/disasterHelper';
 import CheckboxTree from 'components/sharedComponents/CheckboxTree';
 import { updateDefCodes } from 'redux/actions/search/searchFilterActions';
+import { reduxThunkExample } from 'redux/actions/async';
 import SubmitHint from 'components/sharedComponents/filterSidebar/SubmitHint';
 import DEFCheckboxTreeLabel from 'components/search/filters/defc/DEFCheckboxTreeLabel';
 
@@ -57,6 +58,7 @@ export class DEFCheckboxTree extends React.Component {
 
     componentDidMount() {
         this.fetchCodes();
+        this.props.asyncAction();
     }
 
     stageFilter = (newChecked) => {
@@ -158,7 +160,8 @@ export class DEFCheckboxTree extends React.Component {
 DEFCheckboxTree.propTypes = {
     counts: PropTypes.arrayOf(PropTypes.shape({})),
     checked: PropTypes.arrayOf(PropTypes.string),
-    stageDef: PropTypes.func
+    stageDef: PropTypes.func,
+    asyncAction: PropTypes.func
 };
 
 const mapStateToProps = (state) => ({
@@ -167,7 +170,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    stageDef: (require, exclude, counts) => dispatch(updateDefCodes(require, exclude, counts))
+    stageDef: (require, exclude, counts) => dispatch(updateDefCodes(require, exclude, counts)),
+    asyncAction: (test) => dispatch(reduxThunkExample(test))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DEFCheckboxTree);

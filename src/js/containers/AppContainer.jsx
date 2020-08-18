@@ -6,6 +6,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import perflogger from 'redux-perf-middleware';
+import thunk from 'redux-thunk';
 import kGlobalConstants from 'GlobalConstants';
 
 import storeSingleton from 'redux/storeSingleton';
@@ -26,7 +27,8 @@ if (kGlobalConstants.PERF_LOG) {
     store = createStoreWithMiddleware(reducers, devExtension);
 }
 else {
-    store = createStore(reducers, {}, devExtension);
+    const withMiddleware = applyMiddleware(thunk)(createStore);
+    store = withMiddleware(reducers, devExtension);
 }
 
 // hold a reference to the store from the store singleton

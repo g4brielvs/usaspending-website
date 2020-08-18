@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { isCancel } from 'axios';
 import { is } from 'immutable';
 import moment from 'moment';
+import { Table } from 'data-transparency-ui';
 
 import Router from 'containers/router/Router';
 
