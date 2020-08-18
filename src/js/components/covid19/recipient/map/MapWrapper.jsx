@@ -7,6 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { uniq, cloneDeep } from 'lodash';
 
+import { calculateCovidMapRange } from 'helpers/covid19Helper';
 import { calculateRange } from 'helpers/mapHelper';
 import MapBroadcaster from 'helpers/mapBroadcaster';
 import { mapboxSources } from 'dataMapping/covid19/recipient/map/map';
@@ -372,7 +373,11 @@ export default class MapWrapper extends React.Component {
 
         const source = mapboxSources[this.props.activeFilters.territory];
         // calculate the range of data
-        const scale = calculateRange(this.props.data.values, this.props.activeFilters.territory);
+        let scale = calculateRange(this.props.data.values);
+        if (this.props.activeFilters.awardType === "all") {
+            scale = calculateCovidMapRange(this.props.data.values);
+        }
+
         // prepare a set of blank (false) filters
 
         const colors = [];
@@ -473,6 +478,9 @@ export default class MapWrapper extends React.Component {
                 {/* {this.legend()} */}
                 {this.tooltip()}
                 {this.props.children}
+                <div>
+                    <p className="map-data-message"><span className="bold-map-data-message">NOTE:</span> Amounts reported for Utah reflect an award by HHS from the Provider Relief Fund (PRF) to a single entity in Utah which will make payments to recipients across the country. <a href="data/data-limitations.pdf" target="_blank" rel="noopener noreferrer">See more information about HHS&apos;s data submission.</a></p>
+                </div>
             </div>
         );
     }
