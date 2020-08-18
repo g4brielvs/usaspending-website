@@ -373,12 +373,7 @@ export default class MapWrapper extends React.Component {
 
         const source = mapboxSources[this.props.activeFilters.territory];
         // calculate the range of data
-        let scale = calculateRange(this.props.data.values);
-        if (this.props.activeFilters.awardType === "all") {
-            scale = calculateCovidMapRange(this.props.data.values);
-        }
-
-        // prepare a set of blank (false) filters
+        const scale = calculateRange(this.props.data.values, this.props.activeFilters.territory);
 
         const colors = [];
         if (this.props.activeFilters.territory === 'state') {
@@ -473,6 +468,9 @@ export default class MapWrapper extends React.Component {
                     ref={(component) => {
                         this.mapRef = component;
                     }} />
+                <div>
+                    <p className="map-data-message"><span className="bold-map-data-message">NOTE:</span> Amounts reported for Utah reflect an award by HHS from the Provider Relief Fund (PRF) to a single entity in Utah which will make payments to recipients across the country. <a href="data/data-limitations.pdf" target="_blank" rel="noopener noreferrer">See more information about HHS&apos;s data submission.</a></p>
+                </div>
                 <MapFiltersToggle onClick={this.toggleFilters} isOpen={this.state.isFiltersOpen} />
                 {this.filters()}
                 {/* {this.legend()} */}
