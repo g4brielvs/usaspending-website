@@ -410,12 +410,23 @@ export default class MapWrapper extends React.Component {
 
         const source = mapboxSources[this.props.scope];
         // calculate the range of data
-        const scale = MapHelper.calculateRange(this.props.data.values);
-        const colors = MapHelper.visualizationColors;
+        const scale = MapHelper.calculateRange(this.props.data.values, this.props.scope);
         // prepare a set of blank (false) filters
+        const colors = [];
+        if (this.props.scope === 'state') {
+            for (let i = 0; i < 49; i++) {
+                colors.push(`rgba(1, 43, 58, ${i * 0.02})`);
+            }
+        } else {
+            for (let i = 0; i < 2000; i++) {
+                colors.push(`rgba(1, 43, 58, ${i * 0.002})`);
+            }
+        }
+
         const filterValues = colors.map(() => (
             []
         ));
+        console.log(colors)
         this.props.data.locations.forEach((location, index) => {
             let value = this.props.data.values[index];
             if (isNaN(value)) value = 0;

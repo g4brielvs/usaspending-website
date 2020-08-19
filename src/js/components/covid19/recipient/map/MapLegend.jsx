@@ -5,6 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as MoneyFormatter from 'helpers/moneyFormatter';
 
 
 const propTypes = {
@@ -24,21 +25,17 @@ const defaultProps = {
     }
 };
 
-function numberWithCommas(x) {
-    if (!x) {
-        return "";
-    }
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
 const MapLegend = ({ units, segments }) => {
+    const minCurrencyValue = MoneyFormatter.formatMoneyWithPrecision(segments[0] / units.unit, units.precision) + units.unitLabel;
+    const maxCurrencyValue = MoneyFormatter.formatMoneyWithPrecision(segments[segments.length - 1] / units.unit, units.precision) + units.unitLabel;
 
     return (
         <div className="map-legend">
             <ul className="map-legend-body">
-                ${numberWithCommas(Math.trunc(segments[0]))}
+                
+                {minCurrencyValue}
                 <div className="map-legend-gradient" />
-                ${numberWithCommas(Math.trunc(segments[segments.length - 1]))}
+                {maxCurrencyValue}
             </ul>
         </div>
     );

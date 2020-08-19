@@ -372,7 +372,9 @@ export default class MapWrapper extends React.Component {
 
         const source = mapboxSources[this.props.activeFilters.territory];
         // calculate the range of data
+
         const scale = calculateRange(this.props.data.values, this.props.activeFilters.territory);
+    
 
         const colors = [];
         if (this.props.activeFilters.territory === 'state') {
@@ -380,7 +382,7 @@ export default class MapWrapper extends React.Component {
                 colors.push(`rgba(1, 43, 58, ${i * 0.02})`);
             }
         } else {
-            for (let i = 0; i < 500; i++) {
+            for (let i = 0; i < 2000; i++) {
                 colors.push(`rgba(1, 43, 58, ${i * 0.002})`);
             }
         }
@@ -388,7 +390,6 @@ export default class MapWrapper extends React.Component {
         const filterValues = colors.map(() => (
             []
         ));
-
         this.props.data.locations.forEach((location, index) => {
             let value = this.props.data.values[index];
             if (isNaN(value)) value = 0;
