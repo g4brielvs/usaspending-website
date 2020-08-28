@@ -24,6 +24,7 @@ import {
     sendAnalyticEvents,
     sendFieldCombinations
 } from './helpers/searchAnalytics';
+import { Search } from 'js-search';
 
 require('pages/search/searchPage.scss');
 
@@ -129,7 +130,7 @@ const SearchContainer = ({ history }) => {
 
     useEffect(() => {
         const areAppliedFiltersEmpty = SearchHelper.areFiltersEqual(appliedFilters.filters, initialState);
-        if (areAppliedFiltersEmpty) {
+        if (areAppliedFiltersEmpty && !inFlight) {
             // all the filters were cleared, reset to a blank hash
             dispatch(setAppliedFilterEmptiness(true));
             dispatch(setAppliedFilterCompletion(true));
@@ -144,12 +145,14 @@ const SearchContainer = ({ history }) => {
     }, [dispatch, history, generateHash, setDownloadAvailability, appliedFilters.filters, inFlight]);
 
     useEffect(() => {
-        if (!urlHash) {
+        const areFiltersEmpty = SearchHelper.areFiltersEqual(filters, initialState);
+        const areFiltersStaged = (
+            (SearchHelper.areFiltersEqual(filters, appliedFilters.filters) && !areFiltersEmpty)
+        );
+        if (areFiltersStaged || !urlHash || !areFiltersEmpty) {
             setInFlight(false);
             return;
         }
-
-        if (SearchHelper.areFiltersEqual(filters, appliedFilters.filters)) return;
         // url has a hash apply filters retrieve filter selections via hash if necessary.
         SearchHelper.restoreUrlHash({
             hash: urlHash
