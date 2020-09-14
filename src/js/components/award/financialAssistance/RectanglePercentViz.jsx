@@ -79,6 +79,8 @@ const nestedBarStyles = {
     padding: '0.2rem'
 };
 
+let timeout = null;
+
 const RectanglePercentViz = ({
     numerator,
     numerator2 = null,
@@ -121,7 +123,12 @@ const RectanglePercentViz = ({
     const numeratorValue = percentage ? `${numerator.value} (${numerator.width})` : numerator.value;
 
     const closeTooltip = () => {
-        setIsTooltipVisible(false);
+        if (!timeout) {
+            timeout = window.setTimeout(() => {
+                setIsTooltipVisible(false);
+                console.log("close da tooltip");
+            }, 250);
+        }
     };
 
     const showNumeratorTooltip = (e) => {
@@ -323,12 +330,20 @@ const RectanglePercentViz = ({
             );
         });
 
+    const handleHover = () => {
+        if (timeout) {
+            console.log('clearing timeout');
+            window.clearTimeout(timeout);
+        }
+        console.log('hovering');
+        setIsTooltipVisible(true);
+    };
+
     return (
         <div className="award-amounts-viz">
             {isTooltipVisible && <TooltipWrapper
                 className="award-section-tt"
-                onMouseMoveTooltip={setIsTooltipVisible.bind(null, true)}
-                onMouseLeaveTooltip={setIsTooltipVisible.bind(null, false)}
+                onMouseMoveTooltip={handleHover}
                 controlledProps={{
                     isControlled: true,
                     isVisible: true
