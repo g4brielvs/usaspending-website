@@ -289,7 +289,7 @@ export class CovidHighlights extends React.Component {
                                 in response to
                             </span>
                             <span>
-                                <strong>COVID-19.</strong>
+                                <strong>WEIRD CODE...</strong>
                                 <div style={{ width: '20px' }}>
                                     <TooltipWrapper
                                         icon="info"
